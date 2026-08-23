@@ -31,7 +31,12 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Build Debug APK
+      - name: Configure Android SDK Path
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          echo "local.properties configured with sdk.dir=$ANDROID_HOME"
+
+      - name: Build Debug APK with Gradle
         working-directory: ./android
         run: gradle assembleDebug --stacktrace --no-daemon
 
@@ -39,16 +44,16 @@ jobs:
         run: |
           mkdir -p build-output
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/SentinelShield-InCall-Guard-v1.0.apk
-          echo "APK successfully generated."
+          echo "APK successfully built."
 
-      - name: Upload APK Artifact
+      - name: Upload APK as Workflow Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SentinelShield-Android-APK
           path: build-output/SentinelShield-InCall-Guard-v1.0.apk
           retention-days: 30
 
-      - name: Create or Update GitHub Release
+      - name: Create GitHub Release with APK
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
