@@ -392,7 +392,28 @@ async def voice_stream_ws(websocket: WebSocket) -> None:
 # Mount Modular Glassmorphic Frontend (Zero-Build Vanilla HTML/CSS/JS)
 # ---------------------------------------------------------------------------
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc: Any) -> Response:
+    """Interactive custom 404 handler with Back button."""
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=404,
+            content={
+                "error": "page_not_found",
+                "message": f"The requested API route '{request.url.path}' does not exist.",
+            },
+        )
+    not_found_page = frontend_dir / "404.html"
+    if not_found_page.exists():
+        return FileResponse(str(not_found_page), status_code=404)
+    return JSONResponse(
+        status_code=404,
+        content={"error": "page_not_found", "message": "Page Not Found"},
+    )
+
 if frontend_dir.exists():
     app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
 
