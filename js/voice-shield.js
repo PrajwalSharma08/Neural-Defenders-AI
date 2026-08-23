@@ -497,5 +497,103 @@ window.VoiceShield = {
       this.animId = requestAnimationFrame(render);
     };
     render();
+  },
+
+  // --------------------------------------------------------------------------
+  // Mobile Option 1: Live In-Call Phone Simulation Handlers
+  // --------------------------------------------------------------------------
+  simTimerInterval: null,
+  simSeconds: 0,
+
+  simulateCall(type) {
+    this.endSimulatedCall();
+
+    const overlay = document.getElementById('simCallOverlay');
+    const overlayRiskText = document.getElementById('simOverlayRiskText');
+    const callerName = document.getElementById('simCallerName');
+    const callerNumber = document.getElementById('simCallerNumber');
+    const callTimer = document.getElementById('simCallTimer');
+    const statusMsg = document.getElementById('simCallStatusMsg');
+
+    this.simSeconds = 1;
+    if (callTimer) callTimer.textContent = "00:01 • IN CALL";
+    this.simTimerInterval = setInterval(() => {
+      this.simSeconds++;
+      const mm = String(Math.floor(this.simSeconds / 60)).padStart(2, '0');
+      const ss = String(this.simSeconds % 60).padStart(2, '0');
+      if (callTimer) callTimer.textContent = `${mm}:${ss} • IN CALL`;
+    }, 1000);
+
+    if (type === 'ai') {
+      if (callerName) callerName.textContent = "CBI Officer / Impersonator";
+      if (callerNumber) callerNumber.textContent = "+91 91234 56789 (Spoofed)";
+      if (statusMsg) statusMsg.textContent = "Analyzing caller's incoming voice stream in RAM...";
+
+      // Trigger realistic acoustic activity on spectrogram
+      for (let i = 0; i < 42; i++) this.currentFreqData[i] = Math.floor(Math.random() * 180 + 50);
+
+      // Trigger floating overlay after 250ms (sub-second telemetry)
+      setTimeout(() => {
+        if (overlay) overlay.style.display = 'block';
+        if (overlayRiskText) overlayRiskText.textContent = "RISK: 94% AI SYNTHETIC VOICE CLONE";
+        if (statusMsg) {
+          statusMsg.style.color = "var(--accent-crimson)";
+          statusMsg.textContent = "🚨 In-Call Alert: Floating Warning HUD Displayed to User!";
+        }
+
+        this.updateResults({
+          risk_score: 0.94,
+          snr_db: 26.2,
+          phase_variance: 0.08,
+          pitch_jitter: 0.002,
+          processing_ms: 18,
+          verdict: "AI_DETECTED",
+          speech_seconds: 2.5,
+          session_id: "incall_live_simulation",
+          attestation_hash: "incall_ram_tee_94pct_synthetic",
+        });
+      }, 280);
+
+    } else {
+      if (callerName) callerName.textContent = "Family / Trusted Contact";
+      if (callerNumber) callerNumber.textContent = "+91 98765 43210";
+      if (overlay) overlay.style.display = 'none';
+      if (statusMsg) {
+        statusMsg.style.color = "var(--accent-emerald)";
+        statusMsg.textContent = "✅ Genuine Human Voice: Natural vocal tract dynamics (10% Risk).";
+      }
+
+      for (let i = 0; i < 42; i++) this.currentFreqData[i] = Math.floor(Math.random() * 120 + 30);
+
+      this.updateResults({
+        risk_score: 0.10,
+        snr_db: 28.5,
+        phase_variance: 0.85,
+        pitch_jitter: 0.031,
+        processing_ms: 14,
+        verdict: "HUMAN",
+        speech_seconds: 2.0,
+        session_id: "incall_live_simulation",
+        attestation_hash: "incall_ram_tee_human_pass",
+      });
+    }
+  },
+
+  endSimulatedCall() {
+    if (this.simTimerInterval) {
+      clearInterval(this.simTimerInterval);
+      this.simTimerInterval = null;
+    }
+    const overlay = document.getElementById('simCallOverlay');
+    const callTimer = document.getElementById('simCallTimer');
+    const statusMsg = document.getElementById('simCallStatusMsg');
+
+    if (overlay) overlay.style.display = 'none';
+    if (callTimer) callTimer.textContent = "CALL ENDED";
+    if (statusMsg) {
+      statusMsg.style.color = "var(--text-muted)";
+      statusMsg.textContent = "Simulation ended. Ready for next test.";
+    }
+    this.currentFreqData.fill(0);
   }
 };
