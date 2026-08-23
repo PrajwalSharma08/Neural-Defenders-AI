@@ -70,5 +70,61 @@
       "url": "./sms-shield.html",
       "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
     }
+  ],
+  "share_target": {
+    "action": "./link-shield.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "./voice-shield.html",
+      "name": "Audio Forensics Scanner",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }],
+      "accept": {
+        "audio/wav": [".wav"],
+        "audio/mpeg": [".mp3"],
+        "audio/ogg": [".ogg"]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+sentinel",
+      "url": "./link-shield.html?url=%s"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "SentinelShield Quick Guard",
+      "short_name": "Quick Guard",
+      "description": "Instant Cyber Defense Threat Scanner",
+      "tag": "sentinel-guard",
+      "template": "widget-template",
+      "ms_ac_template": "widget-template.json",
+      "data": "widget-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "./img/screenshot-mobile.png",
+          "sizes": "720x1280",
+          "label": "Quick Threat Guard Widget"
+        }
+      ],
+      "icons": [
+        {
+          "src": "./img/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
