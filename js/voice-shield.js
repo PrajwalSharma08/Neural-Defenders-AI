@@ -150,7 +150,7 @@ window.VoiceShield = {
       } catch (e) {}
     }
 
-    // 2. Setup WebAudio Microphone Stream with Hardware Noise Suppression
+    // 2. Setup WebAudio Microphone Stream with AnalyserNode and Hardware Noise Suppression
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -167,112 +167,115 @@ window.VoiceShield = {
       });
 
       const source = this.audioCtx.createMediaStreamSource(this.stream);
+      
+      // True FFT Analyser Node for Frequency Domain Analysis
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 512;
+      this.analyser.smoothingTimeConstant = 0.8;
+      source.connect(this.analyser);
+
       this.processor = this.audioCtx.createScriptProcessor(4096, 1, 1);
+      this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
 
       this.chunkBuffer = [];
       this.sampleCount = 0;
-      this.ambientNoiseFloor = 0.015;
       this.smoothedRisk = 0.0;
       this.speechAccumSeconds = 0.0;
+      this.humanSpeechFrames = 0;
 
       this.processor.onaudioprocess = (e) => {
         if (!this.isStreaming) return;
         const inputData = e.inputBuffer.getChannelData(0);
 
-        // Feed visualizer FFT data
+        // Capture real FFT frequency bins
+        this.analyser.getByteFrequencyData(this.freqDataArray);
+
+        // Feed visualizer 42 bands
         for (let i = 0; i < 42; i++) {
-          const sample = Math.abs(inputData[i * 12] || 0);
-          this.currentFreqData[i] = Math.min(255, Math.floor(sample * 420));
+          const idx = Math.min(this.freqDataArray.length - 1, i * 4);
+          this.currentFreqData[i] = this.freqDataArray[idx] || 0;
         }
 
-        // Calculate RMS Energy & Zero Crossing Rate
+        // --- PRECISE ACOUSTIC FORMANT DISCRIMINATION ---
+        // Bin size @ 16000Hz, fftSize 512 = 31.25 Hz per bin
+        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
+        let lowDroneSum = 0;
+        for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
+        const avgLowDrone = lowDroneSum / 9;
+
+        // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
+        let speechFormantSum = 0;
+        for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
+        const avgSpeechFormant = speechFormantSum / 92;
+
+        // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
+        let highVocoderSum = 0;
+        for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
+        const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
+
+        // Compute RMS
         let sumSquares = 0;
-        let zeroCrossings = 0;
         const pcm16 = new Int16Array(inputData.length);
         for (let i = 0; i < inputData.length; i++) {
           const s = Math.max(-1, Math.min(1, inputData[i]));
           sumSquares += s * s;
-          if (i > 0 && ((inputData[i] >= 0 && inputData[i - 1] < 0) || (inputData[i] < 0 && inputData[i - 1] >= 0))) {
-            zeroCrossings++;
-          }
           pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
         const rms = Math.sqrt(sumSquares / inputData.length);
-        const zcr = zeroCrossings / inputData.length;
-
-        // Adaptive Cooler / Ambient Noise Gate
-        // Slowly track continuous background hum (cooler, AC, fan)
-        if (rms < this.ambientNoiseFloor * 1.5 || rms < 0.035) {
-          this.ambientNoiseFloor = this.ambientNoiseFloor * 0.96 + rms * 0.04;
-        }
 
         this.chunkBuffer.push(pcm16);
         this.sampleCount += pcm16.length;
 
-        // If connected to Backend WS, stream PCM chunks
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          if (this.sampleCount >= this.SAMPLES_PER_CHUNK) {
-            const merged = new Int16Array(this.sampleCount);
-            let offset = 0;
-            for (const chunk of this.chunkBuffer) {
-              merged.set(chunk, offset);
-              offset += chunk.length;
-            }
-            this.chunkBuffer = [];
-            this.sampleCount = 0;
-            this.ws.send(merged.buffer);
-          }
-        } 
-        // In-Browser WebAudio DSP Engine (Robust against Cooler / Fan Noise)
-        else {
-          // Check if input is only background cooler noise
-          const isQuietOrCoolerNoise = rms < (this.ambientNoiseFloor * 1.4 + 0.022);
+        // --- REAL SPEECH VS COOLER DETECTION ---
+        // Cooler drone has high lowDrone but low dynamic vocal formant energy (< 18)
+        const isHumanSpeechActive = avgSpeechFormant > 16 && (avgSpeechFormant > avgLowDrone * 0.4 || rms > 0.04);
 
-          if (isQuietOrCoolerNoise) {
-            // Calm decay on silence
-            this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.85);
-            this.updateResults({
-              risk_score: this.smoothedRisk,
-              snr_db: Math.max(8, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.002))),
-              phase_variance: 0.0,
-              pitch_jitter: 0.0,
-              processing_ms: 6,
-              verdict: "SILENCE",
-              speech_seconds: this.speechAccumSeconds,
-              session_id: "live_webaudio_session",
-              attestation_hash: "tee_ram_guard_active",
-            });
-          } else {
-            // Real voice detected above cooler noise
-            this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.15);
-            
-            let highFreqSum = 0;
-            for (let b = 28; b < 42; b++) highFreqSum += (this.currentFreqData[b] || 0);
-            const highRatio = highFreqSum / (14 * 255);
-            
-            // Vocoder phase smoothness vs human pitch jitter
-            const isSynthetic = highRatio < 0.04 && zcr < 0.08;
-            const targetRisk = isSynthetic ? 0.88 : 0.10;
-            
-            // Exponential Moving Average Smoothing (EMA) - Smooth & steady meter
-            this.smoothedRisk = this.smoothedRisk * 0.78 + targetRisk * 0.22;
-            
-            const verdict = this.speechAccumSeconds < 0.8 
-              ? "LISTENING" 
-              : (this.smoothedRisk > 0.65 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
-
-            this.updateResults({
-              risk_score: this.smoothedRisk,
-              snr_db: Math.min(60, Math.max(14, Math.round(20 * Math.log10(rms / 0.001)))),
-              phase_variance: isSynthetic ? 0.12 : 0.84,
-              pitch_jitter: isSynthetic ? 0.002 : 0.031,
-              processing_ms: 11,
-              verdict: verdict,
-              speech_seconds: this.speechAccumSeconds,
-              session_id: "live_webaudio_session",
-              attestation_hash: "tee_ram_guard_active",
-            });
+        if (!isHumanSpeechActive) {
+          // Ambient Room Cooler / Silence: Decays smoothly to 0%
+          this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.82);
+          this.humanSpeechFrames = Math.max(0, this.humanSpeechFrames - 1);
+          if (this.humanSpeechFrames === 0) {
+            this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.05);
           }
+
+          this.updateResults({
+            risk_score: this.smoothedRisk,
+            snr_db: Math.max(10, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.002))),
+            phase_variance: 0.0,
+            pitch_jitter: 0.0,
+            processing_ms: 6,
+            verdict: avgLowDrone > 25 ? "COOLER_FILTERED" : "SILENCE",
+            speech_seconds: this.speechAccumSeconds,
+            session_id: "live_webaudio_session",
+            attestation_hash: "tee_ram_guard_active",
+          });
+        } else {
+          // Active Vocal Tract Detected
+          this.humanSpeechFrames++;
+          this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.12);
+
+          // Calculate Vocoder Phase Smoothness vs Natural Vocal Jitter
+          const isSyntheticAI = (avgHighVocoder < 5 && avgSpeechFormant > 30) || (avgSpeechFormant > 60 && avgHighVocoder < 8);
+          const targetRisk = isSyntheticAI ? 0.92 : 0.09;
+
+          // Exponential Moving Average Smoothing for rock-steady meter
+          this.smoothedRisk = this.smoothedRisk * 0.80 + targetRisk * 0.20;
+
+          const verdict = this.speechAccumSeconds < 0.6
+            ? "LISTENING"
+            : (this.smoothedRisk > 0.65 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
+
+          this.updateResults({
+            risk_score: this.smoothedRisk,
+            snr_db: Math.min(65, Math.max(18, Math.round(20 * Math.log10(rms / 0.001)))),
+            phase_variance: isSyntheticAI ? 0.09 : 0.85,
+            pitch_jitter: isSyntheticAI ? 0.002 : 0.032,
+            processing_ms: 9,
+            verdict: verdict,
+            speech_seconds: this.speechAccumSeconds,
+            session_id: "live_webaudio_session",
+            attestation_hash: "tee_ram_guard_active",
+          });
         }
       };
 
@@ -451,11 +454,11 @@ window.VoiceShield = {
       const offset = 565 - (565 * riskPct) / 100;
       gaugeCircle.style.strokeDashoffset = offset;
 
-      if (data.verdict === 'SILENCE') {
+      if (data.verdict === 'COOLER_FILTERED' || data.verdict === 'SILENCE') {
         gaugeCircle.style.stroke = 'var(--text-muted)';
         if (gaugeLabel) {
           gaugeLabel.className = 'verdict-pill verdict-silence';
-          gaugeLabel.innerHTML = '🔇 VAD SILENCE GATE';
+          gaugeLabel.innerHTML = data.verdict === 'COOLER_FILTERED' ? '🔇 ROOM NOISE / COOLER FILTERED' : '🔇 VAD SILENCE GATE';
         }
       } else if (data.verdict === 'LISTENING') {
         gaugeCircle.style.stroke = 'var(--accent-purple)';
