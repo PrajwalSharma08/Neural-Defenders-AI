@@ -1,11 +1,8 @@
-name: Build & Package SentinelShield Android APK
+name: Build SentinelShield Android APK
 
 on:
   push:
     branches: ["main"]
-    paths:
-      - 'android/**'
-      - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
 permissions:
@@ -29,60 +26,48 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.4
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.4'
 
-      - name: Ensure Gradle Wrapper Binary
+      - name: Build Debug APK
         working-directory: ./android
-        run: |
-          mkdir -p gradle/wrapper
-          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Fetching official Gradle Wrapper JAR..."
-            curl -sLo gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar || true
-          fi
-          chmod +x gradlew
+        run: gradle assembleDebug --stacktrace --no-daemon
 
-      - name: Accept Android SDK Licenses & Build APK
-        working-directory: ./android
-        run: |
-          yes | sdkmanager --licenses || true
-          ./gradlew assembleDebug --no-daemon --stacktrace
-
-      - name: Prepare APK for Distribution
+      - name: Prepare APK Artifact
         run: |
           mkdir -p build-output
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/SentinelShield-InCall-Guard-v1.0.apk
-          echo "APK successfully compiled and copied."
+          echo "APK successfully generated."
 
-      - name: Upload APK as Workflow Artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SentinelShield-Android-APK
           path: build-output/SentinelShield-InCall-Guard-v1.0.apk
           retention-days: 30
 
-      - name: Publish GitHub Release with APK
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.0-apk
           name: "SentinelShield AI — Android In-Call Guard v1.0"
           body: |
-            ### 🛡️ SentinelShield AI — Mobile Guard Release (APK)
+            ### 🛡️ SentinelShield AI — Mobile In-Call Guard (APK)
             
-            Download the standalone **SentinelShield In-Call Guard** Android APK below:
+            Download the standalone Android APK below and share it with your team:
             
             #### 📱 Features:
-            - **Real-Time In-Call Deepfake Detection:** Evaluates 200ms incoming call audio for synthetic AI voice clones.
+            - **Live In-Call Deepfake Detection:** Evaluates 200ms incoming call audio for synthetic AI voice clones.
             - **Floating HUD Warning Banner:** Displays instant visual warning over the native phone dialler screen.
             - **Zero-Knowledge Privacy:** Signal physics evaluation only in volatile RAM. Zero audio recording or storage.
             
-            #### 📥 Installation Instructions:
+            #### 📥 How to Install on Android:
             1. Download `SentinelShield-InCall-Guard-v1.0.apk` below.
             2. Open the file on your Android device and tap **Install**.
-            3. Open the app, grant **Overlay Permission**, and tap **Activate In-Call Guard**.
+            3. Open the app, tap **GRANT FLOATING OVERLAY PERMISSION**, and tap **ACTIVATE IN-CALL GUARD**.
           files: build-output/SentinelShield-InCall-Guard-v1.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
