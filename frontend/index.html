@@ -14,7 +14,18 @@
   <!-- PWA WebAPK Meta Tags -->
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#080914" />
-  <link rel="apple-touch-icon" href="./img/icon-192.svg" />
+  <link rel="apple-touch-icon" href="./img/icon-192.png" />
+
+  <!-- Service Worker Registration for PWABuilder -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then((reg) => console.log('[SentinelShield] SW Registered! Scope:', reg.scope))
+          .catch((err) => console.log('[SentinelShield] SW Registration note:', err));
+      });
+    }
+  </script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/style.css" />

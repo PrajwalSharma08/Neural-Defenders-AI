@@ -1,24 +1,74 @@
 {
-  "name": "SentinelShield AI — Enterprise Threat Defense",
+  "id": "/Neural-Defenders-AI/",
+  "name": "SentinelShield AI — Cyber Threat Defense",
   "short_name": "SentinelShield",
-  "description": "Sub-Second Multi-Modal Voice Deepfake, Phishing & Extortion Defense Platform",
+  "description": "Sub-Second Multi-Modal Voice Deepfake, Phishing & Digital Arrest Defense Platform for Android & Web",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "prefer_related_applications": false,
   "orientation": "portrait-primary",
   "background_color": "#080914",
   "theme_color": "#4f46e5",
+  "categories": ["security", "utilities", "productivity"],
   "icons": [
     {
-      "src": "./img/icon-192.svg",
+      "src": "./img/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./img/icon-512.svg",
+      "src": "./img/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./img/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./img/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "SentinelShield Cyber Defense Dashboard"
+    },
+    {
+      "src": "./img/screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "In-Call Mobile Guard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Voice Forensics",
+      "short_name": "Voice Shield",
+      "description": "Scan call audio for synthetic voice clones",
+      "url": "./voice-shield.html",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Link Shield",
+      "short_name": "Link Shield",
+      "description": "Inspect phishing & typosquatting URLs",
+      "url": "./link-shield.html",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "SMS Extortion Shield",
+      "short_name": "SMS Shield",
+      "description": "Digital arrest scam detector",
+      "url": "./sms-shield.html",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
