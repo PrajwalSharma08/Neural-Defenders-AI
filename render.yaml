@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sentinelshield-ai
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 8888

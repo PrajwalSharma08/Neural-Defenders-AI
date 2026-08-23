@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ==========================================================================
+     THEME 1: Cyber Dark (Default)
+     ========================================================================== */
+  :root, html.dark {
+    --bg-page: #030712;
+    --bg-panel: rgba(15, 23, 42, 0.85);
+    --border-panel: rgba(6, 182, 212, 0.25);
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --bg-card-solid: #1E293B;
+    --border-card: rgba(51, 65, 85, 0.7);
+    --text-main: #F8FAFC;
+    --text-sub: #94A3B8;
+    --text-muted: #64748B;
+    --input-bg: #0B1120;
+    --input-border: rgba(6, 182, 212, 0.3);
+    --accent-color: #06B6D4;
+    --accent-glow: rgba(6, 182, 212, 0.4);
+    --accent-gradient: linear-gradient(135deg, #0891B2, #06B6D4);
+    --canvas-bg: #030712;
+  }
+
+  /* ==========================================================================
+     THEME 2: Tactical Light (Clean Cyber Defense)
+     ========================================================================== */
+  html.light {
+    --bg-page: #F1F5F9;
+    --bg-panel: rgba(255, 255, 255, 0.95);
+    --border-panel: rgba(2, 132, 199, 0.3);
+    --bg-card: rgba(248, 250, 252, 0.9);
+    --bg-card-solid: #F8FAFC;
+    --border-card: #E2E8F0;
+    --text-main: #0F172A;
+    --text-sub: #334155;
+    --text-muted: #64748B;
+    --input-bg: #FFFFFF;
+    --input-border: #CBD5E1;
+    --accent-color: #0284C7;
+    --accent-glow: rgba(2, 132, 199, 0.25);
+    --accent-gradient: linear-gradient(135deg, #0284C7, #06B6D4);
+    --canvas-bg: #0F172A;
+  }
+
+  /* ==========================================================================
+     THEME 3: Cyberpunk Ultra Neon (Synthwave)
+     ========================================================================== */
+  html.neon {
+    --bg-page: #070114;
+    --bg-panel: rgba(20, 8, 42, 0.9);
+    --border-panel: rgba(217, 70, 239, 0.45);
+    --bg-card: rgba(32, 12, 64, 0.75);
+    --bg-card-solid: #200C40;
+    --border-card: rgba(168, 85, 247, 0.45);
+    --text-main: #FFFFFF;
+    --text-sub: #E9D5FF;
+    --text-muted: #C084FC;
+    --input-bg: #0E0324;
+    --input-border: rgba(0, 240, 255, 0.45);
+    --accent-color: #00F0FF;
+    --accent-glow: rgba(217, 70, 239, 0.6);
+    --accent-gradient: linear-gradient(135deg, #D946EF, #00F0FF);
+    --canvas-bg: #0A021C;
+  }
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-panel);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Theme Elements */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-panel);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hud-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.hud-input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.hud-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Theme-Specific Grid Patterns */
+.cyber-grid-dark {
+  background-image: 
+    linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.cyber-grid-light {
+  background-image: 
+    linear-gradient(rgba(2, 132, 199, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(2, 132, 199, 0.08) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.cyber-grid-neon {
+  background-image: 
+    linear-gradient(rgba(217, 70, 239, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 70, 239, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(0, 240, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 120px 120px, 120px 120px;
+}
+
+/* Neon Text Effects */
+.neon-cyan-text {
+  text-shadow: 0 0 12px rgba(6, 182, 212, 0.85), 0 0 30px rgba(6, 182, 212, 0.4);
+}
+.neon-emerald-text {
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.85), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+.neon-crimson-text {
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.85), 0 0 30px rgba(239, 68, 68, 0.4);
+}
+.neon-purple-text {
+  text-shadow: 0 0 14px rgba(217, 70, 239, 0.9), 0 0 32px rgba(168, 85, 247, 0.5);
+}

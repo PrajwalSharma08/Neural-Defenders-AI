@@ -1,0 +1,3 @@
+"""
+SentinelShield AI — Core Package.
+"""

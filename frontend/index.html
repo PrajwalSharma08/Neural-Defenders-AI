@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SentinelShield AI — Multi-Modal Cyber Threat Defense Platform</title>
+  <meta name="description" content="Sub-Second Voice Deepfake, Phishing & Digital Arrest Defense Platform (SIH26104)" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
+
+  <div class="app-container">
+
+    <!-- ====================================================================
+         Top Cyber Operations Header & HUD Bar
+         ==================================================================== -->
+    <header class="glass-panel" style="margin-bottom: 1.5rem;">
+      <div class="header-glow-line"></div>
+      <div class="header-flex">
+        
+        <!-- Brand & SIH Identity -->
+        <div class="brand-section">
+          <div class="brand-logo-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
+            <p class="brand-subtitle">AICTE SMART INDIA HACKATHON 2026 • SIH26104</p>
+          </div>
+        </div>
+
+        <!-- Telemetry & Controls -->
+        <div class="header-controls">
+          
+          <!-- Theme Switcher (Dark, Light Glass, Neon Glass) -->
+          <div class="theme-switch-group">
+            <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
+              🌙 <span>Dark</span>
+            </button>
+            <button class="theme-btn" data-theme="light" onclick="window.SentinelApp.applyTheme('light')">
+              ☀️ <span>Light Glass</span>
+            </button>
+            <button class="theme-btn" data-theme="neon" onclick="window.SentinelApp.applyTheme('neon')">
+              ⚡ <span>Neon</span>
+            </button>
+          </div>
+
+          <!-- TEE RAM-Only Lock Badge -->
+          <div class="hud-stat-pill" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.1);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <div>
+              <div style="font-size: 0.65rem; color: #10b981; font-weight: 800;">TEE RAM-ONLY</div>
+              <div id="hudAttestationHash" style="font-size: 0.7rem; color: #10b981;">e4fff719...</div>
+            </div>
+          </div>
+
+          <!-- Latency Monitor -->
+          <div class="hud-stat-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+              <line x1="12" y1="20" x2="12.01" y2="20"></line>
+            </svg>
+            <div>
+              <div style="font-size: 0.65rem; color: var(--text-muted);">WS LATENCY</div>
+              <div id="hudLatencyVal" style="font-weight: 800; font-size: 0.75rem;">— ms</div>
+            </div>
+          </div>
+
+          <!-- 1-Click Forensic PDF Trigger -->
+          <button id="btnOpenPdfModal" class="btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>FORENSIC REPORT (PDF)</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Ticker Status Line -->
+      <div style="padding: 0.5rem 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">
+        <div id="hudClockText">STATUS: ACTIVE • CLOCK: --:--:--</div>
+        <div style="display: flex; gap: 1rem;">
+          <span style="color: var(--accent-cyan);">✨ ZERO-DISK TEE SHIELD</span>
+          <span>•</span>
+          <span>200MS STFT PHASE FORENSICS</span>
+          <span>•</span>
+          <span>AHO-CORASICK MULTI-PATTERN</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         Navigation Tabs
+         ==================================================================== -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="voice">
+        🎤 <span>Voice Integrity Shield</span>
+      </button>
+      <button class="tab-btn" data-tab="link">
+        🔗 <span>Link & Phishing Shield</span>
+      </button>
+      <button class="tab-btn" data-tab="sms">
+        📱 <span>Digital Arrest & SMS Shield</span>
+      </button>
+    </nav>
+
+    <!-- ====================================================================
+         TAB 1: Voice Shield (Live Mic + Upload + 60fps Spectrogram)
+         ==================================================================== -->
+    <main id="tab-voice" class="tab-content-panel active">
+      <div class="voice-grid">
+        
+        <!-- Left Column: Radial Risk Gauge & Mic Controls -->
+        <div class="glass-panel" style="padding: 1.5rem;">
+          <h3 style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem;">
+            Real-Time Acoustic Forensics
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Sub-second (<300ms) phase variance, pitch jitter & 38-feature dataset ML classification.
+          </p>
+
+          <!-- Circular SVG Radial Risk Gauge -->
+          <div class="gauge-wrapper">
+            <svg class="gauge-svg" viewBox="0 0 200 200">
+              <circle class="gauge-bg-circle" cx="100" cy="100" r="90"></circle>
+              <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90"></circle>
+            </svg>
+            <div class="gauge-content">
+              <div id="gaugePctText" class="gauge-pct">0%</div>
+              <div class="gauge-sublabel">RISK SCORE</div>
+            </div>
+          </div>
+
+          <!-- Prominent Glowing Verdict Status Pill (Outside ring so it NEVER gets cut off) -->
+          <div style="display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+            <div id="gaugeLabelText" class="verdict-pill verdict-standby">
+              STANDBY
+            </div>
+          </div>
+
+          <!-- Speech Accumulation Progress Bar -->
+          <div style="margin-top: 1rem; margin-bottom: 1.5rem;">
+            <div id="speechSecsText" style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+              Gathering Speech Telemetry: (0.0s / 2.5s)
+            </div>
+            <div style="height: 6px; background: var(--input-bg); border-radius: 4px; overflow: hidden;">
+              <div id="speechProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+
+          <!-- Mic Toggle Button -->
+          <button id="btnToggleMic" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">
+            <span>🎤 START LIVE VOICE SHIELD</span>
+          </button>
+          <p id="micStatusText" style="text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+            STANDBY (Click to Activate 200ms Telemetry)
+          </p>
+        </div>
+
+        <!-- Right Column: 60 FPS Visualizer, Telemetry Cards & File Upload -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          
+          <!-- Canvas Audio Spectrogram -->
+          <div class="glass-panel" style="padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem;">
+              <span style="color: var(--accent-cyan); font-weight: 700;">42-Band Acoustic Equalizer & Beam</span>
+              <span style="color: var(--accent-crimson); font-size: 0.7rem;">[ 8–16 kHz Vocoder Anomaly Zone ]</span>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="visualizerCanvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Telemetry Grid Metrics -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="glass-card">
+              <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">SNR (SIGNAL/NOISE)</span>
+              <div id="valSNR" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— dB</div>
+            </div>
+            <div class="glass-card">
+              <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">8-16kHz PHASE VAR</span>
+              <div id="valPhase" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-purple); margin-top: 0.25rem;">—</div>
+            </div>
+            <div class="glass-card">
+              <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">PITCH MICRO-JITTER</span>
+              <div id="valJitter" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">—</div>
+            </div>
+            <div class="glass-card">
+              <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">DSP INFERENCE TIME</span>
+              <div id="valProcessingTime" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— ms</div>
+            </div>
+          </div>
+
+          <!-- Audio File Upload Zone -->
+          <div class="glass-panel" style="padding: 1.25rem;">
+            <h4 style="font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              Upload Audio File (WAV / MP3)
+            </h4>
+            <div id="voiceDropzone" class="upload-dropzone">
+              <input type="file" id="voiceFileInput" accept="audio/*" style="display: none;" />
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 0.5rem auto;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-main); font-weight: 700;">
+                Click or Drag & Drop audio file here
+              </p>
+              <p id="uploadStatusText" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Supports .wav, .mp3, .ogg (Evaluated in volatile RAM TEE)
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         TAB 2: Link Shield (URL Scanner)
+         ==================================================================== -->
+    <main id="tab-link" class="tab-content-panel">
+      <div class="glass-panel" style="padding: 2rem;">
+        <h3 style="font-family: var(--font-mono); font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem;">
+          🔗 Link & Phishing Threat Intelligence
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Analyzes Shannon domain entropy, Levenshtein brand typosquatting, URL shorteners, and suspicious TLDs.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">SUSPICIOUS URL TARGET TO INSPECT</label>
+          <div style="display: flex; gap: 0.75rem;">
+            <input type="text" id="urlScanInput" class="form-input" placeholder="e.g. http://sbi-secure-kyc-update.xyz/login" />
+            <button id="btnScanUrl" class="btn-primary" style="white-space: nowrap;">
+              🔍 SCAN URL
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+          <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); align-self: center;">Test Samples:</span>
+          <button class="btn-secondary" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" onclick="document.getElementById('urlScanInput').value='http://onlinesbi-kyc-verification.xyz/login'; window.LinkShield.scanUrl('http://onlinesbi-kyc-verification.xyz/login');">
+            🚨 Fake SBI Phishing
+          </button>
+          <button class="btn-secondary" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" onclick="document.getElementById('urlScanInput').value='https://onlinesbi.sbi'; window.LinkShield.scanUrl('https://onlinesbi.sbi');">
+            ✅ Genuine SBI Portal
+          </button>
+        </div>
+
+        <!-- Results Container -->
+        <div id="urlResultsContainer" style="display: none;"></div>
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         TAB 3: SMS & Digital Arrest Shield
+         ==================================================================== -->
+    <main id="tab-sms" class="tab-content-panel">
+      <div class="glass-panel" style="padding: 2rem;">
+        <h3 style="font-family: var(--font-mono); font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem;">
+          📱 Digital Arrest & Cyber Extortion Shield
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Aho-Corasick multi-pattern automaton for sub-millisecond detection of police/CBI impersonation, customs seizures & safe account demands.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">SOURCE CHANNEL</label>
+          <select id="messageChannelSelect" class="form-input" style="width: 200px;">
+            <option value="sms">SMS Message</option>
+            <option value="whatsapp">WhatsApp Message</option>
+            <option value="call_transcript">Voice Call Transcript</option>
+            <option value="email">Email Body</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">MESSAGE / EXTORTION NOTICE TEXT</label>
+          <textarea id="messageScanInput" class="form-textarea" placeholder="Paste SMS, WhatsApp text or call transcript here..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <!-- Quick Presets -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn-secondary sample-threat-btn" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" data-sample-text="CBI arrest warrant issued against you for illegal narcotics package seized by customs. Transfer settlement fine to RBI safe account within 2 hours or police will arrive.">
+              🚨 Digital Arrest Sample
+            </button>
+            <button class="btn-secondary sample-threat-btn" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" data-sample-text="Dear Customer, your electricity bill is pending. Please click the link to pay your electricity bill before midnight.">
+              ⚠️ Electricity Scam
+            </button>
+          </div>
+
+          <button id="btnScanMessage" class="btn-primary">
+            ⚡ SCAN EXTORTION & ARREST PATTERNS
+          </button>
+        </div>
+
+        <!-- Results Container -->
+        <div id="messageResultsContainer" style="display: none;"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ====================================================================
+       Forensic Evidence PDF Modal (Section 65B Admissibility)
+       ==================================================================== -->
+  <div id="pdfModalBackdrop" class="modal-backdrop">
+    <div class="glass-panel modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-family: var(--font-mono); font-size: 1.15rem; color: var(--text-main);">
+          📄 Section 65B Forensic Evidence Dossier
+        </h3>
+        <button id="btnClosePdfModal" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;">
+          ✕
+        </button>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Compiles an in-memory, tamper-evident cryptographic evidence dossier containing telemetry graphs, SHA-256 attestation chains, and a formal Section 65B Certificate of Admissibility under the Indian Evidence Act (BSA 2023).
+      </p>
+
+      <div class="glass-card" style="margin-bottom: 1.5rem;">
+        <h4 style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+          Recorded Multi-Modal Telemetry:
+        </h4>
+        <div id="pdfEvidencePreviewBox"></div>
+      </div>
+
+      <button id="btnGeneratePdf" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">
+        📄 GENERATE & DOWNLOAD LEGAL PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Modular Scripts -->
+  <script src="/js/app.js"></script>
+  <script src="/js/voice-shield.js"></script>
+  <script src="/js/link-shield.js"></script>
+  <script src="/js/sms-shield.js"></script>
+  <script src="/js/forensic-pdf.js"></script>
+</body>
+</html>
