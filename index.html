@@ -11,6 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
   
+  <!-- PWA WebAPK Meta Tags -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#080914" />
+  <link rel="apple-touch-icon" href="./img/icon-192.svg" />
+
   <!-- CSS -->
   <link rel="stylesheet" href="./css/style.css" />
 </head>
@@ -22,9 +27,7 @@
 
   <div class="app-container">
 
-    <!-- ====================================================================
-         Top Cyber Operations Header & Global Navbar
-         ==================================================================== -->
+    <!-- Top Cyber Operations Header & Global Navbar -->
     <header class="glass-panel" style="margin-bottom: 1.5rem;">
       <div class="header-top-bar">
         
@@ -51,6 +54,10 @@
 
         <!-- Telemetry HUD & Actions -->
         <div class="header-actions">
+          <!-- Install PWA App Button (shown on mobile) -->
+          <button id="btnInstallApp" class="btn-primary" style="display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <span>📱 Install App</span>
+          </button>
           <!-- Theme Switcher -->
           <div class="theme-switch-group">
             <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
