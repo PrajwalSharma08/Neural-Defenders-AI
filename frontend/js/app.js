@@ -5,6 +5,7 @@
 window.SentinelApp = {
   currentTheme: localStorage.getItem('sentinel_theme') || 'dark',
   wsLatency: null,
+  backendBaseUrl: localStorage.getItem('sentinel_backend_url') || '',
   sharedForensicData: {
     voice_data: null,
     url_data: null,
@@ -17,13 +18,38 @@ window.SentinelApp = {
     this.initHUDClock();
     this.initAttestationTicker();
     
+    // Auto-detect backend endpoint
+    if (!this.backendBaseUrl && (window.location.hostname.includes('github.io') || window.location.protocol === 'file:')) {
+      // Default to localhost:8888 if on GitHub Pages or local file
+      this.backendBaseUrl = 'http://localhost:8888';
+    }
+
     // Initialize available feature modules
     if (window.VoiceShield) window.VoiceShield.init();
     if (window.LinkShield) window.LinkShield.init();
     if (window.SmsShield) window.SmsShield.init();
     if (window.ForensicPdf) window.ForensicPdf.init();
 
-    console.log("[SentinelShield AI] Multi-Page Architecture Initialized.");
+    console.log("[SentinelShield AI] Multi-Page Resilient Architecture Initialized.");
+  },
+
+  getApiUrl(endpoint) {
+    if (this.backendBaseUrl) {
+      const base = this.backendBaseUrl.replace(/\/+$/, '');
+      const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      return `${base}${path}`;
+    }
+    return endpoint;
+  },
+
+  getWsUrl(endpoint) {
+    if (this.backendBaseUrl) {
+      const wsBase = this.backendBaseUrl.replace(/^http/, 'ws').replace(/\/+$/, '');
+      const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      return `${wsBase}${path}`;
+    }
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}${endpoint}`;
   },
 
   // --------------------------------------------------------------------------
@@ -34,7 +60,6 @@ window.SentinelApp = {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('sentinel_theme', theme);
 
-    // Update active state on theme buttons across pages
     document.querySelectorAll('.theme-btn').forEach(btn => {
       if (btn.dataset.theme === theme) {
         btn.classList.add('active');

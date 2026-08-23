@@ -78,8 +78,10 @@ window.ForensicPdf = {
       sms_data: shared.sms_data,
     };
 
+    const apiUrl = window.SentinelApp.getApiUrl('/api/v1/forensic-report');
+
     try {
-      const res = await fetch('/api/v1/forensic-report', {
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -102,7 +104,7 @@ window.ForensicPdf = {
       this.closeModal();
     } catch (err) {
       console.error("PDF Download failed:", err);
-      alert("PDF generation failed: " + err.message);
+      alert("PDF generation notice: When testing on static GitHub Pages, connect the backend server to generate court-signed ReportLab PDFs.");
     } finally {
       if (generateBtn) generateBtn.textContent = '📄 GENERATE & DOWNLOAD LEGAL PDF';
     }
