@@ -1,0 +1,81 @@
+name: Build & Package SentinelShield Android APK
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        working-directory: ./android
+        run: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper --gradle-version 8.4
+          fi
+          chmod +x gradlew
+
+      - name: Build Debug APK
+        working-directory: ./android
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Rename APK for Distribution
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/SentinelShield-InCall-Guard-v1.0.apk
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SentinelShield-Android-APK
+          path: build-output/SentinelShield-InCall-Guard-v1.0.apk
+          retention-days: 30
+
+      - name: Create GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-apk
+          name: "SentinelShield AI — Android In-Call Guard v1.0"
+          body: |
+            ### 🛡️ SentinelShield AI — Mobile Guard Release (APK)
+            
+            This release contains the standalone **SentinelShield In-Call Guard** Android APK.
+            
+            #### 📱 Features:
+            - **Real-Time In-Call Deepfake Detection:** Evaluates 200ms incoming call audio for synthetic AI voice clones.
+            - **Floating HUD Warning Banner:** Displays instant visual warning over the native phone dialler screen.
+            - **Zero-Knowledge Privacy:** Signal physics evaluation only in volatile RAM. Zero audio recording or storage.
+            
+            #### 📥 Installation Instructions:
+            1. Download `SentinelShield-InCall-Guard-v1.0.apk` below.
+            2. Open and tap **Install** (Allow "Install from Unknown Sources" if prompted).
+            3. Open the app, grant **Overlay Permission**, and tap **Activate In-Call Guard**.
+          files: build-output/SentinelShield-InCall-Guard-v1.0.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

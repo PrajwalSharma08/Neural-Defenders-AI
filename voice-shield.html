@@ -187,6 +187,121 @@
       </div>
     </div>
 
+    <!-- ====================================================================
+         LIVE IN-CALL SMARTPHONE SIMULATOR (OPTION 1 MOBILE GUARD)
+         ==================================================================== -->
+    <div class="glass-panel" style="margin-top: 1.75rem; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <div class="badge badge-warning" style="margin-bottom: 0.35rem;">MOBILE OPTION 1 DEMO</div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main);">
+            📱 Live In-Call Deepfake Defense Simulator
+          </h3>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">
+          🔒 ZERO CONVERSATION RECORDING • SIGNAL PHYSICS ONLY
+        </div>
+      </div>
+      
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Demonstrates how the SentinelShield Android In-Call Service protects users during an active phone conversation. When a synthetic AI voice clone speaks, a non-intrusive floating HUD warning overlay is triggered over the call screen within &lt;300ms without listening to or transcribing the conversation.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; align-items: start;">
+        
+        <!-- Interactive Controls -->
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+            Simulate Live Incoming Phone Call:
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <button id="btnSimulateAiCall" class="btn-primary" style="padding: 0.85rem 1.25rem; justify-content: space-between; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);" onclick="window.VoiceShield.simulateCall('ai')">
+              <span>🚨 SIMULATE AI CLONED CALL (Impersonator)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem;">[Play &amp; Detect]</span>
+            </button>
+
+            <button id="btnSimulateHumanCall" class="btn-secondary" style="padding: 0.85rem 1.25rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.VoiceShield.simulateCall('human')">
+              <span>✅ SIMULATE GENUINE HUMAN CALL</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);">[Natural Voice]</span>
+            </button>
+
+            <button class="btn-secondary" style="padding: 0.65rem 1rem; justify-content: center;" onclick="window.VoiceShield.endSimulatedCall()">
+              <span>⏹ End Call Simulation</span>
+            </button>
+          </div>
+
+          <div class="glass-card" style="margin-top: 1.25rem;">
+            <h5 style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.4rem;">
+              How In-Call Zero-Knowledge Privacy Works:
+            </h5>
+            <ul style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.2rem;">
+              <li><strong>Zero ASR / No Words Transcribed:</strong> Engine never converts speech to text.</li>
+              <li><strong>Volatile RAM DSP:</strong> Only 200ms acoustic phase variance &amp; micro-jitter are analyzed.</li>
+              <li><strong>Immediate Memory Zeroization:</strong> RAM buffer wiped via memset immediately after inference.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Simulated Smartphone Screen Device Frame -->
+        <div style="display: flex; justify-content: center;">
+          <div style="width: 310px; height: 520px; background: #0b0f19; border-radius: 36px; border: 4px solid rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden; padding: 1.25rem 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+            
+            <!-- Phone Notch & Speaker -->
+            <div style="width: 90px; height: 16px; background: #1e293b; border-radius: 10px; margin: 0 auto;"></div>
+
+            <!-- Floating Warning Overlay HUD (Pop up during AI call) -->
+            <div id="simCallOverlay" style="display: none; position: absolute; top: 38px; left: 10px; right: 10px; background: rgba(220, 38, 38, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 0.85rem; color: #fff; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5); z-index: 50; animation: pulseDanger 1.5s infinite;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
+                <span style="font-size: 1.25rem;">🚨</span>
+                <strong style="font-size: 0.78rem; letter-spacing: 0.04em;">SENTINELSHIELD LIVE WARNING</strong>
+              </div>
+              <div id="simOverlayRiskText" style="font-size: 0.75rem; font-weight: 800; color: #fef08a;">
+                RISK: 94% AI SYNTHETIC VOICE CLONE
+              </div>
+              <p style="font-size: 0.65rem; color: #f8fafc; margin-top: 0.35rem; line-height: 1.3;">
+                Do NOT transfer money or share OTPs. Caller is using an AI deepfake synthesizer.
+              </p>
+              <div style="font-size: 0.58rem; color: #a7f3d0; margin-top: 0.35rem; font-family: var(--font-mono);">
+                🔒 Zero Call Recording (Signal Physics Only)
+              </div>
+            </div>
+
+            <!-- Phone Call Screen Body -->
+            <div style="text-align: center; margin-top: 1.5rem;">
+              <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #334155, #1e293b); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto; font-size: 1.75rem;">
+                👤
+              </div>
+              <div id="simCallerName" style="font-size: 1.15rem; font-weight: 800; color: #fff;">Unknown Caller</div>
+              <div id="simCallerNumber" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">+91 98765 43210</div>
+              <div id="simCallTimer" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.4rem; font-weight: 700;">
+                00:18 • IN CALL
+              </div>
+            </div>
+
+            <!-- In-Call Status Message -->
+            <div id="simCallStatusMsg" style="text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+              Ready to test in-call detection.
+            </div>
+
+            <!-- Phone Call Action Controls -->
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 0.75rem;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; cursor: pointer;">
+                🎤
+              </div>
+              <div style="width: 54px; height: 54px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; cursor: pointer;" onclick="window.VoiceShield.endSimulatedCall()">
+                📞
+              </div>
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; cursor: pointer;">
+                🔊
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <!-- Forensic PDF Modal -->
