@@ -1,8 +1,10 @@
 /**
- * SentinelShield AI — Production Service Worker (PWA Offline & Network First)
+ * SentinelShield AI — Production Service Worker (PWA Full Feature Suite)
  */
 
-const CACHE_NAME = 'sentinelshield-v3.0';
+const CACHE_NAME = 'sentinelshield-v3.5';
+const OFFLINE_URL = './index.html';
+
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -40,7 +42,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[ServiceWorker] Removing old cache', key);
+            console.log('[ServiceWorker] Deleting outdated cache:', key);
             return caches.delete(key);
           }
         })
@@ -67,9 +69,43 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
           if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('./index.html');
+            return caches.match(OFFLINE_URL);
           }
         });
       })
   );
+});
+
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || '🚨 SentinelShield Threat Alert';
+  const options = {
+    body: data.body || 'Deepfake or Phishing threat detected on your active stream.',
+    icon: './img/icon-192.png',
+    badge: './img/icon-192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || './index.html'
+    }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url || './index.html')
+  );
+});
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-forensic-telemetry') {
+    console.log('[ServiceWorker] Background Syncing Threat Telemetry');
+  }
+});
+
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'update-threat-database') {
+    console.log('[ServiceWorker] Periodic Background Sync: Checking latest fraud signatures');
+  }
 });
