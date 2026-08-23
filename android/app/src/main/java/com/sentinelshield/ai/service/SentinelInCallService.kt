@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -19,17 +20,10 @@ import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import com.sentinelshield.ai.R
 import kotlinx.coroutines.*
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import kotlin.math.sqrt
 
 /**
  * SentinelShield AI — Android In-Call Background Deepfake Defense Service
- *
- * Capabilities:
- *  1. Intercepts incoming call audio stream (Downlink) via Telecom InCallService.
- *  2. Evaluates 200ms PCM chunks in volatile RAM via on-device DSP without recording/storing audio.
- *  3. Spawns a floating system overlay HUD badge if synthetic voice probability > 85%.
  */
 class SentinelInCallService : InCallService() {
 
@@ -48,7 +42,11 @@ class SentinelInCallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
-        startForeground(NOTIF_ID, createNotification())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(NOTIF_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
+        } else {
+            startForeground(NOTIF_ID, createNotification())
+        }
         startLiveCallAcousticAnalysis(call)
     }
 

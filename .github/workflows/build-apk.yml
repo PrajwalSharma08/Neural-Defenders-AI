@@ -34,15 +34,27 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Build Debug APK with Gradle
+      - name: Ensure Gradle Wrapper Binary
         working-directory: ./android
-        run: gradle assembleDebug --stacktrace
+        run: |
+          mkdir -p gradle/wrapper
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "Fetching official Gradle Wrapper JAR..."
+            curl -sLo gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar || true
+          fi
+          chmod +x gradlew
+
+      - name: Accept Android SDK Licenses & Build APK
+        working-directory: ./android
+        run: |
+          yes | sdkmanager --licenses || true
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Prepare APK for Distribution
         run: |
           mkdir -p build-output
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/SentinelShield-InCall-Guard-v1.0.apk
-          echo "APK successfully built and prepared."
+          echo "APK successfully compiled and copied."
 
       - name: Upload APK as Workflow Artifact
         uses: actions/upload-artifact@v4
