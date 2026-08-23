@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found | SentinelShield AI</title>
+  <meta name="description" content="Requested route not found in SentinelShield perimeter." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
+
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
+
+  <div class="glass-panel" style="max-width: 580px; width: 100%; text-align: center; padding: 3rem 2rem; position: relative; z-index: 10;">
+    
+    <!-- 404 Shield Icon -->
+    <div style="width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(168, 85, 247, 0.2)); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; box-shadow: 0 0 30px rgba(239, 68, 68, 0.25);">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+
+    <!-- Error Code & Title -->
+    <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 800; color: var(--accent-crimson); letter-spacing: 0.15em; margin-bottom: 0.5rem;">
+      HTTP ERROR 404
+    </div>
+    
+    <h1 style="font-size: 2.25rem; font-weight: 900; color: var(--text-main); margin-bottom: 1rem; line-height: 1.2;">
+      Page Not Found
+    </h1>
+
+    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+      The requested route does not exist in the SentinelShield secure perimeter or has been relocated to an encrypted endpoint.
+    </p>
+
+    <!-- Interactive Navigation Buttons -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="./index.html" class="btn-primary" style="padding: 0.8rem 1.75rem; font-size: 0.85rem; text-decoration: none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Return to Command Center</span>
+      </a>
+
+      <button onclick="window.history.back()" class="btn-secondary" style="padding: 0.8rem 1.5rem; font-size: 0.85rem;">
+        <span>Go Back</span>
+      </button>
+    </div>
+
+    <!-- Telemetry Diagnostic Info -->
+    <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">
+      <span>SECURITY STATUS: ACTIVE</span>
+      <span>TEE PERIMETER: ZERO-LEAK</span>
+    </div>
+
+  </div>
+
+</body>
+</html>

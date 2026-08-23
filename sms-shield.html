@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Arrest & SMS Extortion Shield — Aho-Corasick Multi-Pattern Automaton | SentinelShield AI</title>
+  <meta name="description" content="Aho-Corasick multi-pattern automaton for sub-millisecond detection of police/CBI impersonation, customs seizures, and digital arrest threats." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
+
+  <div class="app-container">
+
+    <!-- Top Navbar -->
+    <header class="glass-panel" style="margin-bottom: 1.25rem;">
+      <div class="header-top-bar">
+        <a href="./index.html" style="text-decoration: none;" class="brand-section">
+          <div class="brand-logo-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
+            <p class="brand-subtitle">AICTE SMART INDIA HACKATHON 2026 • SIH26104</p>
+          </div>
+        </a>
+
+        <nav class="main-nav-links">
+          <a href="./index.html" class="nav-link">🏠 Home</a>
+          <a href="./voice-shield.html" class="nav-link">🎤 Voice Shield</a>
+          <a href="./link-shield.html" class="nav-link">🔗 Link Shield</a>
+          <a href="./sms-shield.html" class="nav-link active">📱 SMS Shield</a>
+        </nav>
+
+        <div class="header-actions">
+          <div class="theme-switch-group">
+            <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
+              🌙 <span>Dark</span>
+            </button>
+            <button class="theme-btn" data-theme="light" onclick="window.SentinelApp.applyTheme('light')">
+              ☀️ <span>Light Glass</span>
+            </button>
+            <button class="theme-btn" data-theme="neon" onclick="window.SentinelApp.applyTheme('neon')">
+              ⚡ <span>Neon</span>
+            </button>
+          </div>
+
+          <button id="btnOpenPdfModal" class="btn-primary">
+            <span>FORENSIC DOSSIER (PDF)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+      <a href="./index.html">Command Center</a>
+      <span>/</span>
+      <span style="color: var(--text-main); font-weight: 700;">Digital Arrest & SMS Extortion Shield</span>
+    </div>
+
+    <!-- Main SMS Shield Workstation -->
+    <div class="glass-panel" style="padding: 2.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main);">
+          📱 Digital Arrest & Cyber Extortion Shield
+        </h3>
+        <span class="badge badge-safe">AHO-CORASICK O(N+M) ENGINE</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.75rem;">
+        Single-pass multi-pattern automaton searching 82 extortion indicators across 10 pattern groups: CBI/NCB arrest warrants, customs narcotics seizures, safe account money transfer demands, and deadline panic tactics.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">SOURCE CHANNEL</label>
+        <select id="messageChannelSelect" class="form-input" style="width: 220px;">
+          <option value="sms">SMS Message</option>
+          <option value="whatsapp">WhatsApp Message</option>
+          <option value="call_transcript">Voice Call Transcript</option>
+          <option value="email">Email Body</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">MESSAGE / EXTORTION NOTICE TEXT</label>
+        <textarea id="messageScanInput" class="form-textarea" placeholder="Paste SMS, WhatsApp text or call transcript here..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <!-- Quick Presets -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn-secondary sample-threat-btn" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" data-sample-text="CBI arrest warrant issued against you for illegal narcotics package seized by customs. Transfer settlement fine to RBI safe account within 2 hours or police will arrive.">
+            🚨 Digital Arrest Sample
+          </button>
+          <button class="btn-secondary sample-threat-btn" style="font-size: 0.72rem; padding: 0.35rem 0.65rem;" data-sample-text="Dear Customer, your electricity bill is pending. Please click the link to pay your electricity bill before midnight.">
+            ⚠️ Electricity Scam
+          </button>
+        </div>
+
+        <button id="btnScanMessage" class="btn-primary">
+          ⚡ SCAN EXTORTION & ARREST PATTERNS
+        </button>
+      </div>
+
+      <!-- Results Container -->
+      <div id="messageResultsContainer" style="display: none;"></div>
+    </div>
+
+  </div>
+
+  <!-- Forensic PDF Modal -->
+  <div id="pdfModalBackdrop" class="modal-backdrop">
+    <div class="glass-panel modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+          📄 Section 65B Forensic Evidence Dossier
+        </h3>
+        <button id="btnClosePdfModal" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;">
+          ✕
+        </button>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Compiles an in-memory, tamper-evident cryptographic evidence dossier containing telemetry graphs, SHA-256 attestation chains, and a formal Section 65B Certificate of Admissibility.
+      </p>
+
+      <div class="glass-card" style="margin-bottom: 1.5rem;">
+        <h4 style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+          Recorded Multi-Modal Telemetry:
+        </h4>
+        <div id="pdfEvidencePreviewBox"></div>
+      </div>
+
+      <button id="btnGeneratePdf" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">
+        📄 GENERATE & DOWNLOAD LEGAL PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts with Cache Busting -->
+  <script src="./js/app.js?v=2.5"></script>
+  <script src="./js/sms-shield.js?v=2.5"></script>
+  <script src="./js/forensic-pdf.js?v=2.5"></script>
+</body>
+</html>

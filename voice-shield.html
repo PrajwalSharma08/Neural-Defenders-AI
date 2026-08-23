@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Integrity Shield — Acoustic Deepfake Forensics | SentinelShield AI</title>
+  <meta name="description" content="Sub-second (<300ms) acoustic voice deepfake forensics and biometric analysis." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
+
+  <div class="app-container">
+
+    <!-- Top Navbar -->
+    <header class="glass-panel" style="margin-bottom: 1.25rem;">
+      <div class="header-top-bar">
+        <a href="./index.html" style="text-decoration: none;" class="brand-section">
+          <div class="brand-logo-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
+            <p class="brand-subtitle">AICTE SMART INDIA HACKATHON 2026 • SIH26104</p>
+          </div>
+        </a>
+
+        <nav class="main-nav-links">
+          <a href="./index.html" class="nav-link">🏠 Home</a>
+          <a href="./voice-shield.html" class="nav-link active">🎤 Voice Shield</a>
+          <a href="./link-shield.html" class="nav-link">🔗 Link Shield</a>
+          <a href="./sms-shield.html" class="nav-link">📱 SMS Shield</a>
+        </nav>
+
+        <div class="header-actions">
+          <div class="theme-switch-group">
+            <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
+              🌙 <span>Dark</span>
+            </button>
+            <button class="theme-btn" data-theme="light" onclick="window.SentinelApp.applyTheme('light')">
+              ☀️ <span>Light Glass</span>
+            </button>
+            <button class="theme-btn" data-theme="neon" onclick="window.SentinelApp.applyTheme('neon')">
+              ⚡ <span>Neon</span>
+            </button>
+          </div>
+
+          <div class="hud-pill">
+            <div style="font-size: 0.62rem; color: var(--text-muted);">WS LATENCY</div>
+            <div id="hudLatencyVal" style="font-weight: 800; font-size: 0.72rem; color: var(--accent-cyan);">— ms</div>
+          </div>
+
+          <button id="btnOpenPdfModal" class="btn-primary">
+            <span>FORENSIC DOSSIER (PDF)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+      <a href="./index.html">Command Center</a>
+      <span>/</span>
+      <span style="color: var(--text-main); font-weight: 700;">Voice Integrity Shield</span>
+    </div>
+
+    <!-- Main Voice Forensics Workstation -->
+    <div class="voice-grid">
+      
+      <!-- Left Column: Radial Risk Gauge & Mic Controls -->
+      <div class="glass-panel" style="padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">
+            🎤 Real-Time Acoustic Forensics
+          </h3>
+          <span class="badge badge-safe">200ms TEE STREAM</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Sub-second (<300ms) phase variance, pitch jitter & 38-feature dataset ML classification.
+        </p>
+
+        <!-- Circular SVG Radial Risk Gauge -->
+        <div class="gauge-wrapper">
+          <svg class="gauge-svg" viewBox="0 0 200 200">
+            <circle class="gauge-bg-circle" cx="100" cy="100" r="90"></circle>
+            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90"></circle>
+          </svg>
+          <div class="gauge-content">
+            <div id="gaugePctText" class="gauge-pct">0%</div>
+            <div class="gauge-sublabel">RISK SCORE</div>
+          </div>
+        </div>
+
+        <!-- Prominent Glowing Verdict Status Pill -->
+        <div style="display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+          <div id="gaugeLabelText" class="verdict-pill verdict-standby">
+            STANDBY
+          </div>
+        </div>
+
+        <!-- Speech Accumulation Progress Bar -->
+        <div style="margin-bottom: 1.25rem;">
+          <div id="speechSecsText" style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+            Gathering Speech Telemetry: (0.0s / 2.5s)
+          </div>
+          <div style="height: 6px; background: var(--input-bg); border-radius: 4px; overflow: hidden; border: 1px solid var(--glass-border);">
+            <div id="speechProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Mic Toggle Button -->
+        <button id="btnToggleMic" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">
+          <span>🎤 START LIVE VOICE SHIELD</span>
+        </button>
+        <p id="micStatusText" style="text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem;">
+          STANDBY (Click to Activate 200ms Telemetry)
+        </p>
+      </div>
+
+      <!-- Right Column: 60 FPS Visualizer, Telemetry Cards & File Upload -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <!-- Canvas Audio Spectrogram -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-family: var(--font-mono); font-size: 0.78rem;">
+            <span style="color: var(--accent-cyan); font-weight: 700;">42-Band Acoustic Equalizer & Oscilloscope</span>
+            <span style="color: var(--accent-crimson); font-size: 0.7rem;">[ 8–16 kHz Vocoder Anomaly Zone ]</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="visualizerCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Telemetry Grid Metrics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">SNR (SIGNAL/NOISE)</span>
+            <div id="valSNR" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— dB</div>
+          </div>
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">8-16kHz PHASE VAR</span>
+            <div id="valPhase" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-purple); margin-top: 0.25rem;">—</div>
+          </div>
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">PITCH MICRO-JITTER</span>
+            <div id="valJitter" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">—</div>
+          </div>
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">DSP INFERENCE TIME</span>
+            <div id="valProcessingTime" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— ms</div>
+          </div>
+        </div>
+
+        <!-- Audio File Upload Zone -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">
+            Upload Audio File (WAV / MP3)
+          </h4>
+          <div id="voiceDropzone" class="upload-dropzone">
+            <input type="file" id="voiceFileInput" accept="audio/*" style="display: none;" />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 0.5rem auto;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <p style="font-size: 0.82rem; color: var(--text-main); font-weight: 700;">
+              Click or Drag & Drop audio file here
+            </p>
+            <p id="uploadStatusText" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem;">
+              Supports .wav, .mp3, .ogg (Evaluated in volatile RAM TEE)
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Forensic PDF Modal -->
+  <div id="pdfModalBackdrop" class="modal-backdrop">
+    <div class="glass-panel modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+          📄 Section 65B Forensic Evidence Dossier
+        </h3>
+        <button id="btnClosePdfModal" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;">
+          ✕
+        </button>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Compiles an in-memory, tamper-evident cryptographic evidence dossier containing telemetry graphs, SHA-256 attestation chains, and a formal Section 65B Certificate of Admissibility.
+      </p>
+
+      <div class="glass-card" style="margin-bottom: 1.5rem;">
+        <h4 style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+          Recorded Multi-Modal Telemetry:
+        </h4>
+        <div id="pdfEvidencePreviewBox"></div>
+      </div>
+
+      <button id="btnGeneratePdf" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">
+        📄 GENERATE & DOWNLOAD LEGAL PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts with Cache Busting -->
+  <script src="./js/app.js?v=2.5"></script>
+  <script src="./js/voice-shield.js?v=2.5"></script>
+  <script src="./js/forensic-pdf.js?v=2.5"></script>
+</body>
+</html>
