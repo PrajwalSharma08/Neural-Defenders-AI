@@ -39,5 +39,10 @@ frontend/node_modules/
 .DS_Store
 Thumbs.db
 
+# Documentation & Proposals (Local Only)
+*.docx
+*PROPOSAL*
+*DISTRIBUTION*
+
 # Allow pre-trained classifier model
 !backend/models/voice_classifier.joblib
