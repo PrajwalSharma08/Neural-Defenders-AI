@@ -26,6 +26,7 @@ const ASSETS_TO_CACHE = [
   './img/screenshot-mobile.png'
 ];
 
+// 1. Install Event (Pre-cache assets)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -36,6 +37,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+// 2. Activate Event (Cache Clean-up)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -52,6 +54,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// 3. Fetch Event (Network First with Offline Fallback)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
@@ -76,6 +79,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// 4. Push Notification Support
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || '🚨 SentinelShield Threat Alert';
@@ -98,12 +102,14 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+// 5. Background Sync Support
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-forensic-telemetry') {
     console.log('[ServiceWorker] Background Syncing Threat Telemetry');
   }
 });
 
+// 6. Periodic Background Sync Support
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'update-threat-database') {
     console.log('[ServiceWorker] Periodic Background Sync: Checking latest fraud signatures');
