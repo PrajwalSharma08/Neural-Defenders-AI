@@ -6,6 +6,7 @@ window.SentinelApp = {
   currentTheme: localStorage.getItem('sentinel_theme') || 'dark',
   wsLatency: null,
   backendBaseUrl: localStorage.getItem('sentinel_backend_url') || '',
+  deferredPrompt: null,
   sharedForensicData: {
     voice_data: null,
     url_data: null,
@@ -17,12 +18,7 @@ window.SentinelApp = {
     this.applyTheme(this.currentTheme);
     this.initHUDClock();
     this.initAttestationTicker();
-    
-    // Auto-detect backend endpoint
-    if (!this.backendBaseUrl && (window.location.hostname.includes('github.io') || window.location.protocol === 'file:')) {
-      // Default to localhost:8888 if on GitHub Pages or local file
-      this.backendBaseUrl = 'http://localhost:8888';
-    }
+    this.initPwaInstall();
 
     // Initialize available feature modules
     if (window.VoiceShield) window.VoiceShield.init();
@@ -30,7 +26,14 @@ window.SentinelApp = {
     if (window.SmsShield) window.SmsShield.init();
     if (window.ForensicPdf) window.ForensicPdf.init();
 
-    console.log("[SentinelShield AI] Multi-Page Resilient Architecture Initialized.");
+    // Register Service Worker for PWA WebAPK
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    console.log("[SentinelShield AI] Platform Ready.");
   },
 
   getApiUrl(endpoint) {
@@ -50,6 +53,34 @@ window.SentinelApp = {
     }
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.host}${endpoint}`;
+  },
+
+  // --------------------------------------------------------------------------
+  // PWA WebAPK 1-Click Installation Handler
+  // --------------------------------------------------------------------------
+  initPwaInstall() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      const installBtn = document.getElementById('btnInstallApp');
+      if (installBtn) {
+        installBtn.style.display = 'inline-flex';
+        installBtn.addEventListener('click', () => this.triggerPwaInstall());
+      }
+    });
+  },
+
+  async triggerPwaInstall() {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      console.log(`User response to install prompt: ${outcome}`);
+      this.deferredPrompt = null;
+      const installBtn = document.getElementById('btnInstallApp');
+      if (installBtn) installBtn.style.display = 'none';
+    } else {
+      alert("To install SentinelShield on your phone, tap your browser menu (⋮) and select 'Install app' or 'Add to Home Screen'!");
+    }
   },
 
   // --------------------------------------------------------------------------
