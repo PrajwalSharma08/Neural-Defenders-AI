@@ -3,7 +3,6 @@
  */
 
 window.SentinelApp = {
-  activeTab: 'voice',
   currentTheme: localStorage.getItem('sentinel_theme') || 'dark',
   wsLatency: null,
   sharedForensicData: {
@@ -15,28 +14,27 @@ window.SentinelApp = {
 
   init() {
     this.applyTheme(this.currentTheme);
-    this.initTabs();
     this.initHUDClock();
     this.initAttestationTicker();
     
-    // Initialize feature modules
+    // Initialize available feature modules
     if (window.VoiceShield) window.VoiceShield.init();
     if (window.LinkShield) window.LinkShield.init();
     if (window.SmsShield) window.SmsShield.init();
     if (window.ForensicPdf) window.ForensicPdf.init();
 
-    console.log("[SentinelShield AI] Pure Vanilla JS Core Initialized.");
+    console.log("[SentinelShield AI] Multi-Page Architecture Initialized.");
   },
 
   // --------------------------------------------------------------------------
-  // Theme Switching (Dark, Light, Neon Glass)
+  // Theme Switching (Dark Luxe, Light Glass, Neon Glass)
   // --------------------------------------------------------------------------
   applyTheme(theme) {
     this.currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('sentinel_theme', theme);
 
-    // Update active state on theme buttons
+    // Update active state on theme buttons across pages
     document.querySelectorAll('.theme-btn').forEach(btn => {
       if (btn.dataset.theme === theme) {
         btn.classList.add('active');
@@ -47,36 +45,7 @@ window.SentinelApp = {
   },
 
   // --------------------------------------------------------------------------
-  // Tab Switching (Voice, Link, SMS)
-  // --------------------------------------------------------------------------
-  initTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetTab = btn.dataset.tab;
-        this.switchTab(targetTab);
-      });
-    });
-  },
-
-  switchTab(tabId) {
-    this.activeTab = tabId;
-
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(b => {
-      if (b.dataset.tab === tabId) b.classList.add('active');
-      else b.classList.remove('active');
-    });
-
-    // Update content panels
-    document.querySelectorAll('.tab-content-panel').forEach(panel => {
-      if (panel.id === `tab-${tabId}`) panel.classList.add('active');
-      else panel.classList.remove('active');
-    });
-  },
-
-  // --------------------------------------------------------------------------
-  // Top HUD Clock & Telemetry
+  // Top HUD Clock & Attestation Ticker
   // --------------------------------------------------------------------------
   initHUDClock() {
     const clockEl = document.getElementById('hudClockText');
