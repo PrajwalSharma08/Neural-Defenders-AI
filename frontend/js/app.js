@@ -20,6 +20,12 @@ window.SentinelApp = {
     this.initAttestationTicker();
     this.initPwaInstall();
 
+    // Show Notification button if not granted
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      const btnNotif = document.getElementById('btnEnableNotifications');
+      if (btnNotif) btnNotif.style.display = 'inline-flex';
+    }
+
     // Initialize available feature modules
     if (window.VoiceShield) window.VoiceShield.init();
     if (window.LinkShield) window.LinkShield.init();
@@ -53,6 +59,29 @@ window.SentinelApp = {
     }
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.host}${endpoint}`;
+  },
+
+  // --------------------------------------------------------------------------
+  // Global Notification & Push Enable Handler
+  // --------------------------------------------------------------------------
+  async requestNotificationPermission() {
+    if (!('Notification' in window)) {
+      alert("Push notifications not supported on this browser.");
+      return;
+    }
+    try {
+      const perm = await Notification.requestPermission();
+      console.log("[SentinelShield] Manual Notification Request:", perm);
+      if (perm === 'granted') {
+        alert("✅ Security Alerts are now ENABLED!");
+        const btn = document.getElementById('btnEnableNotifications');
+        if (btn) btn.style.display = 'none';
+      } else {
+        alert("❌ Alerts Denied. You may need to enable them in your Android browser settings.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
   },
 
   // --------------------------------------------------------------------------

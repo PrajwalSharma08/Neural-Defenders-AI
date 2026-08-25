@@ -73,6 +73,16 @@ window.VoiceShield = {
   // WebAudio API & Real-Time Live Microphone Telemetry
   // --------------------------------------------------------------------------
   async toggleStreaming() {
+    // 🔔 Explicitly request Notification Permission synchronously on button click
+    if (!this.isStreaming && 'Notification' in window && Notification.permission === 'default') {
+      try {
+        // MUST be called directly in click handler to retain Android user gesture
+        Notification.requestPermission().then((perm) => {
+          console.log('[SentinelShield] User responded to Notification Permission:', perm);
+        });
+      } catch (e) {}
+    }
+
     if (this.isStreaming) {
       this.stopStreaming();
     } else {
@@ -139,15 +149,6 @@ window.VoiceShield = {
       } catch (wsErr) {
         console.warn("WS setup skipped", wsErr);
       }
-    }
-
-    // Request Notification Permission on first mic start
-    if ('Notification' in window && Notification.permission === 'default') {
-      try {
-        Notification.requestPermission().then((perm) => {
-          console.log('[SentinelShield] Notification Permission:', perm);
-        });
-      } catch (e) {}
     }
 
     // 2. Setup WebAudio Microphone Stream with AnalyserNode and Hardware Noise Suppression
