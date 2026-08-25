@@ -256,11 +256,17 @@ window.VoiceShield = {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.12);
 
           // Calculate Vocoder Phase Smoothness vs Natural Vocal Jitter
-          const isSyntheticAI = (avgHighVocoder < 5 && avgSpeechFormant > 30) || (avgSpeechFormant > 60 && avgHighVocoder < 8);
-          const targetRisk = isSyntheticAI ? 0.92 : 0.09;
+          // Real human mics often lack >4000Hz completely, so we cannot rely on avgHighVocoder < 5.
+          // Instead, look for unnatural lack of zero-crossings (consonants/fricatives) during loud speech.
+          const zcr = zeroCrossings / inputData.length;
+          
+          // Synthetic TTS often lacks high-frequency fricative energy and has unnaturally low ZCR.
+          // Genuine human speech will naturally have ZCR > 0.05 and dynamic formants.
+          const isSyntheticAI = (avgSpeechFormant > 40 && zcr < 0.03);
+          const targetRisk = isSyntheticAI ? 0.88 : 0.09;
 
           // Exponential Moving Average Smoothing for rock-steady meter
-          this.smoothedRisk = this.smoothedRisk * 0.80 + targetRisk * 0.20;
+          this.smoothedRisk = this.smoothedRisk * 0.85 + targetRisk * 0.15;
 
           const verdict = this.speechAccumSeconds < 0.6
             ? "LISTENING"
