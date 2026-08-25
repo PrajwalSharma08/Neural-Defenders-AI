@@ -228,11 +228,17 @@ window.VoiceShield = {
         this.sampleCount += pcm16.length;
 
         // --- REAL SPEECH VS COOLER DETECTION ---
-        // Cooler drone has high lowDrone but low dynamic vocal formant energy (< 18)
-        const isHumanSpeechActive = avgSpeechFormant > 16 && (avgSpeechFormant > avgLowDrone * 0.4 || rms > 0.04);
+        // A standard male voice fundamental frequency (F0) is 85Hz - 180Hz, which falls in the 'low drone' band.
+        // Therefore, we cannot just filter out all low frequency.
+        // Instead, we use absolute RMS amplitude for VAD, and track ambient noise.
+        const isHumanSpeechActive = (rms > this.ambientNoiseFloor * 1.5 && rms > 0.02);
 
         if (!isHumanSpeechActive) {
           // Ambient Room Cooler / Silence: Decays smoothly to 0%
+          // Slowly track the continuous background hum of the cooler
+          if (rms > 0.005) {
+            this.ambientNoiseFloor = this.ambientNoiseFloor * 0.98 + rms * 0.02;
+          }
           this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.82);
           this.humanSpeechFrames = Math.max(0, this.humanSpeechFrames - 1);
           if (this.humanSpeechFrames === 0) {
@@ -245,32 +251,59 @@ window.VoiceShield = {
             phase_variance: 0.0,
             pitch_jitter: 0.0,
             processing_ms: 6,
-            verdict: avgLowDrone > 25 ? "COOLER_FILTERED" : "SILENCE",
+            verdict: rms > 0.015 ? "COOLER_FILTERED" : "SILENCE",
             speech_seconds: this.speechAccumSeconds,
             session_id: "live_webaudio_session",
             attestation_hash: "tee_ram_guard_active",
           });
+          this.lastNotifiedVerdict = null;
         } else {
           // Active Vocal Tract Detected
           this.humanSpeechFrames++;
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.12);
 
-          // Calculate Vocoder Phase Smoothness vs Natural Vocal Jitter
-          // Real human mics often lack >4000Hz completely, so we cannot rely on avgHighVocoder < 5.
-          // Instead, look for unnatural lack of zero-crossings (consonants/fricatives) during loud speech.
+          // Calculate ZCR
+          let zeroCrossings = 0;
+          for (let i = 1; i < inputData.length; i++) {
+            if ((inputData[i] >= 0 && inputData[i - 1] < 0) || (inputData[i] < 0 && inputData[i - 1] >= 0)) {
+              zeroCrossings++;
+            }
+          }
           const zcr = zeroCrossings / inputData.length;
           
           // Synthetic TTS often lacks high-frequency fricative energy and has unnaturally low ZCR.
           // Genuine human speech will naturally have ZCR > 0.05 and dynamic formants.
-          const isSyntheticAI = (avgSpeechFormant > 40 && zcr < 0.03);
+          const isSyntheticAI = (avgSpeechFormant > 35 && zcr < 0.035);
           const targetRisk = isSyntheticAI ? 0.88 : 0.09;
 
           // Exponential Moving Average Smoothing for rock-steady meter
           this.smoothedRisk = this.smoothedRisk * 0.85 + targetRisk * 0.15;
 
-          const verdict = this.speechAccumSeconds < 0.6
+          const verdict = this.speechAccumSeconds < 0.8
             ? "LISTENING"
             : (this.smoothedRisk > 0.65 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
+
+          // TRIGGER NATIVE PUSH NOTIFICATION ON MOBILE
+          if (verdict === "AI_DETECTED" || verdict === "HUMAN") {
+            if (this.lastNotifiedVerdict !== verdict && 'Notification' in window && Notification.permission === 'granted') {
+              this.lastNotifiedVerdict = verdict;
+              const title = verdict === 'AI_DETECTED' ? '🚨 SENTINELSHIELD WARNING' : '✅ SENTINELSHIELD SAFE';
+              const body = verdict === 'AI_DETECTED' ? 'Synthetic AI Voice Clone Detected! Do not send money.' : 'Genuine Human Voice Verified.';
+              const iconUrl = verdict === 'AI_DETECTED' ? './img/icon-192.png' : './img/icon-192.png';
+              
+              try {
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                  navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, { body: body, icon: iconUrl, vibrate: verdict === 'AI_DETECTED' ? [200, 100, 200, 100, 200] : [100] });
+                  });
+                } else {
+                  new Notification(title, { body: body, icon: iconUrl });
+                }
+              } catch (e) {
+                console.warn("Push notification failed", e);
+              }
+            }
+          }
 
           this.updateResults({
             risk_score: this.smoothedRisk,
