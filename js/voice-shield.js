@@ -97,6 +97,7 @@ window.VoiceShield = {
     if (micStatusText) micStatusText.textContent = "LISTENING (16kHz PCM WebAudio)...";
 
     this.speechAccumSeconds = 0;
+    this.ambientNoiseFloor = 0.01; // Initialize to prevent NaN in VAD
 
     // 1. Try WebSocket if on localhost
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
