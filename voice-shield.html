@@ -161,23 +161,37 @@
           </div>
         </div>
 
-        <!-- Telemetry Grid Metrics -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <!-- Telemetry Grid Metrics (6-Card Scientific Array) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
           <div class="glass-card">
-            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">SNR (SIGNAL/NOISE)</span>
-            <div id="valSNR" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— dB</div>
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">SOUND LEVEL (dB SPL)</span>
+            <div id="valDecibel" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— dB SPL</div>
+            <div id="lblDecibelCategory" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">Standby</div>
           </div>
           <div class="glass-card">
-            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">8-16kHz PHASE VAR</span>
-            <div id="valPhase" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-purple); margin-top: 0.25rem;">—</div>
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">2-3s ACOUSTIC VARIANCE</span>
+            <div id="valVariance" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">—</div>
+            <div id="lblVarianceCategory" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">Sliding Window</div>
           </div>
           <div class="glass-card">
-            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">PITCH MICRO-JITTER</span>
-            <div id="valJitter" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">—</div>
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">BIOLOGICAL BREATHING</span>
+            <div id="valBreathing" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">—</div>
+            <div id="lblBreathingCategory" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">Micro-Pauses</div>
           </div>
           <div class="glass-card">
-            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">DSP INFERENCE TIME</span>
-            <div id="valProcessingTime" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">— ms</div>
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">PITCH MICRO-JITTER</span>
+            <div id="valJitter" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-purple); margin-top: 0.25rem;">—</div>
+            <div id="lblJitterCategory" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">NCVS Titze Metric</div>
+          </div>
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">8-16kHz VOCODER ANOMALY</span>
+            <div id="valPhase" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">—</div>
+            <div id="lblPhaseCategory" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">Phase Variance</div>
+          </div>
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">DSP INFERENCE TIME</span>
+            <div id="valProcessingTime" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">— ms</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem;">Sub-Second (<300ms)</div>
           </div>
         </div>
 
