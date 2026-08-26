@@ -39,8 +39,10 @@ frontend/node_modules/
 .DS_Store
 Thumbs.db
 
-# Documentation & Proposals (Local Only)
+# Documentation & Proposals (Local Only - Never Push to GitHub)
 *.docx
+project_synopsis.md
+*synopsis*
 *PROPOSAL*
 *DISTRIBUTION*
 
