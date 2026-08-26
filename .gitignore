@@ -40,6 +40,7 @@ frontend/node_modules/
 Thumbs.db
 
 # Documentation & Proposals (Local Only - Never Push to GitHub)
+docs/
 *.docx
 project_synopsis.md
 *synopsis*
