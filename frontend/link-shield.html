@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Link Shield — Cyber Threat Intelligence & Phishing Inspector | SentinelShield AI</title>
-  <meta name="description" content="Real-time URL threat intelligence, Shannon entropy DGA detection, and tracking parameter stripper." />
+  <meta name="description" content="Real-time URL threat intelligence, Open Redirect detection, Shannon entropy DGA bot scanner, and tracking parameter stripper." />
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,15 +19,15 @@
   <link rel="stylesheet" href="./css/style.css" />
 
   <style>
-    /* Custom Link Shield Enhancements matching Voice Shield */
-    .link-workstation-grid {
+    /* Custom Layout Styles matching Voice Shield */
+    .link-grid {
       display: grid;
-      grid-template-columns: 1fr 1.35fr;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
-    @media (max-width: 1024px) {
-      .link-workstation-grid {
+    @media (max-width: 992px) {
+      .link-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -86,7 +86,7 @@
       border: 1px solid var(--glass-border);
       color: var(--text-muted);
       border-radius: 20px;
-      padding: 0.25rem 0.75rem;
+      padding: 0.3rem 0.8rem;
       font-size: 0.75rem;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -209,7 +209,7 @@
     </div>
 
     <!-- Hero URL Input Command Bar -->
-    <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 1.25rem;">
+    <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 1.5rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
           🔗 Real-Time URL Inspector & Privacy Shield
@@ -220,7 +220,7 @@
       <!-- Search Box -->
       <div class="scanner-search-bar">
         <div style="color: var(--accent-cyan); font-size: 1.1rem;">🔒</div>
-        <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g., https://example.com/item?utm_source=fb)..." autocomplete="off" spellcheck="false" />
+        <input type="url" id="urlInput" placeholder="Enter or paste URL (e.g., https://amazon.com/item?utm_source=fb or google.com/url?q=...)..." autocomplete="off" spellcheck="false" />
         <button class="quick-tool-btn" id="btnPasteInput" title="Paste from clipboard">📋 Paste</button>
         <button class="quick-tool-btn" id="btnClearInput" title="Clear input">✕ Clear</button>
         <button class="btn-primary" id="btnScanSubmit" style="padding: 0.55rem 1.25rem;">
@@ -228,18 +228,19 @@
         </button>
       </div>
 
-      <!-- Demo Pills -->
+      <!-- Demo Pills with Open-Redirect & Subdomain Spoofing Demos -->
       <div class="demo-pills-row">
-        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Try Live Demo:</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Try Live Phishing Scenarios:</span>
         <button class="demo-pill-btn" data-url="https://amazon.com/dp/B08N5WRWNW?utm_source=facebook&utm_medium=cpc&fbclid=IwAR2xyz998&ref=campaign_2026">🛒 Tracking Link</button>
         <button class="demo-pill-btn" data-url="https://bit.ly/3xXyZ99">🔗 Shortened Link</button>
         <button class="demo-pill-btn" data-url="http://insecure-portal.com/login?session_token=98765">⚠️ Insecure HTTP</button>
-        <button class="demo-pill-btn" data-url="https://sbi-online-kyc-update-99x2.xyz/verify">🏦 Banking Phishing Spoof</button>
+        <button class="demo-pill-btn" data-url="https://google.com/url?q=http://sbi-fake-login-kyc.xyz/verify">🕵️ Cloaked Open Redirect</button>
+        <button class="demo-pill-btn" data-url="https://sbi.co.in.scam-server-99.xyz/login">🎭 Subdomain Masking Spoof</button>
       </div>
     </div>
 
-    <!-- Main Workstation 2-Column Grid -->
-    <div class="link-workstation-grid">
+    <!-- Main Workstation 2-Column Grid (matching voice-grid) -->
+    <div class="link-grid">
       
       <!-- Left Column: Radial Security Score & Verdict -->
       <div class="glass-panel" style="padding: 1.75rem;">
@@ -250,7 +251,7 @@
           <span class="badge badge-safe">HEURISTIC FUSION</span>
         </div>
         <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-          Multi-layer entropy analysis, SSL verification, and privacy tracker detection.
+          Multi-layer entropy analysis, open-redirect inspection & privacy tracker detection.
         </p>
 
         <!-- Radial Gauge (Voice-Shield Style) -->
@@ -275,7 +276,7 @@
         <!-- Detected Issues Container -->
         <div id="issuesList" style="margin-bottom: 1.25rem;">
           <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; font-size: 0.82rem; color: #10b981;">
-            <span>🛡️</span> <span>Paste or scan a URL to analyze threats.</span>
+            <span>🛡️</span> <span>Paste or click a demo link above to analyze threats.</span>
           </div>
         </div>
 
@@ -290,67 +291,65 @@
         </div>
       </div>
 
-      <!-- Right Column: 6-Card Scientific & Heuristic Intelligence Grid -->
-      <div class="telemetry-grid">
+      <!-- Right Column: Visualizer Banner & 6-Card Scientific Array -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
         
-        <!-- Card 1: Shannon Entropy -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">SHANNON ENTROPY H(X)</span>
-            <span class="telemetry-icon">🎯</span>
+        <!-- Live Inspection Threat Banner -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-family: var(--font-mono); font-size: 0.78rem;">
+            <span style="color: var(--accent-cyan); font-weight: 700;">Multi-Vector URL Threat Inspection Matrix</span>
+            <span style="color: var(--accent-emerald); font-size: 0.7rem;">[ Real-Time DGA & Phishing Defense ]</span>
           </div>
-          <div id="cardEntropyVal" class="telemetry-value" style="color: var(--accent-cyan);">—</div>
-          <div id="cardEntropySub" class="telemetry-sublabel">Threshold: &lt; 3.5 bits/char</div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            Evaluates Shannon entropy \(H(X)\), typosquatting Levenshtein distance, cloaked open redirects, subdomain hijacking, and marketing tracking pixels in sub-10ms.
+          </p>
         </div>
 
-        <!-- Card 2: Tracking Parameters -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">TRACKING PARAMS</span>
-            <span class="telemetry-icon">🧹</span>
+        <!-- 6-Card Scientific & Heuristic Intelligence Grid (Using glass-card) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem;">
+          
+          <!-- Card 1: Shannon Entropy -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">SHANNON ENTROPY H(X)</span>
+            <div id="cardEntropyVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">—</div>
+            <div id="cardEntropySub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">Threshold: &lt; 3.5 bits/char</div>
           </div>
-          <div id="cardTrackVal" class="telemetry-value" style="color: var(--accent-amber);">—</div>
-          <div id="cardTrackSub" class="telemetry-sublabel">UTM / FBCLID / Ad Tags</div>
-        </div>
 
-        <!-- Card 3: SSL & Protocol -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">PROTOCOL INTEGRITY</span>
-            <span class="telemetry-icon">🔒</span>
+          <!-- Card 2: Tracking Parameters -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">TRACKING PARAMS</span>
+            <div id="cardTrackVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-amber); margin-top: 0.25rem;">—</div>
+            <div id="cardTrackSub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">UTM / FBCLID / Ad Tags</div>
           </div>
-          <div id="cardSslVal" class="telemetry-value" style="color: var(--accent-emerald);">—</div>
-          <div id="cardSslSub" class="telemetry-sublabel">TLS 1.3 / Port 443</div>
-        </div>
 
-        <!-- Card 4: Shortener & Redirect -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">REDIRECT STATUS</span>
-            <span class="telemetry-icon">🌐</span>
+          <!-- Card 3: SSL & Protocol -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">PROTOCOL INTEGRITY</span>
+            <div id="cardSslVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">—</div>
+            <div id="cardSslSub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">TLS 1.3 / Port 443</div>
           </div>
-          <div id="cardShortVal" class="telemetry-value" style="color: var(--accent-purple);">—</div>
-          <div id="cardShortSub" class="telemetry-sublabel">Direct Destination</div>
-        </div>
 
-        <!-- Card 5: IP Resolution -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">HOST INTEGRITY</span>
-            <span class="telemetry-icon">🔍</span>
+          <!-- Card 4: Shortener & Redirect -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">REDIRECT STATUS</span>
+            <div id="cardShortVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-purple); margin-top: 0.25rem;">—</div>
+            <div id="cardShortSub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">Direct Destination</div>
           </div>
-          <div id="cardHostVal" class="telemetry-value" style="color: var(--accent-cyan);">DOMAIN</div>
-          <div class="telemetry-sublabel">DNS FQDN Validated</div>
-        </div>
 
-        <!-- Card 6: Inspection Latency -->
-        <div class="telemetry-card">
-          <div class="telemetry-header">
-            <span class="telemetry-label">ANALYSIS LATENCY</span>
-            <span class="telemetry-icon">⚡</span>
+          <!-- Card 5: Subdomain / Host Integrity -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">HOST INTEGRITY</span>
+            <div id="cardHostVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">DOMAIN</div>
+            <div id="cardHostSub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">DNS FQDN Validated</div>
           </div>
-          <div id="cardLatencyVal" class="telemetry-value" style="color: var(--accent-emerald);">— ms</div>
-          <div class="telemetry-sublabel">Sub-10ms Fast Path</div>
+
+          <!-- Card 6: Inspection Latency -->
+          <div class="glass-card">
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">ANALYSIS LATENCY</span>
+            <div id="cardLatencyVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-emerald); margin-top: 0.25rem;">— ms</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">Sub-10ms Fast Path</div>
+          </div>
+
         </div>
 
       </div>
@@ -369,7 +368,7 @@
           <span>🧹</span> Privacy URL Cleaner
         </button>
         <button class="cyber-tab-btn" data-tab="unshortener">
-          <span>🔗</span> Unshortener Trace
+          <span>🔗</span> Open-Redirect & Unshortener
         </button>
         <button class="cyber-tab-btn" data-tab="rules">
           <span>🛡️</span> Security Rule Checks
@@ -409,14 +408,14 @@
         </div>
       </div>
 
-      <!-- Tab 3: Unshortener Trace Pane -->
+      <!-- Tab 3: Open-Redirect & Unshortener Trace Pane -->
       <div id="pane-unshortener" class="cyber-tab-pane">
         <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">
-          Shortened URL Hop Analysis
+          Cloaked Open Redirect & Short URL Hop Analysis
         </h4>
         <div id="unshortenerStatusBox">
           <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-            Short URL detection will analyze bit.ly, t.co, tinyurl, and other redirect services.
+            Open-redirect detection analyzes hidden target parameters and shortener services.
           </div>
         </div>
       </div>
@@ -428,7 +427,7 @@
         </h4>
         <div id="securityRulesList">
           <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-            Security rule checklist will evaluate entropy, SSL, domain resolution, and tracking flags.
+            Security rule checklist evaluates entropy, open redirects, subdomain spoofing, and SSL flags.
           </div>
         </div>
       </div>
