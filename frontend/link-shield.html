@@ -86,8 +86,8 @@
       border: 1px solid var(--glass-border);
       color: var(--text-muted);
       border-radius: 20px;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.75rem;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -220,10 +220,10 @@
       <!-- Search Box -->
       <div class="scanner-search-bar">
         <div style="color: var(--accent-cyan); font-size: 1.1rem;">🔒</div>
-        <input type="url" id="urlInput" placeholder="Enter or paste URL (e.g., https://amazon.com/item?utm_source=fb or google.com/url?q=...)..." autocomplete="off" spellcheck="false" />
-        <button class="quick-tool-btn" id="btnPasteInput" title="Paste from clipboard">📋 Paste</button>
-        <button class="quick-tool-btn" id="btnClearInput" title="Clear input">✕ Clear</button>
-        <button class="btn-primary" id="btnScanSubmit" style="padding: 0.55rem 1.25rem;">
+        <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g. https://amazon.com/item?utm_source=fb)..." autocomplete="off" spellcheck="false" />
+        <button class="quick-tool-btn" id="btnPasteInput" onclick="window.CyberLinkShield && window.CyberLinkShield.handlePaste()" title="Paste from clipboard">📋 Paste</button>
+        <button class="quick-tool-btn" id="btnClearInput" onclick="window.CyberLinkShield && window.CyberLinkShield.handleClear()" title="Clear input">✕ Clear</button>
+        <button class="btn-primary" id="btnScanSubmit" onclick="window.CyberLinkShield && window.CyberLinkShield.handleScan()" style="padding: 0.55rem 1.25rem;">
           <span>⚡ SCAN URL</span>
         </button>
       </div>
@@ -258,34 +258,34 @@
         <div class="gauge-wrapper">
           <svg class="gauge-svg" viewBox="0 0 200 200">
             <circle class="gauge-bg-circle" cx="100" cy="100" r="90"></circle>
-            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90" style="stroke-dashoffset: 0; stroke: var(--accent-emerald);"></circle>
+            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90" style="stroke-dashoffset: 565.48; stroke: var(--text-muted);"></circle>
           </svg>
           <div class="gauge-content">
-            <div id="gaugePctText" class="gauge-pct">100%</div>
+            <div id="gaugePctText" class="gauge-pct">—%</div>
             <div class="gauge-sublabel">SAFETY SCORE</div>
           </div>
         </div>
 
         <!-- Glowing Status Pill -->
         <div style="display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
-          <div id="gaugeLabelText" class="verdict-pill verdict-human">
-            SECURE & READY
+          <div id="gaugeLabelText" class="verdict-pill verdict-standby">
+            STANDBY
           </div>
         </div>
 
         <!-- Detected Issues Container -->
         <div id="issuesList" style="margin-bottom: 1.25rem;">
-          <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; font-size: 0.82rem; color: #10b981;">
-            <span>🛡️</span> <span>Paste or click a demo link above to analyze threats.</span>
+          <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 8px; font-size: 0.82rem; color: var(--text-muted);">
+            <span>🔍</span> <span>Paste or click a demo scenario below to scan.</span>
           </div>
         </div>
 
         <!-- Action Controls -->
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-          <button id="btnAutoFix" class="btn-primary" style="display: none; width: 100%; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
+          <button id="btnAutoFix" class="btn-primary" onclick="window.CyberLinkShield && window.CyberLinkShield.handleAutoFix()" style="display: none; width: 100%; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
             <span>🪄 One-Click Auto-Fix & Clean URL</span>
           </button>
-          <button id="btnCopyCleanUrl" class="btn-secondary" style="width: 100%; justify-content: center;">
+          <button id="btnCopyCleanUrl" class="btn-secondary" onclick="window.CyberLinkShield && window.CyberLinkShield.handleCopyClean()" style="width: 100%; justify-content: center;">
             <span>📋 Copy Cleaned Privacy Link</span>
           </button>
         </div>
@@ -361,19 +361,19 @@
       
       <!-- Tabs Navigation Bar -->
       <div class="cyber-tabs-nav">
-        <button class="cyber-tab-btn active" data-tab="breakdown">
+        <button class="cyber-tab-btn active" data-tab="breakdown" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('breakdown')">
           <span>🔍</span> URL Breakdown
         </button>
-        <button class="cyber-tab-btn" data-tab="cleaner">
+        <button class="cyber-tab-btn" data-tab="cleaner" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('cleaner')">
           <span>🧹</span> Privacy URL Cleaner
         </button>
-        <button class="cyber-tab-btn" data-tab="unshortener">
+        <button class="cyber-tab-btn" data-tab="unshortener" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('unshortener')">
           <span>🔗</span> Open-Redirect & Unshortener
         </button>
-        <button class="cyber-tab-btn" data-tab="rules">
+        <button class="cyber-tab-btn" data-tab="rules" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('rules')">
           <span>🛡️</span> Security Rule Checks
         </button>
-        <button class="cyber-tab-btn" data-tab="history">
+        <button class="cyber-tab-btn" data-tab="history" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('history')">
           <span>📜</span> Audit History
         </button>
       </div>
@@ -475,10 +475,10 @@
     </div>
   </div>
 
-  <!-- JavaScript Modules & Controller -->
+  <!-- JavaScript Modules & Controller (Standard Script tag for 100% browser compatibility) -->
   <script src="./js/app.js"></script>
   <script src="./js/forensic-pdf.js"></script>
-  <script type="module" src="./js/link-shield-controller.js"></script>
+  <script src="./js/link-shield-controller.js"></script>
 
   <!-- Service Worker Registration -->
   <script>
