@@ -62,13 +62,6 @@
       "description": "Inspect phishing & typosquatting URLs",
       "url": "./link-shield.html",
       "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "SMS Extortion Shield",
-      "short_name": "SMS Shield",
-      "description": "Digital arrest scam detector",
-      "url": "./sms-shield.html",
-      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "share_target": {

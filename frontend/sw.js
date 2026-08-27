@@ -2,7 +2,7 @@
  * SentinelShield AI — Production Service Worker (PWA Full Feature Suite)
  */
 
-const CACHE_NAME = 'sentinelshield-v3.5';
+const CACHE_NAME = 'sentinelshield-v4.0';
 const OFFLINE_URL = './index.html';
 
 const ASSETS_TO_CACHE = [
@@ -10,20 +10,17 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './voice-shield.html',
   './link-shield.html',
-  './sms-shield.html',
   './404.html',
   './css/style.css',
+  './css/linkguard.css',
   './js/app.js',
   './js/voice-shield.js',
-  './js/link-shield.js',
-  './js/sms-shield.js',
+  './js/linkguard-app.js',
   './js/forensic-pdf.js',
   './manifest.json',
   './img/icon-192.png',
   './img/icon-512.png',
-  './img/icon-maskable-512.png',
-  './img/screenshot-desktop.png',
-  './img/screenshot-mobile.png'
+  './img/icon-maskable-512.png'
 ];
 
 // 1. Install Event (Pre-cache assets)
