@@ -1,402 +1,487 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cyber" data-mode="power">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="LinkGuard — Professional Cyber URL Inspector, Privacy Guard & Threat Intelligence Platform.">
-  <title>LinkGuard — Cyber Threat Inspector & URL Intelligence</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Shield — Cyber Threat Intelligence & Phishing Inspector | SentinelShield AI</title>
+  <meta name="description" content="Real-time URL threat intelligence, Shannon entropy DGA detection, and tracking parameter stripper." />
   
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   
-  <meta name="theme-color" content="#070a12">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
-  <link rel="apple-touch-icon" href="assets/icon.svg">
-  
-  <link rel="stylesheet" href="css/linkguard.css">
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#080914" />
+  <link rel="apple-touch-icon" href="./img/icon-192.png" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <style>
+    /* Custom Link Shield Enhancements matching Voice Shield */
+    .link-workstation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 1024px) {
+      .link-workstation-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .scanner-search-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.5rem 0.75rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .scanner-search-bar:focus-within {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+    }
+    .scanner-search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: var(--font-sans);
+    }
+    .scanner-search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+    .quick-tool-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .quick-tool-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+    .demo-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.85rem;
+    }
+    .demo-pill-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .demo-pill-btn:hover {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .cyber-tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
+      overflow-x: auto;
+    }
+    .cyber-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .cyber-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .cyber-tab-btn.active {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .cyber-tab-pane {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .cyber-tab-pane.active {
+      display: block;
+    }
+    .url-display-box {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      word-break: break-all;
+      color: var(--text-main);
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand">
-        <div class="brand-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
-        </div>
-        <div class="brand-text">
-          <h1>LinkGuard</h1>
-          <span class="brand-tag">Cyber Threat Intelligence v2.0</span>
-        </div>
-      </div>
-      
-      
-      <div style="display: flex; gap: 0.5rem; align-items: center; margin: 0 1rem;">
-        <a href="./index.html" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">🏠 Home</a>
-        <a href="./voice-shield.html" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">🎤 Voice Shield</a>
-        <a href="./link-shield.html" style="color: #38bdf8; text-decoration: none; font-size: 0.85rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 6px; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3);">🔗 Link Shield</a>
-      </div>
 
-      <div class="header-actions">
-        <div class="view-mode-selector">
-          <button class="mode-pill active" id="compactModeBtn" data-mode="compact">⚡ Compact</button>
-          <button class="mode-pill" id="powerModeBtn" data-mode="power">🔬 Power Mode</button>
-        </div>
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
 
-        <button class="settings-trigger" id="settingsBtn" title="Settings & Themes">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
-      </div>
-    </div>
-  </header>
+  <div class="app-container">
 
-  <!-- Main Container -->
-  <main class="app-layout">
-    <!-- Top Navigation Tool Tabs Bar -->
-    <nav class="tool-navigation-bar" id="toolTabsBar">
-      <button class="nav-tab-btn active" data-tab="all">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        Overview (All)
-      </button>
-      <button class="nav-tab-btn" data-tab="urlParser">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        URL Breakdown
-      </button>
-      <button class="nav-tab-btn" data-tab="urlCleaner">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path><path d="m14 7 3 3"></path></svg>
-        URL Cleaner
-      </button>
-      <button class="nav-tab-btn" data-tab="urlUnshortener">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-        URL Unshortener
-      </button>
-      <button class="nav-tab-btn" data-tab="statusChecker">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-        Status Checker
-      </button>
-      <button class="nav-tab-btn" data-tab="patternChecker">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-        Pattern Rules
-      </button>
-      <button class="nav-tab-btn" data-tab="history">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        Audit Log
-      </button>
-      <button class="nav-tab-btn" data-tab="openShare">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        Open & Share
-      </button>
-    </nav>
-
-    <!-- Command Hero Input Bar -->
-    <section class="command-hero-card">
-      <div class="hero-scanner-box">
-        <div class="scanner-input-container">
-          <div class="lock-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    <!-- Top Navbar -->
+    <header class="glass-panel" style="margin-bottom: 1.25rem;">
+      <div class="header-top-bar">
+        <a href="./index.html" style="text-decoration: none;" class="brand-section">
+          <div class="brand-logo-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
           </div>
-          <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g., https://example.com/item?utm_source=fb)..." autocomplete="off" spellcheck="false">
-          <div class="input-quick-tools">
-            <button class="tool-action-btn" id="pasteBtn" title="Paste from clipboard">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg>
+          <div>
+            <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
+            <p class="brand-subtitle">AICTE SMART INDIA HACKATHON 2026 • SIH26104</p>
+          </div>
+        </a>
+
+        <nav class="main-nav-links">
+          <a href="./index.html" class="nav-link">🏠 Home</a>
+          <a href="./voice-shield.html" class="nav-link">🎤 Voice Shield</a>
+          <a href="./link-shield.html" class="nav-link active">🔗 Link Shield</a>
+        </nav>
+
+        <div class="header-actions">
+          <div class="theme-switch-group">
+            <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
+              🌙 <span>Dark</span>
             </button>
-            <button class="tool-action-btn" id="clearBtn" title="Clear input">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <button class="theme-btn" data-theme="light" onclick="window.SentinelApp.applyTheme('light')">
+              ☀️ <span>Light Glass</span>
+            </button>
+            <button class="theme-btn" data-theme="neon" onclick="window.SentinelApp.applyTheme('neon')">
+              ⚡ <span>Neon</span>
             </button>
           </div>
-          <button class="primary-scan-btn" id="scanSubmitBtn">
-            <span>SCAN URL</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+
+          <div class="hud-pill">
+            <div style="font-size: 0.62rem; color: var(--text-muted);">SCAN ENGINE</div>
+            <div style="font-weight: 800; font-size: 0.72rem; color: var(--accent-cyan);">LINKGUARD v2.0</div>
+          </div>
+
+          <button id="btnOpenPdfModal" class="btn-primary">
+            <span>FORENSIC DOSSIER (PDF)</span>
           </button>
         </div>
-        
-        <div class="sample-pills-wrapper">
-          <span class="sample-title">Try Demo:</span>
-          <button class="demo-pill" data-url="https://example.com/product?utm_source=facebook&utm_medium=cpc&fbclid=IwAR123456&ref=campaign_12">🛒 Tracking Link</button>
-          <button class="demo-pill" data-url="https://bit.ly/3xXyZ99">🔗 Short Link</button>
-          <button class="demo-pill" data-url="http://insecure-website.com/login?session_id=98765">⚠️ Insecure HTTP</button>
-        </div>
       </div>
+    </header>
 
-      <!-- Radar Security Dashboard -->
-      <div class="radar-score-dashboard" id="heroScoreCard" style="display: none;">
-        <div class="radar-gauge-section">
-          <div class="score-ring" id="scoreRadial">
-            <span class="score-number" id="scoreValue">100%</span>
-            <span class="score-label-mini">SECURE</span>
-          </div>
-          <div class="radar-summary">
-            <h3 class="radar-status-heading" id="scoreTitle">Clean & Secure Link</h3>
-            <p class="radar-status-sub" id="scoreSubtitle">No privacy tracking parameters or protocol vulnerabilities detected</p>
-          </div>
-        </div>
-        
-        <div class="radar-issues-list" id="scoreIssues"></div>
-
-        <button class="super-autofix-btn" id="autoFixBtn" style="display: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-          One-Click Auto-Fix Link
-        </button>
-      </div>
-    </section>
-
-    <!-- Tool Panels Grid -->
-    <div class="panels-grid" id="modulesContainer">
-      <!-- URL Parser Module -->
-      <section class="tool-panel-card" id="urlParserModule" data-module="urlParser">
-        <div class="panel-header" data-toggle="urlParserBody">
-          <div class="panel-header-left">
-            <div class="panel-icon cyan">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            </div>
-            <h2 class="panel-title">URL Breakdown</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="urlParserStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="urlParserBody">
-          <div class="url-parts" id="urlParts"></div>
-          <div class="url-visual" id="urlVisual"></div>
-        </div>
-      </section>
-
-      <!-- URL Cleaner Module -->
-      <section class="tool-panel-card" id="urlCleanerModule" data-module="urlCleaner">
-        <div class="panel-header" data-toggle="urlCleanerBody">
-          <div class="panel-header-left">
-            <div class="panel-icon violet">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path><path d="m14 7 3 3"></path></svg>
-            </div>
-            <h2 class="panel-title">URL Cleaner & Tracker Stripper</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="urlCleanerStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="urlCleanerBody">
-          <div class="cleaner-results" id="cleanerResults">
-            <p class="module-placeholder">Tracking parameters will be identified here</p>
-          </div>
-          <button class="action-btn" id="cleanBtn" disabled>Clean URL</button>
-        </div>
-      </section>
-
-      <!-- URL Unshortener Module -->
-      <section class="tool-panel-card" id="urlUnshortenerModule" data-module="urlUnshortener">
-        <div class="panel-header" data-toggle="urlUnshortenerBody">
-          <div class="panel-header-left">
-            <div class="panel-icon green">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-            </div>
-            <h2 class="panel-title">URL Unshortener</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="urlUnshortenerStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="urlUnshortenerBody">
-          <div class="unshortener-results" id="unshortenerResults">
-            <p class="module-placeholder">Shortened URLs will be resolved here</p>
-          </div>
-          <button class="action-btn" id="unshortenBtn" disabled>Unshorten</button>
-        </div>
-      </section>
-
-      <!-- Status Checker Module -->
-      <section class="tool-panel-card" id="statusCheckerModule" data-module="statusChecker">
-        <div class="panel-header" data-toggle="statusCheckerBody">
-          <div class="panel-header-left">
-            <div class="panel-icon yellow">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-            </div>
-            <h2 class="panel-title">Status & Health Checker</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="statusCheckerStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="statusCheckerBody">
-          <div class="status-results" id="statusResults">
-            <p class="module-placeholder">HTTP status will appear here</p>
-          </div>
-          <button class="action-btn" id="checkStatusBtn" disabled>Check Status</button>
-        </div>
-      </section>
-
-      <!-- Pattern Checker Module -->
-      <section class="tool-panel-card" id="patternCheckerModule" data-module="patternChecker">
-        <div class="panel-header" data-toggle="patternCheckerBody">
-          <div class="panel-header-left">
-            <div class="panel-icon cyan">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-            </div>
-            <h2 class="panel-title">Pattern & Regex Rules</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="patternCheckerStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="patternCheckerBody">
-          <div class="pattern-results" id="patternResults">
-            <p class="module-placeholder">Pattern matches will appear here</p>
-          </div>
-          <div class="pattern-rules" id="patternRules"></div>
-          <button class="small-btn" id="addPatternBtn">+ Add Custom Rule</button>
-        </div>
-      </section>
-
-      <!-- History Module -->
-      <section class="tool-panel-card" id="historyModule" data-module="history">
-        <div class="panel-header" data-toggle="historyBody">
-          <div class="panel-header-left">
-            <div class="panel-icon violet">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <h2 class="panel-title">Audit History & Diff Log</h2>
-          </div>
-          <div class="panel-header-right">
-            <div class="module-status" id="historyStatus"></div>
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="historyBody">
-          <div class="history-controls">
-            <button class="icon-btn" id="undoBtn" disabled title="Undo">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
-            </button>
-            <button class="icon-btn" id="redoBtn" disabled title="Redo">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
-            </button>
-            <button class="icon-btn" id="clearHistoryBtn" title="Clear history">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            </button>
-          </div>
-          <div class="history-log" id="historyLog">
-            <p class="module-placeholder">Changes will be logged here</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Open & Share Module -->
-      <section class="tool-panel-card" id="openShareModule" data-module="openShare">
-        <div class="panel-header" data-toggle="openShareBody">
-          <div class="panel-header-left">
-            <div class="panel-icon green">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-            </div>
-            <h2 class="panel-title">Open & Share Safe URL</h2>
-          </div>
-          <div class="panel-header-right">
-            <button class="panel-collapse-trigger" aria-label="Toggle panel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-          </div>
-        </div>
-        <div class="panel-body" id="openShareBody">
-          <div class="action-buttons">
-            <button class="primary-btn" id="openBtn" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Open in New Tab
-            </button>
-            <button class="secondary-btn" id="copyBtn" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy URL
-            </button>
-            <button class="secondary-btn" id="shareBtn" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share
-            </button>
-          </div>
-        </div>
-      </section>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+      <a href="./index.html">Command Center</a>
+      <span>/</span>
+      <span style="color: var(--text-main); font-weight: 700;">Cyber URL Inspector & Link Shield</span>
     </div>
-  </main>
 
-  <!-- Settings Overlay -->
-  <div class="settings-overlay" id="settingsOverlay">
-    <div class="settings-panel" id="settingsPanel">
-      <div class="settings-header">
-        <h2>Settings & Aesthetics</h2>
-        <button class="close-btn" id="closeSettingsBtn" aria-label="Close settings">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <!-- Hero URL Input Command Bar -->
+    <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+          🔗 Real-Time URL Inspector & Privacy Shield
+        </h3>
+        <span class="badge badge-safe">ACTIVE HEURISTICS</span>
+      </div>
+
+      <!-- Search Box -->
+      <div class="scanner-search-bar">
+        <div style="color: var(--accent-cyan); font-size: 1.1rem;">🔒</div>
+        <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g., https://example.com/item?utm_source=fb)..." autocomplete="off" spellcheck="false" />
+        <button class="quick-tool-btn" id="btnPasteInput" title="Paste from clipboard">📋 Paste</button>
+        <button class="quick-tool-btn" id="btnClearInput" title="Clear input">✕ Clear</button>
+        <button class="btn-primary" id="btnScanSubmit" style="padding: 0.55rem 1.25rem;">
+          <span>⚡ SCAN URL</span>
         </button>
       </div>
-      <div class="settings-body">
-        <div class="settings-section">
-          <h3>Theme Aesthetics</h3>
-          <p class="settings-hint">Choose your preferred color palette.</p>
-          <div class="theme-grid">
-            <button class="theme-card active" data-theme="cyber">
-              <span class="theme-dot cyber"></span>
-              <span class="theme-title">💎 Cyber Cyan</span>
-            </button>
-            <button class="theme-card" data-theme="emerald">
-              <span class="theme-dot emerald"></span>
-              <span class="theme-title">🟢 Emerald Stealth</span>
-            </button>
-            <button class="theme-card" data-theme="solar">
-              <span class="theme-dot solar"></span>
-              <span class="theme-title">🟧 Solar Flare</span>
-            </button>
-            <button class="theme-card" data-theme="monochrome">
-              <span class="theme-dot monochrome"></span>
-              <span class="theme-title">⚙️ Monochrome Pro</span>
-            </button>
+
+      <!-- Demo Pills -->
+      <div class="demo-pills-row">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Try Live Demo:</span>
+        <button class="demo-pill-btn" data-url="https://amazon.com/dp/B08N5WRWNW?utm_source=facebook&utm_medium=cpc&fbclid=IwAR2xyz998&ref=campaign_2026">🛒 Tracking Link</button>
+        <button class="demo-pill-btn" data-url="https://bit.ly/3xXyZ99">🔗 Shortened Link</button>
+        <button class="demo-pill-btn" data-url="http://insecure-portal.com/login?session_token=98765">⚠️ Insecure HTTP</button>
+        <button class="demo-pill-btn" data-url="https://sbi-online-kyc-update-99x2.xyz/verify">🏦 Banking Phishing Spoof</button>
+      </div>
+    </div>
+
+    <!-- Main Workstation 2-Column Grid -->
+    <div class="link-workstation-grid">
+      
+      <!-- Left Column: Radial Security Score & Verdict -->
+      <div class="glass-panel" style="padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">
+            🛡️ Security Rating
+          </h3>
+          <span class="badge badge-safe">HEURISTIC FUSION</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Multi-layer entropy analysis, SSL verification, and privacy tracker detection.
+        </p>
+
+        <!-- Radial Gauge (Voice-Shield Style) -->
+        <div class="gauge-wrapper">
+          <svg class="gauge-svg" viewBox="0 0 200 200">
+            <circle class="gauge-bg-circle" cx="100" cy="100" r="90"></circle>
+            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90" style="stroke-dashoffset: 0; stroke: var(--accent-emerald);"></circle>
+          </svg>
+          <div class="gauge-content">
+            <div id="gaugePctText" class="gauge-pct">100%</div>
+            <div class="gauge-sublabel">SAFETY SCORE</div>
           </div>
         </div>
-        <div class="settings-section">
-          <h3>Modules</h3>
-          <p class="settings-hint">Toggle modules on/off. Drag to reorder.</p>
-          <ul class="module-list" id="moduleList"></ul>
-        </div>
-        <div class="settings-section">
-          <h3>Data</h3>
-          <div class="settings-actions">
-            <button class="small-btn" id="exportSettingsBtn">Export Settings</button>
-            <button class="small-btn" id="importSettingsBtn">Import Settings</button>
-            <input type="file" id="importFileInput" accept=".json" hidden>
+
+        <!-- Glowing Status Pill -->
+        <div style="display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+          <div id="gaugeLabelText" class="verdict-pill verdict-human">
+            SECURE & READY
           </div>
         </div>
+
+        <!-- Detected Issues Container -->
+        <div id="issuesList" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; font-size: 0.82rem; color: #10b981;">
+            <span>🛡️</span> <span>Paste or scan a URL to analyze threats.</span>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <button id="btnAutoFix" class="btn-primary" style="display: none; width: 100%; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
+            <span>🪄 One-Click Auto-Fix & Clean URL</span>
+          </button>
+          <button id="btnCopyCleanUrl" class="btn-secondary" style="width: 100%; justify-content: center;">
+            <span>📋 Copy Cleaned Privacy Link</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: 6-Card Scientific & Heuristic Intelligence Grid -->
+      <div class="telemetry-grid">
+        
+        <!-- Card 1: Shannon Entropy -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">SHANNON ENTROPY H(X)</span>
+            <span class="telemetry-icon">🎯</span>
+          </div>
+          <div id="cardEntropyVal" class="telemetry-value" style="color: var(--accent-cyan);">—</div>
+          <div id="cardEntropySub" class="telemetry-sublabel">Threshold: &lt; 3.5 bits/char</div>
+        </div>
+
+        <!-- Card 2: Tracking Parameters -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">TRACKING PARAMS</span>
+            <span class="telemetry-icon">🧹</span>
+          </div>
+          <div id="cardTrackVal" class="telemetry-value" style="color: var(--accent-amber);">—</div>
+          <div id="cardTrackSub" class="telemetry-sublabel">UTM / FBCLID / Ad Tags</div>
+        </div>
+
+        <!-- Card 3: SSL & Protocol -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">PROTOCOL INTEGRITY</span>
+            <span class="telemetry-icon">🔒</span>
+          </div>
+          <div id="cardSslVal" class="telemetry-value" style="color: var(--accent-emerald);">—</div>
+          <div id="cardSslSub" class="telemetry-sublabel">TLS 1.3 / Port 443</div>
+        </div>
+
+        <!-- Card 4: Shortener & Redirect -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">REDIRECT STATUS</span>
+            <span class="telemetry-icon">🌐</span>
+          </div>
+          <div id="cardShortVal" class="telemetry-value" style="color: var(--accent-purple);">—</div>
+          <div id="cardShortSub" class="telemetry-sublabel">Direct Destination</div>
+        </div>
+
+        <!-- Card 5: IP Resolution -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">HOST INTEGRITY</span>
+            <span class="telemetry-icon">🔍</span>
+          </div>
+          <div id="cardHostVal" class="telemetry-value" style="color: var(--accent-cyan);">DOMAIN</div>
+          <div class="telemetry-sublabel">DNS FQDN Validated</div>
+        </div>
+
+        <!-- Card 6: Inspection Latency -->
+        <div class="telemetry-card">
+          <div class="telemetry-header">
+            <span class="telemetry-label">ANALYSIS LATENCY</span>
+            <span class="telemetry-icon">⚡</span>
+          </div>
+          <div id="cardLatencyVal" class="telemetry-value" style="color: var(--accent-emerald);">— ms</div>
+          <div class="telemetry-sublabel">Sub-10ms Fast Path</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Tabbed Interactive Inspector Suite -->
+    <div class="glass-panel" style="padding: 1.75rem; margin-bottom: 2rem;">
+      
+      <!-- Tabs Navigation Bar -->
+      <div class="cyber-tabs-nav">
+        <button class="cyber-tab-btn active" data-tab="breakdown">
+          <span>🔍</span> URL Breakdown
+        </button>
+        <button class="cyber-tab-btn" data-tab="cleaner">
+          <span>🧹</span> Privacy URL Cleaner
+        </button>
+        <button class="cyber-tab-btn" data-tab="unshortener">
+          <span>🔗</span> Unshortener Trace
+        </button>
+        <button class="cyber-tab-btn" data-tab="rules">
+          <span>🛡️</span> Security Rule Checks
+        </button>
+        <button class="cyber-tab-btn" data-tab="history">
+          <span>📜</span> Audit History
+        </button>
+      </div>
+
+      <!-- Tab 1: URL Breakdown Pane -->
+      <div id="pane-breakdown" class="cyber-tab-pane active">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">
+          Component Structure & Query Parameters
+        </h4>
+        <div id="urlBreakdownTable">
+          <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+            Enter a URL above to inspect its protocol, hostname, path, and query parameters.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Privacy URL Cleaner Pane -->
+      <div id="pane-cleaner" class="cyber-tab-pane">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
+            Stripped Clean Privacy URL
+          </h4>
+          <span id="cleanerRemovedBadge" class="badge" style="background: rgba(255,255,255,0.08);">0 Trackers</span>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem;">Original URL:</div>
+          <div id="cleanerRawUrl" class="url-display-box" style="opacity: 0.7;">—</div>
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700; margin-bottom: 0.35rem;">Cleaned Privacy URL (All Trackers Removed):</div>
+          <div id="cleanerCleanUrl" class="url-display-box" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">—</div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Unshortener Trace Pane -->
+      <div id="pane-unshortener" class="cyber-tab-pane">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">
+          Shortened URL Hop Analysis
+        </h4>
+        <div id="unshortenerStatusBox">
+          <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+            Short URL detection will analyze bit.ly, t.co, tinyurl, and other redirect services.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Security Rules Pane -->
+      <div id="pane-rules" class="cyber-tab-pane">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">
+          Heuristic Security Rule Verifications
+        </h4>
+        <div id="securityRulesList">
+          <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+            Security rule checklist will evaluate entropy, SSL, domain resolution, and tracking flags.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 5: Audit History Pane -->
+      <div id="pane-history" class="cyber-tab-pane">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">
+          Recent Local Audit Log
+        </h4>
+        <div id="historyListContainer" style="border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden;">
+          <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+            No recent URL scans recorded.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Forensic PDF Modal (Section 65B Admissibility) -->
+  <div id="pdfModalBackdrop" class="modal-backdrop">
+    <div class="glass-panel modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.5rem;">⚖️</span>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Forensic Evidence Report</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Section 65B Indian Evidence Act Admissibility Certification</p>
+          </div>
+        </div>
+        <button id="btnClosePdfModal" class="btn-secondary" style="padding: 0.35rem 0.65rem;">✕</button>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;">
+        This cryptographic dossier compiles the URL Threat Intelligence, Shannon Entropy calculations, Typosquatting heuristics, and SHA-256 HMAC integrity hashes into a court-admissible PDF document.
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button id="btnCancelPdfModal" class="btn-secondary">Cancel</button>
+        <button id="btnGeneratePdf" class="btn-primary" onclick="window.SentinelForensics.generatePDF()">
+          <span>Download Section 65B PDF</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast-container" id="toastContainer"></div>
+  <!-- JavaScript Modules & Controller -->
+  <script src="./js/app.js"></script>
+  <script src="./js/forensic-pdf.js"></script>
+  <script type="module" src="./js/link-shield-controller.js"></script>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <p>LinkGuard — Created by <a href="https://github.com/shivanshSWE-cmd" target="_blank" rel="noopener">Shivansh Mishra</a></p>
-  </footer>
-
-  <!-- Scripts -->
-  <script type="module" src="js/utils/urlUtils.js"></script>
-  <script type="module" src="js/utils/storage.js"></script>
-  <script type="module" src="js/modules/history.js"></script>
-  <script type="module" src="js/modules/urlParser.js"></script>
-  <script type="module" src="js/modules/urlEditor.js"></script>
-  <script type="module" src="js/modules/urlCleaner.js"></script>
-  <script type="module" src="js/modules/urlUnshortener.js"></script>
-  <script type="module" src="js/modules/statusChecker.js"></script>
-  <script type="module" src="js/modules/patternChecker.js"></script>
-  <script type="module" src="js/linkguard-app.js"></script>
+  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
