@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Team Neural Defenders — SIH26104 Presentation & File Study Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 2400px;
+      min-height: 3500px;
+      background: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #0f172a;
+      padding: 35px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Master Banner */
+    .master-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0369a1 100%);
+      border-radius: 20px;
+      padding: 26px 40px;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25);
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+    .brand-icon-box {
+      width: 85px;
+      height: 85px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+    }
+    .brand-title {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+    .brand-title span {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-tagline {
+      font-size: 19px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+    .header-badges {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .sih-badge {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1.5px solid #38bdf8;
+      color: #38bdf8;
+      padding: 7px 18px;
+      border-radius: 12px;
+      font-size: 15.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .track-badge {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    /* Strategy Callout Banner */
+    .strategy-banner {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-left: 8px solid #6366f1;
+      border-radius: 16px;
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+    .strategy-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .strategy-desc {
+      font-size: 14.5px;
+      color: #475569;
+      line-height: 1.45;
+    }
+    .strategy-steps {
+      display: flex;
+      gap: 12px;
+    }
+    .strategy-pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 14px;
+      text-align: center;
+    }
+    .strategy-pill-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6366f1;
+    }
+    .strategy-pill-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* 6 Members Grid (2 Columns x 3 Rows) */
+    .members-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* Member Card */
+    .member-card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      padding: 22px 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .member-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .member-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #ffffff;
+      font-weight: 800;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+    .member-name {
+      font-size: 21px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .member-role {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0284c7;
+      margin-top: 2px;
+    }
+    .order-badge {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #475569;
+    }
+
+    /* File List Box (NEW) */
+    .file-box {
+      background: #fdf4ff;
+      border: 1.5px solid #f5d0fe;
+      border-left: 4px solid #c026d3;
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+    .file-box-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #a21caf;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .file-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .file-tag {
+      background: #ffffff;
+      border: 1px solid #e879f9;
+      color: #86198f;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* Study Box */
+    .study-box {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-left: 4px solid #0284c7;
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+    .box-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0369a1;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .study-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .study-list li {
+      font-size: 13px;
+      color: #334155;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.35;
+    }
+
+    /* Pitch Box */
+    .pitch-box {
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-left: 4px solid #16a34a;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .pitch-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #15803d;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pitch-text {
+      font-size: 13.5px;
+      color: #14532d;
+      line-height: 1.4;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    /* Q&A Box */
+    .qa-box {
+      background: #fefce8;
+      border: 1.5px solid #fef08a;
+      border-left: 4px solid #ca8a04;
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+    .qa-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #a16207;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qa-q {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #713f12;
+      margin-bottom: 2px;
+    }
+    .qa-a {
+      font-size: 12.5px;
+      color: #854d0e;
+      line-height: 1.35;
+    }
+
+    /* Master Footer */
+    .master-footer {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 14px 24px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MASTER HEADER -->
+  <header class="master-header">
+    <div class="header-left">
+      <div class="brand-icon-box">👥</div>
+      <div>
+        <h1 class="brand-title">TEAM NEURAL DEFENDERS — <span>ROLE, FILE & PITCH GUIDE</span></h1>
+        <p class="brand-tagline">AICTE Smart India Hackathon 2026 • Problem ID: SIH26104 • Exact Files to Study & Judge Presentation Scripts</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="sih-badge">6-MEMBER COMPLETE STRATEGY</div>
+      <div class="track-badge">Total Pitch Time: 5–7 Mins • Live Q&A Defense</div>
+    </div>
+  </header>
+
+  <!-- PITCH STRATEGY BANNER -->
+  <div class="strategy-banner">
+    <div>
+      <div class="strategy-title">🎯 The 5-Minute Hackathon Winning Pitch Flow</div>
+      <div class="strategy-desc">Each member speaks for 45–60 seconds, leading into live interactive demo & technical cross-examination.</div>
+    </div>
+    <div class="strategy-steps">
+      <div class="strategy-pill"><div class="strategy-pill-num">0:00 - 1:00</div><div class="strategy-pill-text">1. Hook & Problem</div></div>
+      <div class="strategy-pill"><div class="strategy-pill-num">1:00 - 2:00</div><div class="strategy-pill-text">2. Architecture & DSP</div></div>
+      <div class="strategy-pill"><div class="strategy-pill-num">2:00 - 3:00</div><div class="strategy-pill-text">3. Client & UI HUD</div></div>
+      <div class="strategy-pill"><div class="strategy-pill-num">3:00 - 4:00</div><div class="strategy-pill-text">4. Security & Sec 65B</div></div>
+      <div class="strategy-pill"><div class="strategy-pill-num">4:00 - 5:00</div><div class="strategy-pill-text">5. Link Guard & DSA</div></div>
+    </div>
+  </div>
+
+  <!-- 6 MEMBERS GRID -->
+  <div class="members-grid">
+
+    <!-- MEMBER 1: Prajwal Sharma -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #0284c7, #2563eb);">PS</div>
+          <div>
+            <div class="member-name">Prajwal Sharma</div>
+            <div class="member-role">👑 Team Leader • System Architect & Backend/ML Lead</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #2 (Architecture & ML)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">backend/services/voice_dsp.py</span>
+          <span class="file-tag">backend/services/ml_classifier.py</span>
+          <span class="file-tag">backend/core/tee_guard.py</span>
+          <span class="file-tag">docs/SentinelShield_AI_Project_Synopsis.docx</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>38-Feature DSP Vector:</strong> 26 MFCCs, Spectral Centroid, Rolloff (85%), ZCR, Flatness.</li>
+          <li>• <strong>ML Model:</strong> Random Forest (150 Decision Trees, Gini Impurity, 960 audio samples).</li>
+          <li>• <strong>TEE Privacy:</strong> Volatile RAM locking (ctypes.VirtualLock) & instant memory wipe (ctypes.memset).</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "Respected Judges, deep learning models like CNN/RNN create a 1-to-2 second delay on CPU, which fails during live scam calls. We engineered a sub-300ms physics-based acoustic DSP engine. In just 14 milliseconds, we extract 38 vocal tract biomarkers and evaluate 150 Decision Trees in parallel with 97.29% accuracy, while storing ZERO audio on disk!"
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Deep Learning (CNN/Wav2Vec) kyu nahi use kiya?"</div>
+        <div class="qa-a">A: "DL models take 1000ms+ inference time and require costly GPUs. Our Random Forest ensemble achieves 14ms latency on commodity CPU with 0.9999 ROC-AUC across 13 Indian languages."</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 2: Ritesh Mishra -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #dc2626, #ea580c);">RM</div>
+          <div>
+            <div class="member-name">Ritesh Mishra</div>
+            <div class="member-role">🎤 Primary Pitcher & Presentation Lead</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #1 (Opening Hook & Problem)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">docs/SentinelShield_AI_Project_Synopsis.docx</span>
+          <span class="file-tag">docs/SentinelShield_AI_SIH_Project_Poster.html</span>
+          <span class="file-tag">README.md</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>Problem Statement SIH26104:</strong> AI voice cloning impersonation in educational/financial ecosystems.</li>
+          <li>• <strong>Threat Landscape:</strong> Digital Arrest scams, fake college administrator & exam controller calls.</li>
+          <li>• <strong>Why Existing Solutions Fail:</strong> Caller ID apps (Truecaller) only check numbers, not synthetic voice.</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "Judges, imagine receiving an urgent call from your college principal or police officer demanding an immediate fee transfer. The voice sounds 100% genuine because AI can clone anyone with just 3 seconds of audio. Traditional security fails here! SentinelShield AI is India's first real-time, sub-second cyber defense platform that neutralizes voice clones in-call without recording private conversations."
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Truecaller ya Telecom spam filters se aapka solution kaise alag hai?"</div>
+        <div class="qa-a">A: "Truecaller only looks up phone numbers in a database. If a scammer uses a spoofed or new SIM with an AI synthetic clone, Truecaller passes it. SentinelShield analyzes the actual acoustic soundwave physics in real time!"</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 3: Piyoosh Patel -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">PP</div>
+          <div>
+            <div class="member-name">Piyoosh Patel</div>
+            <div class="member-role">💻 Frontend Lead • UI/UX & WebAudio Engineer</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #3 (Client & Live HUD)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">frontend/voice-shield.html</span>
+          <span class="file-tag">frontend/js/voice-shield.js</span>
+          <span class="file-tag">frontend/css/style.css</span>
+          <span class="file-tag">frontend/sw.js</span>
+          <span class="file-tag">frontend/manifest.json</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>WebAudio Pipeline:</strong> AnalyserNode 16kHz PCM capture, 200ms frame slicing at 60 FPS.</li>
+          <li>• <strong>In-Call Floating HUD:</strong> Visual warning badges and native vibration patterns (`navigator.vibrate`).</li>
+          <li>• <strong>PWA Architecture:</strong> Offline Service Worker (`sw.js`), WebAPK packaging, responsive glassmorphism.</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "On the client side, we built an ultra-responsive Cyber Glassmorphic interface. Using the WebAudio API, audio is captured in 200ms non-blocking buffers. When synthetic voice is detected, our interface triggers an instant floating In-Call HUD warning with heavy vibration cues, allowing the user to hang up before any financial harm occurs."
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Mobile devices par background me audio capture kaise hoga?"</div>
+        <div class="qa-a">A: "We integrated standard PWA WebAPK and Android Service Worker hooks, with foreground notification and vibration channels, designed to hook directly into Android's CallScreeningService."</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 4: Shakti Maurya -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #059669, #10b981);">SM</div>
+          <div>
+            <div class="member-name">Shakti Maurya</div>
+            <div class="member-role">🛡️ Cyber Security & Legal Evidence Lead</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #4 (Privacy & Forensic PDF)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">frontend/js/forensic-pdf.js</span>
+          <span class="file-tag">backend/core/security.py</span>
+          <span class="file-tag">backend/core/tee_guard.py</span>
+          <span class="file-tag">docs/SentinelShield_AI_Project_Synopsis.docx</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>Legal Compliance:</strong> Section 65B Indian Evidence Act & Section 63 Bharatiya Sakshya Adhiniyam 2023.</li>
+          <li>• <strong>Privacy Laws:</strong> Digital Personal Data Protection (DPDP) Act 2023 (Zero-Knowledge, no text transcription).</li>
+          <li>• <strong>Forensic Dossier:</strong> Automated PDF generation with SHA-256 HMAC integrity hashes for Police 1930.</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "Security without privacy is a failure. SentinelShield implements complete Zero-Knowledge processing: audio is never transcribed or saved to disk, ensuring 100% compliance with the DPDP Act 2023. When an attack occurs, our engine generates an automated Section 65B tamper-evident PDF dossier that victims can submit directly to Cyber Police Helpline 1930."
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Court ya Police ko aapke system se kya legal evidence milega?"</div>
+        <div class="qa-a">A: "Our Section 65B PDF contains timestamped acoustic anomaly scores, Shannon entropy metrics, and cryptographic SHA-256 HMAC attestation tokens certified under Section 63 BSA 2023."</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 5: Shivansh Mishra -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #d97706, #f59e0b);">SM</div>
+          <div>
+            <div class="member-name">Shivansh Mishra</div>
+            <div class="member-role">🔗 Integration Specialist • Link Guard & Phishing Lead</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #5 (Link Guard & Phishing)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">frontend/link-shield.html</span>
+          <span class="file-tag">frontend/js/link-shield-controller.js</span>
+          <span class="file-tag">frontend/js/utils/urlUtils.js</span>
+          <span class="file-tag">frontend/js/modules/</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>Shannon Entropy Formula:</strong> H(X) = -Σ P(x_i) log2 P(x_i) (threshold > 3.5 bits/char for DGA bot links).</li>
+          <li>• <strong>Cloaked Open-Redirect & Subdomain Spoofing:</strong> Detecting hidden target URLs and fake bank subdomains.</li>
+          <li>• <strong>LinkGuard Modules:</strong> URL Breakdown, Privacy Tracker Stripper (UTM/FBCLID), and Unshortener trace.</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "Cyber attackers never rely on a single vector; voice cloning calls are always paired with phishing SMS links. We integrated Link Guard, which calculates Shannon Entropy in sub-10ms to catch bot-generated DGA domains (H > 3.5 bits/char) and checks Levenshtein typosquatting against 60+ Indian banks, while automatically stripping tracking telemetry."
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Shannon Entropy link me kya pakadta hai?"</div>
+        <div class="qa-a">A: "Legitimate domains (amazon.com, sbi.co.in) have low entropy (H ≤ 3.0 bits/char). Scammers use automated DGA bots that generate randomized character strings with high entropy (H > 3.5 bits/char)."</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 6: Rachit Jaiswal -->
+    <div class="member-card">
+      <div class="member-header">
+        <div class="member-info">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #0d9488, #14b8a6);">RJ</div>
+          <div>
+            <div class="member-name">Rachit Jaiswal</div>
+            <div class="member-role">⚡ DSA & Optimization Engineer</div>
+          </div>
+        </div>
+        <div class="order-badge">Speaker #6 (Performance & Optimization)</div>
+      </div>
+
+      <div class="file-box">
+        <div class="file-box-title">📂 Kounsi Files Padhni Hai (Exact Project Files):</div>
+        <div class="file-tags-row">
+          <span class="file-tag">backend/services/voice_dsp.py</span>
+          <span class="file-tag">frontend/js/utils/urlUtils.js</span>
+          <span class="file-tag">backend/services/sms_shield.py</span>
+        </div>
+      </div>
+
+      <div class="study-box">
+        <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
+        <ul class="study-list">
+          <li>• <strong>2.5s Sliding Window Buffer:</strong> Ring queue computing standard deviation (σ_S) of acoustic energy.</li>
+          <li>• <strong>Time Complexity Optimization:</strong> O(1) DSP frame updates and sub-millisecond string matrix lookups.</li>
+          <li>• <strong>Numerical Efficiency:</strong> Low-power float32 SIMD matrix operations keeping CPU usage < 4%.</li>
+        </ul>
+      </div>
+
+      <div class="pitch-box">
+        <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
+        <div class="pitch-text">
+          "To achieve true real-time performance on mobile and commodity hardware, we optimized our algorithmic complexity. We maintain a fixed-size 2.5-second ring buffer to track biological breathing variance (σ_S) in O(1) time and optimized discrete cosine transforms, keeping CPU consumption under 4% on mobile devices."
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-title">❓ Judge Cross-Question & Winning Answer:</div>
+        <div class="qa-q">Q: "Mobile battery aur CPU par iska kya impact padega?"</div>
+        <div class="qa-a">A: "Because of our O(1) ring buffer queue and optimized C-level numpy/scipy operations, each 200ms frame processes in just 14ms, utilizing less than 4% CPU without draining battery."</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MASTER FOOTER -->
+  <footer class="master-footer">
+    <div>Team Neural Defenders • AICTE Smart India Hackathon (SIH 2026) • Problem ID: SIH26104</div>
+    <div>Live Defense System: https://prajwalsharma08.github.io/Neural-Defenders-AI/</div>
+  </footer>
+
+</body>
+</html>
