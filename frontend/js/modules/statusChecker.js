@@ -23,14 +23,24 @@ export class StatusCheckerModule {
       
       this.showStatus(statusCode, statusText, statusClass, url, data);
       
+      const exists = statusCode >= 200 && statusCode < 400;
+      return {
+        exists,
+        statusCode,
+        statusText,
+        isRedirect: statusCode >= 300 && statusCode < 400,
+        isError: statusCode >= 400
+      };
+      
     } catch (e) {
       // Fallback: try direct fetch
       try {
         const response = await fetch(url, { mode: 'no-cors', method: 'HEAD' });
-        // In no-cors mode, we get type 'opaque' with status 0
         this.showStatus(0, 'Reachable (status hidden by CORS)', 'info', url);
+        return { exists: true, statusCode: 200, statusText: 'Reachable via CORS', isRedirect: false, isError: false };
       } catch (e2) {
         this.showStatus(-1, 'Unreachable — ' + e2.message, 'danger', url);
+        return { exists: false, statusCode: -1, statusText: 'Unreachable', isRedirect: false, isError: true };
       }
     }
   }

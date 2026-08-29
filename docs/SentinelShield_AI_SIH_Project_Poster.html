@@ -2,639 +2,548 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SentinelShield AI — SIH26104 Master Scientific Poster</title>
+  <title>SentinelShield AI — Master Scientific Project Poster</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=KaTeX_Main:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       width: 2400px;
-      min-height: 3350px;
-      background: #f8fafc;
+      min-height: 3500px;
+      background: #f1f5f9;
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: #0f172a;
-      padding: 35px 40px;
+      padding: 30px 35px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       -webkit-font-smoothing: antialiased;
     }
 
     /* Master Top Banner */
-    .master-header {
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0369a1 100%);
+    .hero-banner {
+      background: linear-gradient(135deg, #0b1329 0%, #1e1b4b 45%, #0369a1 100%);
       border-radius: 20px;
-      padding: 26px 40px;
+      padding: 24px 35px;
       color: #ffffff;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 12px 30px rgba(11, 19, 41, 0.25);
     }
-    .header-left {
+    .hero-left {
       display: flex;
       align-items: center;
-      gap: 25px;
+      gap: 22px;
     }
-    .brand-icon-box {
-      width: 85px;
-      height: 85px;
+    .hero-logo-box {
+      width: 80px;
+      height: 80px;
       background: linear-gradient(135deg, #0ea5e9, #6366f1);
-      border-radius: 20px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 44px;
+      font-size: 42px;
       box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
     }
-    .brand-title {
-      font-size: 44px;
+    .hero-title {
+      font-size: 38px;
       font-weight: 900;
-      letter-spacing: -1px;
+      letter-spacing: -0.8px;
       line-height: 1.1;
     }
-    .brand-title span {
+    .hero-title span {
       background: linear-gradient(90deg, #38bdf8, #818cf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .brand-tagline {
-      font-size: 19px;
+    .hero-subtitle {
+      font-size: 17px;
       color: #94a3b8;
       font-weight: 600;
-      margin-top: 5px;
+      margin-top: 4px;
     }
-    .header-badges {
+    .hero-right {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 8px;
+      gap: 6px;
     }
-    .sih-badge {
+    .sih-tag {
       background: rgba(56, 189, 248, 0.2);
       border: 1.5px solid #38bdf8;
       color: #38bdf8;
-      padding: 7px 18px;
-      border-radius: 12px;
-      font-size: 15.5px;
+      padding: 6px 16px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 800;
-      letter-spacing: 0.5px;
     }
-    .track-badge {
+    .team-tag {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #e2e8f0;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 8px;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
     }
 
-    /* Grid Layouts */
-    .row-3-cols {
+    /* Grid Sections */
+    .row-3 {
       display: grid;
-      grid-template-columns: 1fr 1fr 1.35fr;
-      gap: 18px;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      gap: 16px;
+    }
+    .row-formulas {
+      display: grid;
+      grid-template-columns: 1.15fr 1.15fr 1fr;
+      gap: 16px;
     }
     .row-3-equal {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 18px;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 16px;
     }
-    .row-4-cols {
+    .row-4 {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 18px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
     }
 
-    /* Standard Card Container */
+    /* Section Card */
     .card {
       background: #ffffff;
-      border-radius: 16px;
-      border: 1.5px solid #e2e8f0;
-      padding: 22px 24px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
       display: flex;
       flex-direction: column;
+      gap: 8px;
     }
     .card-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
+      gap: 10px;
       border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 8px;
     }
-    .card-number {
+    .sec-num {
       background: #0284c7;
       color: #ffffff;
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 15px;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .card-title {
-      font-size: 19px;
+    .sec-title {
+      font-size: 15px;
       font-weight: 800;
       color: #0f172a;
-      letter-spacing: -0.3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
-    /* Subheaders and Paragraphs */
-    .section-subtitle {
-      font-size: 14.5px;
-      font-weight: 800;
-      color: #0369a1;
-      margin-bottom: 6px;
-      margin-top: 8px;
-    }
-    .section-subtitle:first-of-type {
-      margin-top: 0;
-    }
-    .card-text {
-      font-size: 14px;
-      color: #475569;
+    .card-body {
+      font-size: 12.8px;
+      color: #334155;
       line-height: 1.45;
-      margin-bottom: 8px;
-    }
-
-    /* Bullet List */
-    .feature-list {
-      list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-    }
-    .feature-list li {
-      font-size: 13.5px;
-      color: #334155;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      line-height: 1.4;
+      gap: 6px;
     }
 
-    /* Mathematical Formula Box (Stylized KaTeX Look) */
-    .math-box {
+    /* Formula Box */
+    .formula-box {
       background: #f8fafc;
       border: 1.5px solid #cbd5e1;
       border-left: 4px solid #0284c7;
       border-radius: 8px;
-      padding: 8px 12px;
-      margin: 6px 0;
+      padding: 7px 11px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 11.5px;
       color: #0f172a;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
     }
-    .math-formula {
+    .formula-title {
       font-weight: 800;
       color: #0369a1;
-      margin-bottom: 3px;
-      font-size: 13.5px;
+      font-size: 11.8px;
+      margin-bottom: 2px;
     }
-    .math-vars {
-      font-size: 11.5px;
+    .formula-math {
+      font-weight: 700;
+      color: #0f172a;
+      background: #ffffff;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      display: inline-block;
+      margin: 2px 0;
+    }
+    .formula-desc {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11.2px;
       color: #475569;
+      margin-top: 2px;
       line-height: 1.35;
     }
 
     /* Flow Diagrams */
-    .flow-horizontal {
+    .flow-pipeline {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 6px;
-      margin: 10px 0;
       background: #f8fafc;
-      padding: 12px;
-      border-radius: 12px;
       border: 1px solid #e2e8f0;
-    }
-    .flow-step-box {
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
       border-radius: 8px;
       padding: 8px 10px;
+    }
+    .flow-step {
+      background: #ffffff;
+      border: 1.5px solid #0284c7;
+      border-radius: 6px;
+      padding: 5px 8px;
       text-align: center;
       flex: 1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    }
-    .flow-step-box.primary {
-      border-color: #0284c7;
-      background: #f0f9ff;
-    }
-    .flow-step-box.success {
-      border-color: #10b981;
-      background: #f0fdf4;
     }
     .flow-step-title {
-      font-size: 12.5px;
+      font-size: 10.5px;
       font-weight: 800;
-      color: #0f172a;
+      color: #0369a1;
     }
-    .flow-step-desc {
-      font-size: 11px;
+    .flow-step-sub {
+      font-size: 9.5px;
       color: #64748b;
-      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
     }
     .flow-arrow {
       color: #0284c7;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 14px;
     }
 
-    /* Stakeholders */
-    .stakeholder-grid {
+    /* Badge Grid */
+    .badge-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .stakeholder-item {
-      background: #f1f5f9;
-      border-radius: 8px;
-      padding: 8px 4px;
-      text-align: center;
-    }
-    .stakeholder-icon {
-      font-size: 22px;
-      margin-bottom: 2px;
-    }
-    .stakeholder-label {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #1e293b;
-    }
-
-    /* Tech Stack Pills */
-    .tech-pill-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .tech-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .tech-badge-title {
-      width: 95px;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 800;
-      text-align: center;
-    }
-    .tech-badge-content {
-      flex: 1;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    /* Gantt Chart */
-    .gantt-bar-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-    .gantt-label {
-      width: 125px;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #334155;
-    }
-    .gantt-track {
-      flex: 1;
-      height: 12px;
-      background: #e2e8f0;
-      border-radius: 6px;
-      overflow: hidden;
-      display: flex;
-    }
-    .gantt-fill {
-      height: 100%;
-      border-radius: 6px;
-    }
-
-    /* Metric Badges */
-    .metric-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 800;
-      background: #ecfdf5;
-      color: #059669;
-      border: 1px solid #a7f3d0;
-    }
-
-    /* Architecture Dark Container */
-    .arch-diagram-container {
-      background: #0f172a;
-      border-radius: 10px;
-      padding: 12px;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .arch-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 6px;
     }
-    .arch-box {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+    .badge-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
-      padding: 6px 8px;
+      padding: 6px;
       text-align: center;
-      flex: 1;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #38bdf8;
     }
-    .arch-box.highlight {
-      background: rgba(14, 165, 233, 0.25);
-      border-color: #38bdf8;
+    .badge-icon {
+      font-size: 16px;
+    }
+    .badge-name {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 2px;
+    }
+
+    /* Progress bar */
+    .progress-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bar-label-val {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .bar-bg {
+      height: 7px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0284c7, #6366f1);
+      border-radius: 4px;
+    }
+
+    /* Tech Pill Row */
+    .tech-pill-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 5px;
+    }
+    .tech-pill-label {
+      background: #0f172a;
       color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 4px;
+      min-width: 85px;
+      text-align: center;
+    }
+    .tech-pill-content {
+      color: #334155;
+      font-weight: 600;
     }
 
     /* Footer */
     .master-footer {
-      background: #0f172a;
+      background: #0b1329;
       border-radius: 12px;
       padding: 12px 24px;
       color: #94a3b8;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <!-- MASTER HEADER -->
-  <header class="master-header">
-    <div class="header-left">
-      <div class="brand-icon-box">🛡️</div>
+  <!-- MASTER TOP HERO -->
+  <header class="hero-banner">
+    <div class="hero-left">
+      <div class="hero-logo-box">🛡️</div>
       <div>
-        <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
-        <p class="brand-tagline">Sub-Second Acoustic Forensics & Real-Time Multi-Modal Cyber Defense Platform</p>
+        <h1 class="hero-title">SENTINEL<span>SHIELD</span> AI</h1>
+        <p class="hero-subtitle">Sub-Second Acoustic Forensics & Real-Time Multi-Modal Cyber Defense Platform</p>
       </div>
     </div>
-    <div class="header-badges">
-      <div class="sih-badge">AICTE SMART INDIA HACKATHON 2026 • PROBLEM ID: SIH26104</div>
-      <div class="track-badge">Track: Cybersecurity • Category: Software • Team: Neural Defenders</div>
+    <div class="hero-right">
+      <div class="sih-tag">AICTE SMART INDIA HACKATHON 2026 • PROBLEM ID: SIH26104</div>
+      <div class="team-tag">Track: Cybersecurity • Category: Software • Team: Neural Defenders</div>
     </div>
   </header>
 
-  <!-- ROW 1: Problem Statement, Analysis, Proposed Solution -->
-  <div class="row-3-cols">
+  <!-- ROW 1: PROBLEM STATEMENT | PROBLEM ANALYSIS | PROPOSED SOLUTION -->
+  <div class="row-3">
     
     <!-- 1. PROBLEM STATEMENT -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">1</div>
-        <h2 class="card-title">PROBLEM STATEMENT</h2>
+        <span class="sec-num">1</span>
+        <span class="sec-title">Problem Statement</span>
       </div>
-      <div class="section-subtitle">What is the problem?</div>
-      <p class="card-text">
-        Generative voice cloning (<3s audio) enables synthetic impersonation of faculty, exam controllers, administrators, and students, causing massive financial fraud, digital arrest extortion, and trust collapse in digital education.
-      </p>
-      <div class="section-subtitle">Who is affected?</div>
-      <div class="stakeholder-grid" style="margin-bottom: 10px;">
-        <div class="stakeholder-item"><div class="stakeholder-icon">👨‍🎓</div><div class="stakeholder-label">Students</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">👨‍🏫</div><div class="stakeholder-label">Faculty</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">🏛️</div><div class="stakeholder-label">Institutes</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">🏛️</div><div class="stakeholder-label">Regulators</div></div>
+      <div class="card-body">
+        <strong>What is the problem?</strong>
+        <p>GenAI voice cloning allows fraudsters to synthesize speech impersonations of faculty, exam controllers, administrators, and students to execute extortion, digital arrest, and campus fraud.</p>
+        <strong>Who is affected?</strong>
+        <div class="badge-grid">
+          <div class="badge-item"><div class="badge-icon">👨‍🎓</div><div class="badge-name">Students</div></div>
+          <div class="badge-item"><div class="badge-icon">👩‍🏫</div><div class="badge-name">Faculty</div></div>
+          <div class="badge-item"><div class="badge-icon">🏛️</div><div class="badge-name">Institutes</div></div>
+          <div class="badge-item"><div class="badge-icon">⚖️</div><div class="badge-name">Regulators</div></div>
+        </div>
+        <strong>Why does it matter?</strong>
+        <p>🚨 Threatens academic integrity & campus safety. Enables multi-crore Digital Arrest extortion scams.</p>
       </div>
-      <div class="section-subtitle">Why does it matter?</div>
-      <ul class="feature-list">
-        <li><span>🛡️</span> <span>Threatens academic integrity & exam safety.</span></li>
-        <li><span>🚨</span> <span>Enables multi-crore Digital Arrest scams.</span></li>
-      </ul>
     </div>
 
     <!-- 2. PROBLEM ANALYSIS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">2</div>
-        <h2 class="card-title">PROBLEM ANALYSIS</h2>
+        <span class="sec-num">2</span>
+        <span class="sec-title">Problem Analysis</span>
       </div>
-      <div class="section-subtitle">Root Causes</div>
-      <ul class="feature-list">
-        <li><span>⚡</span> <span>Open neural vocoders (XTTS, Bark, HiFi-GAN).</span></li>
-        <li><span>📉</span> <span>Lack of in-call real-time authentication mechanisms.</span></li>
-        <li><span>🎙️</span> <span>Cellular audio codecs smooth vocal tract micro-tremors.</span></li>
-      </ul>
-      <div class="section-subtitle" style="margin-top: 10px;">Key Technical Challenges</div>
-      <ul class="feature-list">
-        <li><span>⏱️</span> <span><strong>Sub-300ms Latency:</strong> Must detect AI before user can be deceived.</span></li>
-        <li><span>🔊</span> <span><strong>Noise-Robust:</strong> Dynamic VAD to filter room cooler/fan noise.</span></li>
-        <li><span>🔒</span> <span><strong>Zero-Knowledge Privacy:</strong> Zero audio stored on disk (DPDP Act).</span></li>
-        <li><span>🌐</span> <span><strong>Multi-Lingual:</strong> Generalize across 13 Indian languages.</span></li>
-      </ul>
+      <div class="card-body">
+        <strong>Root Causes:</strong>
+        <p>• <strong>Open-source vocoders</strong> (XTTS, Bark, HiFi-GAN) replicate any voice with only 3s audio.</p>
+        <p>• <strong>Lack of in-call real-time authentication</strong> in conventional telecom infrastructure.</p>
+        <p>• <strong>Cellular audio codecs</strong> erode subtle vocal artifacts.</p>
+        <strong>Key Technical Challenges:</strong>
+        <p>⚡ <strong>Sub-300ms Latency:</strong> Must detect AI before victim is deceived.</p>
+        <p>🛡️ <strong>Noise-Robust:</strong> Dynamic SNR filters room/cellular noise (10–18 dB SNR).</p>
+        <p>🔒 <strong>Zero-Knowledge Privacy:</strong> Zero speech storage (DPDP Act 2023).</p>
+        <p>🌐 <strong>Multi-Lingual:</strong> Generalizes across 13 Indian languages.</p>
+      </div>
     </div>
 
-    <!-- 3. PROPOSED SOLUTION & MATHEMATICAL FUSION -->
+    <!-- 3. PROPOSED SOLUTION -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">3</div>
-        <h2 class="card-title">PROPOSED SOLUTION</h2>
+        <span class="sec-num">3</span>
+        <span class="sec-title">Proposed Solution</span>
       </div>
-      <p class="card-text">
-        An edge-first, zero-knowledge real-time voice authentication and anti-spoofing platform extracting 38 acoustic physical features from 200ms audio chunks, combined with intelligent Link Guard phishing URL inspection.
-      </p>
-      <div class="flow-horizontal">
-        <div class="flow-step-box primary">
-          <div class="flow-step-title">🎙️ Inbound Call</div>
-          <div class="flow-step-desc">16 kHz PCM Audio</div>
+      <div class="card-body">
+        <p>An edge-first, zero-knowledge real-time voice authentication and anti-spoofing platform extracting 38 acoustic physical features from 200ms audio chunks, combined with intelligent Link Guard phishing URL inspection.</p>
+        
+        <!-- Live Architecture Flow -->
+        <div class="flow-pipeline" style="margin-top: 4px;">
+          <div class="flow-step">
+            <div class="flow-step-title">Inbound Call</div>
+            <div class="flow-step-sub">16kHz PCM Audio</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-title">38-DSP Vector</div>
+            <div class="flow-step-sub">MFCC + Phase + ZCR</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-title">Random Forest</div>
+            <div class="flow-step-sub">150 Trees Ensemble</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="border-color: #10b981;">
+            <div class="flow-step-title" style="color: #10b981;">Human / AI</div>
+            <div class="flow-step-sub">&lt; 300ms Verdict</div>
+          </div>
         </div>
-        <div class="flow-arrow">➔</div>
-        <div class="flow-step-box">
-          <div class="flow-step-title">🔬 38-DSP Vector</div>
-          <div class="flow-step-desc">MFCC + Phase + ZCR</div>
+
+        <div class="formula-box" style="margin-top: 4px; border-left-color: #10b981;">
+          <div class="formula-title">Ensemble Decision Formula:</div>
+          <div class="formula-math">Risk Score = (1/150) * Σ [t=1..150] h_t(F)</div>
+          <div class="formula-desc">• h_t(F) ∈ [0,1] = Tree score. If Risk > 0.85 -> Red Alert HUD Triggered.</div>
         </div>
-        <div class="flow-arrow">➔</div>
-        <div class="flow-step-box">
-          <div class="flow-step-title">🧠 Random Forest</div>
-          <div class="flow-step-desc">150 Trees Ensemble</div>
-        </div>
-        <div class="flow-arrow">➔</div>
-        <div class="flow-step-box success">
-          <div class="flow-step-title">✅ Human / 🚨 AI</div>
-          <div class="flow-step-desc">&lt;300ms HUD Alert</div>
-        </div>
-      </div>
-      <div class="math-box">
-        <div class="math-formula">Ensemble Decision: Risk Score = (1/150) * Σ_{t=1}^{150} h_t(F)</div>
-        <div class="math-vars">• h_t(F) = Tree vote (1 for AI, 0 for Human) | Risk ≥ 65% triggers Red Alert</div>
-      </div>
-      <div style="display: flex; gap: 8px; margin-top: 4px;">
-        <span class="metric-badge">⚡ Sub-300ms Latency</span>
-        <span class="metric-badge">🎯 97.29% Accuracy</span>
-        <span class="metric-badge">⚖️ Section 65B Certified</span>
       </div>
     </div>
 
   </div>
 
-  <!-- ROW 2: Key Features & Formulas, Innovation & USP, System Architecture -->
-  <div class="row-3-equal">
+  <!-- ROW 2: KEY FEATURES & DSP FORMULAS | INNOVATION & LINK GUARD FORMULAS | SYSTEM ARCHITECTURE -->
+  <div class="row-formulas">
     
-    <!-- 4. KEY FEATURES & 38 ACOUSTIC DSP FORMULAS -->
+    <!-- 4. KEY FEATURES & DSP FORMULAS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">4</div>
-        <h2 class="card-title">KEY FEATURES & DSP FORMULAS</h2>
+        <span class="sec-num">4</span>
+        <span class="sec-title">Key Features & DSP Formulas</span>
       </div>
-      <div style="font-size: 13.5px; font-weight: 700; color: #0284c7; margin-bottom: 4px;">
-        38-Feature Acoustic Vector F ∈ R^38:
-      </div>
-      
-      <!-- Formula 1: Mel Scale -->
-      <div class="math-box">
-        <div class="math-formula">1. Mel-Scale: m = 2595 * log10(1 + f / 700)</div>
-        <div class="math-vars">• m: Mel pitch, f: Frequency (Hz), 2595 & 700: Cochlear response constants. Extracts 26 MFCCs (13 Mean + 13 Std) via DCT for vocal tract geometry.</div>
-      </div>
+      <div class="card-body">
+        <div style="font-size: 11.5px; font-weight: 700; color: #0369a1;">38-Feature Acoustic Vector F ∈ R^38:</div>
 
-      <!-- Formula 2: Spectral Centroid -->
-      <div class="math-box">
-        <div class="math-formula">2. Spectral Centroid: C = Σ ( f(k) * |X(k)| ) / Σ |X(k)|</div>
-        <div class="math-vars">• C: Sound Brightness in Hz, |X(k)|: FFT magnitude. Detects metallic ringing in AI vocoders.</div>
-      </div>
+        <div class="formula-box">
+          <div class="formula-title">1. Mel-Scale Filterbank Formula:</div>
+          <div class="formula-math">m = 2595 * log10(1 + f / 700)</div>
+          <div class="formula-desc">• m: Mel pitch, f: Frequency (Hz). 2595 & 700: Cochlear response constants. Extracts 26 MFCCs (13 Raw + 13 Del) via DCT for vocal tract geometry.</div>
+        </div>
 
-      <!-- Formula 3: Zero-Crossing Rate -->
-      <div class="math-box">
-        <div class="math-formula">3. ZCR (Fricatives): ZCR = (1/2N) * Σ |sgn(x[n]) - sgn(x[n-1])|</div>
-        <div class="math-vars">• N: 3200 samples (200ms). Human fricatives (S, Sh) have high ZCR variance (Std>0.05); AI is flat.</div>
-      </div>
+        <div class="formula-box">
+          <div class="formula-title">2. Spectral Centroid Formula:</div>
+          <div class="formula-math">C = Σ [f(k) * |X(k)|] / Σ |X(k)|</div>
+          <div class="formula-desc">• C: Sound Brightness in Hz, |X(k)|: FFT magnitude. Detects metallic ringing in AI vocoders.</div>
+        </div>
 
-      <!-- Formula 4: Spectral Flatness -->
-      <div class="math-box">
-        <div class="math-formula">4. Wiener Flatness: S_f = exp(1/K * Σ ln|X_k|^2) / (1/K * Σ|X_k|^2)</div>
-        <div class="math-vars">• Ratio of Geometric to Arithmetic Mean. Distinguishes white noise from pure tones.</div>
+        <div class="formula-box">
+          <div class="formula-title">3. Zero-Crossing Rate (ZCR):</div>
+          <div class="formula-math">ZCR = (1/2N) * Σ |sgn(x[n]) - sgn(x[n-1])|</div>
+          <div class="formula-desc">• N: 3200 samples (200ms). Human Fricatives: 25-35%; AI vocoders show abnormal flat ZCR.</div>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-title">4. Wiener Spectral Flatness:</div>
+          <div class="formula-math">S_f = exp( (1/K) Σ ln|X_k|^2 ) / ( (1/K) Σ |X_k|^2 )</div>
+          <div class="formula-desc">• Ratio of Geometric to Arithmetic mean. Distinguishes white noise from pure tones.</div>
+        </div>
       </div>
     </div>
 
     <!-- 5. INNOVATION & LINK GUARD FORMULAS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">5</div>
-        <h2 class="card-title">INNOVATION & LINK GUARD FORMULAS</h2>
+        <span class="sec-num">5</span>
+        <span class="sec-title">Innovation & Link Guard Formulas</span>
       </div>
-      
-      <!-- Formula 5: Sliding Window Variance -->
-      <div class="math-box">
-        <div class="math-formula">A. 2.5s Acoustic Variance: σ_S = sqrt( (1/M) * Σ (E_m - E_bar)^2 ) / (E_bar + ε)</div>
-        <div class="math-vars">• Tracks biological breathing micro-pauses (20-30 dB SPL). Human σ_S > 0.12 vs AI σ_S < 0.05.</div>
-      </div>
+      <div class="card-body">
+        <div class="formula-box" style="border-left-color: #6366f1;">
+          <div class="formula-title">A. 2.5s Acoustic Variance (Breathing/Biological Pause):</div>
+          <div class="formula-math">σ_S = sqrt[ (1/K) * Σ (E_m - E_bar)^2 ] / (E_bar + ε)</div>
+          <div class="formula-desc">• Tracks biological breathing silence pauses (10-18 dB SNR). Human σ_S > 0.12 vs AI σ_S < 0.04.</div>
+        </div>
 
-      <!-- Formula 6: Shannon Entropy -->
-      <div class="math-box">
-        <div class="math-formula">B. Shannon Entropy: H(X) = - Σ P(x_i) * log2 P(x_i)</div>
-        <div class="math-vars">• P(x_i): Char probability in URL. Legitimate H ≤ 3.0 bits/char; DGA Bot Phishing H > 3.5.</div>
-      </div>
+        <div class="formula-box" style="border-left-color: #6366f1;">
+          <div class="formula-title">B. Shannon Entropy (Link Guard Heuristics):</div>
+          <div class="formula-math">H(X) = - Σ P(x_i) * log2 P(x_i)</div>
+          <div class="formula-desc">• P(x_i): Char probability in URL. Legitimate H < 3.0 bits/char; DGA Bot Phishing H > 3.5.</div>
+        </div>
 
-      <!-- Formula 7: Levenshtein Distance -->
-      <div class="math-box">
-        <div class="math-formula">C. Levenshtein Matrix: lev(inbound, brand) ≤ 2</div>
-        <div class="math-vars">• Detects typosquatting spoofs ('arnazon' vs 'amazon', 'sbi-kyc' vs 'sbi') across 60+ banks.</div>
-      </div>
+        <div class="formula-box" style="border-left-color: #6366f1;">
+          <div class="formula-title">C. Cloaked Open-Redirect & Typosquatting Metrics:</div>
+          <div class="formula-math">lev(inbound, brand) &lt; 2  |  target_host ≠ outer_host</div>
+          <div class="formula-desc">• Detects typosquatting spoofs ("amazn" vs "amazon") and deep hidden forwarding targets.</div>
+        </div>
 
-      <ul class="feature-list" style="margin-top: 6px;">
-        <li><span>🔒</span> <span><strong>Zero-Disk Retention:</strong> RAM locked via ctypes.VirtualLock, zeroized instantly.</span></li>
-        <li><span>🧠</span> <span><strong>Language-Agnostic:</strong> Acoustic physics is invariant across 13 Indian languages.</span></li>
-      </ul>
+        <div style="font-size: 11.5px; color: #475569; line-height: 1.4; margin-top: 2px;">
+          🔒 <strong>Zero-Disk Retention:</strong> RAM-locked via ctypes VirtualLock, zeroed instantly.<br>
+          🌐 <strong>Language-Agnostic:</strong> Acoustic physics invariant across 13 Indian languages.
+        </div>
+      </div>
     </div>
 
     <!-- 6. SYSTEM ARCHITECTURE -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">6</div>
-        <h2 class="card-title">SYSTEM ARCHITECTURE</h2>
+        <span class="sec-num">6</span>
+        <span class="sec-title">System Architecture</span>
       </div>
-      <div class="arch-diagram-container">
-        <div class="arch-row">
-          <div class="arch-box">User Ingestion (16kHz PCM)</div>
-          <div style="color: #38bdf8;">➔</div>
-          <div class="arch-box">Adaptive VAD & Noise Gate</div>
+      <div class="card-body">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: #0f172a; border-radius: 8px; padding: 12px; color: #ffffff; text-align: center;">
+            <div style="font-size: 11px; font-weight: 800; color: #38bdf8;">USER AUDIO INGESTION (16kHz PCM)</div>
+            <div style="font-size: 14px; margin: 4px 0;">⬇️</div>
+            <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; border-radius: 6px; padding: 6px; font-size: 10.5px; font-family: 'JetBrains Mono', monospace;">
+              Volatile RAM TEE (200ms Chunks • Zero Disk)
+            </div>
+            <div style="font-size: 14px; margin: 4px 0;">⬇️</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <div style="background: rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 9.5px;">512-pt FFT & 38-DSP Vector (14ms)</div>
+              <div style="background: rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 9.5px;">Random Forest (150 Trees)</div>
+            </div>
+            <div style="font-size: 14px; margin: 4px 0;">⬇️</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <div style="background: #059669; border-radius: 4px; padding: 4px; font-size: 9.5px; font-weight: 700;">In-Call Floating HUD Overlay</div>
+              <div style="background: #d97706; border-radius: 4px; padding: 4px; font-size: 9.5px; font-weight: 700;">Sec 65B Legal PDF Dossier</div>
+            </div>
+          </div>
+          <p style="font-size: 11px; color: #64748b; text-align: center; font-style: italic;">* All memory pages locked in volatile RAM and zeroed via ctypes.memset in < 1ms.</p>
         </div>
-        <div class="arch-row">
-          <div class="arch-box highlight">Volatile RAM TEE (200ms Chunks • Zero Disk)</div>
-        </div>
-        <div class="arch-row">
-          <div class="arch-box">512-pt FFT & 38-DSP Vector (R^38)</div>
-          <div style="color: #38bdf8;">➔</div>
-          <div class="arch-box highlight">Random Forest (150 Trees)</div>
-        </div>
-        <div class="arch-row">
-          <div class="arch-box">In-Call Floating HUD Overlay</div>
-          <div class="arch-box">Push Notification (Vibrate)</div>
-          <div class="arch-box">Sec 65B Legal PDF</div>
-        </div>
-      </div>
-      <div style="font-size: 11.5px; color: #64748b; margin-top: 8px; text-align: center;">
-        *All memory pages locked in volatile RAM and zeroized immediately via ctypes.memset post-inference.
       </div>
     </div>
 
   </div>
 
-  <!-- ROW 3: Tech Stack, Methodology, Benefits -->
+  <!-- ROW 3: TECHNOLOGY STACK | METHODOLOGY / WORKFLOW | BENEFITS -->
   <div class="row-3-equal">
     
     <!-- 7. TECHNOLOGY STACK -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">7</div>
-        <h2 class="card-title">TECHNOLOGY STACK</h2>
+        <span class="sec-num">7</span>
+        <span class="sec-title">Technology Stack</span>
       </div>
-      <div class="tech-pill-group">
-        <div class="tech-row">
-          <div class="tech-badge-title">Frontend</div>
-          <div class="tech-badge-content">Vanilla JS, WebAudio API, PWA Service Worker, HTML5/CSS3</div>
+      <div class="card-body">
+        <div class="tech-pill-row">
+          <div class="tech-pill-label">Frontend</div>
+          <div class="tech-pill-content">Vanilla JS, WebAudio API, PWA Service Worker, HTML5/CSS3</div>
         </div>
-        <div class="tech-row">
-          <div class="tech-badge-title">Backend / DSP</div>
-          <div class="tech-badge-content">Python FastAPI, Librosa, SciPy, NumPy, WebSockets (16kHz)</div>
+        <div class="tech-pill-row">
+          <div class="tech-pill-label">Backend / DSP</div>
+          <div class="tech-pill-content">Python FastAPI, Librosa, SciPy, NumPy, WebSockets (WS/WSS)</div>
         </div>
-        <div class="tech-row">
-          <div class="tech-badge-title">AI / ML Model</div>
-          <div class="tech-badge-content">Scikit-Learn Random Forest (150 Trees), Gini Impurity, EMA</div>
+        <div class="tech-pill-row">
+          <div class="tech-pill-label">AI / ML Model</div>
+          <div class="tech-pill-content">Scikit-Learn Random Forest (150 Trees, Gini Impurity, 134k)</div>
         </div>
-        <div class="tech-row">
-          <div class="tech-badge-title">Privacy / TEE</div>
-          <div class="tech-badge-content">Volatile RAM BytesIO, Ctypes Zeroization, SHA-256 HMAC</div>
+        <div class="tech-pill-row">
+          <div class="tech-pill-label">Privacy / TEE</div>
+          <div class="tech-pill-content">Volatile RAM BytesIO, Ctypes Zeroization, SHA-256 HMAC</div>
         </div>
-        <div class="tech-row">
-          <div class="tech-badge-title">Deployment</div>
-          <div class="tech-badge-content">GitHub Actions Cloud Builder, GitHub Pages, Standalone PWA</div>
+        <div class="tech-pill-row">
+          <div class="tech-pill-label">Deployment</div>
+          <div class="tech-pill-content">GitHub Actions CI/CD Pipeline, GitHub Pages, Standalone PWA</div>
         </div>
       </div>
     </div>
@@ -642,188 +551,172 @@
     <!-- 8. METHODOLOGY / WORKFLOW -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">8</div>
-        <h2 class="card-title">METHODOLOGY / WORKFLOW</h2>
+        <span class="sec-num">8</span>
+        <span class="sec-title">Methodology / Workflow</span>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 7px;">
-        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 7px 12px; border-radius: 8px; border-left: 4px solid #0284c7;">
-          <strong style="font-size: 12.5px; color: #0284c7;">1. Audio Slicing:</strong>
-          <span style="font-size: 12.5px; color: #334155;">16 kHz stream sliced into 200ms frames (3200 samples).</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 7px 12px; border-radius: 8px; border-left: 4px solid #6366f1;">
-          <strong style="font-size: 12.5px; color: #6366f1;">2. 38-DSP Extraction:</strong>
-          <span style="font-size: 12.5px; color: #334155;">MFCCs (1-13 μ & σ), Centroid, Rolloff, ZCR, & Flatness.</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 7px 12px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
-          <strong style="font-size: 12.5px; color: #8b5cf6;">3. Ensemble Voting:</strong>
-          <span style="font-size: 12.5px; color: #334155;">150 Decision Trees evaluate Risk Score in 14-28 ms.</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 7px 12px; border-radius: 8px; border-left: 4px solid #10b981;">
-          <strong style="font-size: 12.5px; color: #10b981;">4. Alert & Wipe:</strong>
-          <span style="font-size: 12.5px; color: #334155;">Floating HUD alert triggers; RAM buffer wiped immediately.</span>
-        </div>
+      <div class="card-body">
+        <p>1. <strong>Audio Capture:</strong> 16 kHz stream sliced into 200ms frames (3,200 samples).</p>
+        <p>2. <strong>38-DSP Extraction:</strong> MFCCs (1–13+Del), Centroid, Rolloff, ZCR, & Flatness.</p>
+        <p>3. <strong>Ensemble Voting:</strong> 150 Decision Trees evaluate Risk Score in 14–28 ms.</p>
+        <p>4. <strong>Alert & Wipe:</strong> Floating HUD alert triggers; RAM buffer wiped immediately.</p>
       </div>
     </div>
 
     <!-- 9. BENEFITS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">9</div>
-        <h2 class="card-title">BENEFITS</h2>
+        <span class="sec-num">9</span>
+        <span class="sec-title">Benefits</span>
       </div>
-      <ul class="feature-list">
-        <li><span>🛡️</span> <span><strong>Stops Real-Time Impersonation:</strong> Neutralizes voice deepfakes before caller can defraud victims.</span></li>
-        <li><span>🎓</span> <span><strong>Protects Campus & Faculty:</strong> Prevents unauthorized administrative directives & exam leak calls.</span></li>
-        <li><span>⚡</span> <span><strong>Sub-Second Warning (&lt;300ms):</strong> Instant visual & vibration cue saves victims from transferring money.</span></li>
-        <li><span>⚖️</span> <span><strong>Court-Admissible Dossiers:</strong> Section 65B certified evidence aids Cyber Police Helpline 1930.</span></li>
-        <li><span>💰</span> <span><strong>Zero Infrastructure Cost:</strong> Runs on client edge devices without costly GPU clusters.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>🛡️ <strong>Stops Real-Time Impersonation:</strong> Neutralizes voice deepfakes before caller can defraud victims.</p>
+        <p>🎓 <strong>Protects Campus & Faculty:</strong> Prevents unauthorized administrative directives & exam leak calls.</p>
+        <p>⚡ <strong>Sub-Second Warning (&lt;300ms):</strong> Instant visual & vibration cues warn victims from transferring money.</p>
+        <p>⚖️ <strong>Court-Admissible Dossier:</strong> Section 65B certified evidence aids Cyber Police Helpline 1930.</p>
+        <p>💰 <strong>Zero Infrastructure Cost:</strong> Runs on client edge devices without costly GPU clusters.</p>
+      </div>
     </div>
 
   </div>
 
-  <!-- ROW 4: Implementation, Expected Results, Future Scope, Impact -->
-  <div class="row-4-cols">
+  <!-- ROW 4: IMPLEMENTATION PLAN | EXPECTED RESULTS | FUTURE SCOPE | IMPACT -->
+  <div class="row-4">
     
     <!-- 10. IMPLEMENTATION PLAN -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">10</div>
-        <h2 class="card-title">IMPLEMENTATION PLAN</h2>
+        <span class="sec-num">10</span>
+        <span class="sec-title">Implementation Plan</span>
       </div>
-      <div style="margin-top: 2px;">
-        <div class="gantt-bar-row">
-          <div class="gantt-label">Dataset & Research</div>
-          <div class="gantt-track"><div class="gantt-fill" style="width: 100%; background: #0284c7;"></div></div>
+      <div class="card-body">
+        <div class="progress-bar-row">
+          <div class="bar-label-val"><span>Dataset & Research</span><span>100%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 100%;"></div></div>
         </div>
-        <div class="gantt-bar-row">
-          <div class="gantt-label">38-DSP Pipeline</div>
-          <div class="gantt-track"><div class="gantt-fill" style="width: 100%; background: #0ea5e9;"></div></div>
+        <div class="progress-bar-row">
+          <div class="bar-label-val"><span>38-DSP Pipeline</span><span>100%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 100%;"></div></div>
         </div>
-        <div class="gantt-bar-row">
-          <div class="gantt-label">Model Training</div>
-          <div class="gantt-track"><div class="gantt-fill" style="width: 100%; background: #6366f1;"></div></div>
+        <div class="progress-bar-row">
+          <div class="bar-label-val"><span>Model Training</span><span>100%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 100%;"></div></div>
         </div>
-        <div class="gantt-bar-row">
-          <div class="gantt-label">Cyber UI & PWA</div>
-          <div class="gantt-track"><div class="gantt-fill" style="width: 100%; background: #8b5cf6;"></div></div>
+        <div class="progress-bar-row">
+          <div class="bar-label-val"><span>Cyber UI & PWA</span><span>100%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 100%;"></div></div>
         </div>
-        <div class="gantt-bar-row">
-          <div class="gantt-label">Testing & Deploy</div>
-          <div class="gantt-track"><div class="gantt-fill" style="width: 100%; background: #10b981;"></div></div>
+        <div class="progress-bar-row">
+          <div class="bar-label-val"><span>Testing & Deploy</span><span>100%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 100%;"></div></div>
         </div>
-      </div>
-      <div style="font-size: 11px; color: #64748b; margin-top: 6px;">
-        100% Phase Completion: Fully Production Deployed.
+        <div style="font-size: 10px; color: #16a34a; font-weight: 700; text-align: center; margin-top: 4px;">
+          ✓ 100% Production Ready & Fully Deployed
+        </div>
       </div>
     </div>
 
     <!-- 11. EXPECTED RESULTS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">11</div>
-        <h2 class="card-title">EXPECTED RESULTS</h2>
+        <span class="sec-num">11</span>
+        <span class="sec-title">Expected Results</span>
       </div>
-      <ul class="feature-list" style="gap: 5px;">
-        <li><span>🎯</span> <span><strong>97.29% Accuracy:</strong> Tested on 960 Indian audio samples.</span></li>
-        <li><span>⚡</span> <span><strong>14-28ms Latency:</strong> Far below 300ms in-call budget.</span></li>
-        <li><span>📈</span> <span><strong>0.9999 ROC-AUC:</strong> 5-Fold Stratified Cross-Validation.</span></li>
-        <li><span>🔒</span> <span><strong>0% Disk Leakage:</strong> 100% Volatile RAM TEE execution.</span></li>
-        <li><span>🛡️</span> <span><strong>99.4% Specificity:</strong> Near-zero false alarms on human voice.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>🎯 <strong>97.29% Accuracy:</strong> Tested on 960 Indian audio samples.</p>
+        <p>⚡ <strong>14–28ms Latency:</strong> Far below 300ms in-call budget.</p>
+        <p>📊 <strong>0.9999 ROC-AUC:</strong> 5-Fold Stratified Cross-Validation.</p>
+        <p>🔒 <strong>0% Disk Leakage:</strong> 100% Volatile RAM TEE execution.</p>
+        <p>🛡️ <strong>99.41% Specificity:</strong> Near-zero false alarms on human voice.</p>
+      </div>
     </div>
 
     <!-- 12. FUTURE SCOPE -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">12</div>
-        <h2 class="card-title">FUTURE SCOPE</h2>
+        <span class="sec-num">12</span>
+        <span class="sec-title">Future Scope</span>
       </div>
-      <ul class="feature-list" style="gap: 5px;">
-        <li><span>📡</span> <span><strong>Telecom Carrier SIP Gateways:</strong> In-network carrier level AI filtering (Jio/Airtel/VI).</span></li>
-        <li><span>📲</span> <span><strong>Android Native Call Service:</strong> System-level background audio tap overlay.</span></li>
-        <li><span>🔐</span> <span><strong>Hardware ARM TrustZone:</strong> Hardware enclave key attestation.</span></li>
-        <li><span>🌐</span> <span><strong>Pan-India Cyber Mesh:</strong> Real-time scam threat sharing with I4C.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>📡 <strong>Telecom Carrier SIP Gateways:</strong> In-network carrier-level AI filtering (VoLTE/VoNR/VoWiFi).</p>
+        <p>📱 <strong>Android Native Call Service:</strong> System-level background audio overlay.</p>
+        <p>🔐 <strong>Hardware ARM TrustZone:</strong> Hardware enclave key attestation.</p>
+        <p>🇮🇳 <strong>Pan-India Cyber Mesh:</strong> Real-time scam threat sharing with I4C.</p>
+      </div>
     </div>
 
     <!-- 13. IMPACT -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">13</div>
-        <h2 class="card-title">IMPACT</h2>
+        <span class="sec-num">13</span>
+        <span class="sec-title">Impact</span>
       </div>
-      <ul class="feature-list" style="gap: 5px;">
-        <li><span>🏫</span> <span><strong>Safer Digital Campuses:</strong> Protects remote exams & identity.</span></li>
-        <li><span>💰</span> <span><strong>Financial Fraud Reduction:</strong> Blocks extortion calls before payment.</span></li>
-        <li><span>🏛️</span> <span><strong>Legal Empowerment:</strong> Section 65B reports assist police prosecution.</span></li>
-        <li><span>🇮🇳</span> <span><strong>National AI Safety:</strong> Supports AICTE & Digital India mission.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>🛡️ <strong>Safer Digital Campuses:</strong> Protects remote exams & identity.</p>
+        <p>💰 <strong>Financial Fraud Reduction:</strong> Blocks extortion calls before payment.</p>
+        <p>⚖️ <strong>Legal Empowerment:</strong> Section 65B reports assist police prosecution.</p>
+        <p>🇮🇳 <strong>National AI Safety:</strong> Supports AICTE & Digital India mission.</p>
+      </div>
     </div>
 
   </div>
 
-  <!-- ROW 5: References, Feasibility, Stakeholders, Live Demo Flow -->
-  <div class="row-4-cols">
+  <!-- ROW 5: REFERENCES | FEASIBILITY | STAKEHOLDERS | DEMO FLOW -->
+  <div class="row-4">
     
     <!-- 14. REFERENCES -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">14</div>
-        <h2 class="card-title">REFERENCES</h2>
+        <span class="sec-num">14</span>
+        <span class="sec-title">References</span>
       </div>
-      <ul class="feature-list" style="font-size: 12px; gap: 4px;">
-        <li><span>📄</span> <span>Prof. Ingo Titze (NCVS) & ASVspoof Pitch Jitter.</span></li>
-        <li><span>📄</span> <span>IEEE/ACM Audio Trans (Vocoder Phase Anomaly).</span></li>
-        <li><span>⚖️</span> <span>Section 65B Indian Evidence Act / Sec 63 BSA 2023.</span></li>
-        <li><span>📊</span> <span>Claude Shannon (1948) Information Entropy.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>📖 Prof. Ingo Titze (NCVS) & ASVspoof: Pitch Jitter.</p>
+        <p>📖 ICEDACH Audio Pairs (Vocoder Phase Anomaly).</p>
+        <p>📜 Section 65B Indian Evidence Act / Sec 63 BSA 2023.</p>
+        <p>📊 Claude Shannon (1948) Information Entropy.</p>
+      </div>
     </div>
 
     <!-- 15. FEASIBILITY -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">15</div>
-        <h2 class="card-title">FEASIBILITY</h2>
+        <span class="sec-num">15</span>
+        <span class="sec-title">Feasibility</span>
       </div>
-      <ul class="feature-list" style="font-size: 12.5px; gap: 5px;">
-        <li><span>✅</span> <span><strong>Technically Feasible:</strong> Validated on multi-lingual dataset.</span></li>
-        <li><span>💰</span> <span><strong>Cost Effective:</strong> Zero GPU requirement at runtime.</span></li>
-        <li><span>🚀</span> <span><strong>High Scalability:</strong> O(1) DSP + O(n+m) String checks.</span></li>
-        <li><span>📦</span> <span><strong>Instantly Deployable:</strong> Pure PWA + FastAPI cloud.</span></li>
-      </ul>
+      <div class="card-body">
+        <p>✅ <strong>Technically Feasible:</strong> Validation on multi-lingual dataset.</p>
+        <p>💰 <strong>Cost Effective:</strong> Zero GPU requirement at runtime.</p>
+        <p>🚀 <strong>High Scalability:</strong> O(1) DSP + O(1) ring buffer updates.</p>
+        <p>📱 <strong>Instantly Deployable:</strong> PWA PWA + FastAPI cloud.</p>
+      </div>
     </div>
 
     <!-- 16. STAKEHOLDERS -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">16</div>
-        <h2 class="card-title">STAKEHOLDERS</h2>
+        <span class="sec-num">16</span>
+        <span class="sec-title">Stakeholders</span>
       </div>
-      <div class="stakeholder-grid">
-        <div class="stakeholder-item"><div class="stakeholder-icon">👨‍🎓</div><div class="stakeholder-label">Students</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">👨‍🏫</div><div class="stakeholder-label">Faculty</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">🏛️</div><div class="stakeholder-label">Institutes</div></div>
-        <div class="stakeholder-item"><div class="stakeholder-icon">👮</div><div class="stakeholder-label">Police 1930</div></div>
+      <div class="card-body">
+        <div class="badge-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="badge-item"><div class="badge-icon">🎓</div><div class="badge-name">Students</div></div>
+          <div class="badge-item"><div class="badge-icon">👩‍🏫</div><div class="badge-name">Faculty</div></div>
+          <div class="badge-item"><div class="badge-icon">🏛️</div><div class="badge-name">Institutes</div></div>
+          <div class="badge-item"><div class="badge-icon">👮</div><div class="badge-name">Police 1930</div></div>
+        </div>
       </div>
     </div>
 
     <!-- 17. DEMO FLOW -->
     <div class="card">
       <div class="card-header">
-        <div class="card-number">17</div>
-        <h2 class="card-title">DEMO FLOW</h2>
+        <span class="sec-num">17</span>
+        <span class="sec-title">Demo Flow</span>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px;">
-        <div style="background: #f8fafc; padding: 5px 8px; border-radius: 6px; border-left: 3px solid #0284c7;">
-          <strong>1. User Speaks:</strong> Mic captures 16kHz PCM audio.
-        </div>
-        <div style="background: #f8fafc; padding: 5px 8px; border-radius: 6px; border-left: 3px solid #6366f1;">
-          <strong>2. Real-Time DSP:</strong> 38 features extracted in 14ms.
-        </div>
-        <div style="background: #f8fafc; padding: 5px 8px; border-radius: 6px; border-left: 3px solid #10b981;">
-          <strong>3. Instant Verdict:</strong> Green Human vs Red Clone Alert.
-        </div>
+      <div class="card-body">
+        <p>1. <strong>User Speaks:</strong> Mic captures 16kHz PCM audio.</p>
+        <p>2. <strong>Real-Time DSP:</strong> 38 features extracted in 14ms.</p>
+        <p>3. <strong>Instant Verdict:</strong> Green Human vs Red Clone Alert.</p>
       </div>
     </div>
 

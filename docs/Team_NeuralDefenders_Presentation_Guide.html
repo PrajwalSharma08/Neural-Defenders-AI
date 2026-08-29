@@ -8,11 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       width: 2400px;
       min-height: 3500px;
@@ -26,7 +22,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Master Banner */
+    /* Master Header */
     .master-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0369a1 100%);
       border-radius: 20px;
@@ -84,7 +80,6 @@
       border-radius: 12px;
       font-size: 15.5px;
       font-weight: 800;
-      letter-spacing: 0.5px;
     }
     .track-badge {
       background: rgba(255, 255, 255, 0.1);
@@ -96,7 +91,7 @@
       font-weight: 700;
     }
 
-    /* Strategy Callout Banner */
+    /* Strategy Banner */
     .strategy-banner {
       background: #ffffff;
       border: 2px solid #e2e8f0;
@@ -141,7 +136,7 @@
       color: #0f172a;
     }
 
-    /* 6 Members Grid (2 Columns x 3 Rows) */
+    /* 6 Members Grid */
     .members-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -204,7 +199,7 @@
       color: #475569;
     }
 
-    /* File List Box (NEW) */
+    /* File List Box */
     .file-box {
       background: #fdf4ff;
       border: 1.5px solid #f5d0fe;
@@ -323,7 +318,7 @@
       line-height: 1.35;
     }
 
-    /* Master Footer */
+    /* Footer */
     .master-footer {
       background: #0f172a;
       border-radius: 12px;
@@ -591,7 +586,7 @@
       <div class="pitch-box">
         <div class="pitch-title">🎙️ Presentation Me Exactly Kya Bolna Hai (Your Pitch Script):</div>
         <div class="pitch-text">
-          "Cyber attackers never rely on a single vector; voice cloning calls are always paired with phishing SMS links. We integrated Link Guard, which calculates Shannon Entropy in sub-10ms to catch bot-generated DGA domains (H > 3.5 bits/char) and checks Levenshtein typosquatting against 60+ Indian banks, while automatically stripping tracking telemetry."
+          "Cyber attackers never rely on a single vector; voice cloning calls are frequently accompanied by malicious links. We integrated Link Guard, which calculates Shannon Entropy in sub-10ms to catch bot-generated DGA domains (H > 3.5 bits/char) and checks Levenshtein typosquatting against 60+ Indian banks, while automatically stripping tracking telemetry."
         </div>
       </div>
 
@@ -620,15 +615,15 @@
         <div class="file-tags-row">
           <span class="file-tag">backend/services/voice_dsp.py</span>
           <span class="file-tag">frontend/js/utils/urlUtils.js</span>
-          <span class="file-tag">backend/services/sms_shield.py</span>
+          <span class="file-tag">backend/services/ml_classifier.py</span>
         </div>
       </div>
 
       <div class="study-box">
         <div class="box-title">📚 Kya Padh Kar Jana Hai (Technical Concepts):</div>
         <ul class="study-list">
-          <li>• <strong>2.5s Sliding Window Buffer:</strong> Ring queue computing standard deviation (σ_S) of acoustic energy.</li>
-          <li>• <strong>Time Complexity Optimization:</strong> O(1) DSP frame updates and sub-millisecond string matrix lookups.</li>
+          <li>• <strong>2.5s Sliding Window Buffer:</strong> Ring queue computing standard deviation (σ_S) of acoustic energy in O(1).</li>
+          <li>• <strong>Time Complexity Optimization:</strong> Single-pass O(N) Shannon Entropy and fast bitwise DCT lookups.</li>
           <li>• <strong>Numerical Efficiency:</strong> Low-power float32 SIMD matrix operations keeping CPU usage < 4%.</li>
         </ul>
       </div>
