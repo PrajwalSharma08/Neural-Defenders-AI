@@ -30,23 +30,23 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Build Android Release APK
+      - name: Build Signed Android APK
         run: |
           cd android-app
-          gradle assembleRelease --stacktrace
+          gradle assembleDebug --stacktrace
 
       - name: Upload APK as GitHub Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SentinelShield-AI-Native-APK
-          path: android-app/app/build/outputs/apk/release/app-release.apk
+          path: android-app/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Deploy Compiled APK to Website
         run: |
-          cp android-app/app/build/outputs/apk/release/app-release.apk frontend/SentinelShield-AI-v1.0.apk
-          cp android-app/app/build/outputs/apk/release/app-release.apk frontend/SentinelShield-AI.apk
+          cp android-app/app/build/outputs/apk/debug/app-debug.apk frontend/SentinelShield-AI-v1.0.apk
+          cp android-app/app/build/outputs/apk/debug/app-debug.apk frontend/SentinelShield-AI.apk
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add frontend/SentinelShield-AI-v1.0.apk frontend/SentinelShield-AI.apk
-          git commit -m "chore(release): deploy fresh signed release APK binary [skip ci]" || echo "No changes to commit"
+          git commit -m "chore(release): deploy real compiled signed Android APK binary [skip ci]" || echo "No changes"
           git push origin main || echo "Push skipped"
