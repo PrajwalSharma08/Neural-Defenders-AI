@@ -259,6 +259,119 @@
       box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
       transform: scale(1.01);
     }
+  
+    /* QR Scanner Modal & Video Overlay */
+    .qr-modal-card {
+      max-width: 580px;
+      width: 95%;
+      margin: auto;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .qr-tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .qr-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .qr-tab-btn.active {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+    .camera-container {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--glass-border);
+    }
+    #qrVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .qr-target-box {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border: 2px solid rgba(6, 182, 212, 0.8);
+      border-radius: 16px;
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.55), 0 0 20px rgba(6, 182, 212, 0.5);
+      pointer-events: none;
+    }
+    .qr-corner {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #38bdf8;
+      border-style: solid;
+    }
+    .qr-c-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 12px; }
+    .qr-c-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 12px; }
+    .qr-c-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 12px; }
+    .qr-c-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 12px; }
+    
+    .qr-laser-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #38bdf8, #06b6d4, transparent);
+      box-shadow: 0 0 12px #38bdf8;
+      animation: qrLaserScan 2s infinite ease-in-out;
+    }
+    @keyframes qrLaserScan {
+      0% { top: 10%; opacity: 0.2; }
+      50% { top: 90%; opacity: 1; }
+      100% { top: 10%; opacity: 0.2; }
+    }
+    .qr-dropzone {
+      border: 2px dashed rgba(6, 182, 212, 0.4);
+      background: rgba(6, 182, 212, 0.04);
+      border-radius: 16px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .qr-dropzone:hover, .qr-dropzone.dragover {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: var(--accent-cyan);
+    }
+    .sample-qr-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.85rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .sample-qr-card:hover {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
   </style>
 </head>
 <body>
@@ -339,6 +452,7 @@
           <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g. https://amazon.com)..." autocomplete="off" spellcheck="false" />
         </div>
         <div class="scanner-btn-group">
+          <button class="quick-tool-btn" id="btnOpenQrScanner" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4); font-weight: 700;">📷 Scan QR</button>
           <button class="quick-tool-btn" id="btnPasteInput" title="Paste from clipboard">📋 Paste</button>
           <button class="quick-tool-btn" id="btnClearInput" title="Clear input">✕ Clear</button>
           <button class="btn-primary" id="btnScanSubmit" style="padding: 0.55rem 1.25rem;">
@@ -355,6 +469,7 @@
         <button class="demo-pill-btn" data-url="http://insecure-portal.com/login?session_token=98765">⚠️ Insecure HTTP</button>
         <button class="demo-pill-btn" data-url="https://google.com/url?q=http://sbi-fake-login-kyc.xyz/verify">🕵️ Cloaked Open Redirect</button>
         <button class="demo-pill-btn" data-url="https://sbi.co.in.scam-server-99.xyz/login">🎭 Subdomain Masking Spoof</button>
+        <button class="demo-pill-btn" id="btnPillQrScenarios" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4);">📷 QR Code Scanner</button>
       </div>
     </div>
 
@@ -722,6 +837,136 @@
 
   </div>
 
+  
+  <!-- ====================================================================
+       Real-Time QR Code Scanner & Quishing Defense Modal
+       ==================================================================== -->
+  <div id="qrScannerModal" class="modal-backdrop">
+    <div class="glass-panel modal-card qr-modal-card">
+      
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.4rem;">📷</span>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+              QR Code Threat & Quishing Scanner
+            </h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">
+              Scan or upload any QR code to extract & analyze the destination URL
+            </p>
+          </div>
+        </div>
+        <button id="btnCloseQrModal" class="btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 1.1rem;">✕</button>
+      </div>
+
+      <!-- Mode Tabs -->
+      <div class="qr-tab-nav">
+        <button class="qr-tab-btn active" id="tabBtnCameraQr" onclick="window.CyberLinkShield.switchQrTab('camera')">
+          📷 Real-Time Camera
+        </button>
+        <button class="qr-tab-btn" id="tabBtnUploadQr" onclick="window.CyberLinkShield.switchQrTab('upload')">
+          🖼️ Upload QR Image
+        </button>
+        <button class="qr-tab-btn" id="tabBtnSampleQr" onclick="window.CyberLinkShield.switchQrTab('samples')">
+          🎯 Test Samples
+        </button>
+      </div>
+
+      <!-- Tab 1: Live Camera Scanner -->
+      <div id="qrPaneCamera" class="qr-pane">
+        <div class="camera-container">
+          <video id="qrVideo" playsinline></video>
+          <div class="qr-target-box">
+            <div class="qr-corner qr-c-tl"></div>
+            <div class="qr-corner qr-c-tr"></div>
+            <div class="qr-corner qr-c-bl"></div>
+            <div class="qr-corner qr-c-br"></div>
+            <div class="qr-laser-line"></div>
+          </div>
+          <div id="cameraStatusText" style="position: absolute; bottom: 12px; background: rgba(0,0,0,0.7); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem; color: var(--accent-cyan); font-family: var(--font-mono);">
+            Point camera at QR code...
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted);">
+            ⚡ Sub-second optical decode via jsQR
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btnSwitchCamera" class="btn-secondary" style="padding: 0.45rem 0.85rem; font-size: 0.78rem;">
+              🔄 Flip Camera
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Upload QR Image -->
+      <div id="qrPaneUpload" class="qr-pane" style="display: none;">
+        <div class="qr-dropzone" id="qrDropzone">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+            Drag & Drop QR Image Here
+          </h4>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Supports PNG, JPG, WEBP, Screenshots (Max 10 MB)
+          </p>
+          <button class="btn-primary" onclick="document.getElementById('qrFileInput').click()" style="padding: 0.5rem 1.25rem;">
+            <span>Browse File</span>
+          </button>
+          <input type="file" id="qrFileInput" accept="image/*" style="display: none;" />
+        </div>
+
+        <!-- Image Upload Preview & Result -->
+        <div id="qrUploadResultBox" style="display: none; margin-top: 1rem;" class="glass-card">
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <canvas id="qrUploadCanvas" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 1px solid var(--glass-border);"></canvas>
+            <div style="flex: 1;">
+              <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700;">EXTRACTED PAYLOAD:</div>
+              <div id="qrUploadDecodedUrl" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-main); word-break: break-all; margin-top: 0.2rem;"></div>
+            </div>
+          </div>
+          <button id="btnScanExtractedUrl" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.85rem;">
+            <span>⚡ Scan This Link Now →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Pre-Generated Test QR Samples -->
+      <div id="qrPaneSamples" class="qr-pane" style="display: none;">
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Click any sample QR code below to simulate instant optical decoding and threat inspection:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.85rem;">
+          
+          <div class="sample-qr-card" onclick="window.CyberLinkShield.loadSampleQr('safe')">
+            <canvas id="sampleCanvasSafe" width="130" height="130" style="margin: 0 auto 0.5rem auto;"></canvas>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #34d399;">✅ Official Safe Link</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted);">Amazon Product Page</div>
+          </div>
+
+          <div class="sample-qr-card" onclick="window.CyberLinkShield.loadSampleQr('phish')">
+            <canvas id="sampleCanvasPhish" width="130" height="130" style="margin: 0 auto 0.5rem auto;"></canvas>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #f87171;">🚨 Fake Bank Quishing</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted);">Cloaked SBI KYC APK</div>
+          </div>
+
+          <div class="sample-qr-card" onclick="window.CyberLinkShield.loadSampleQr('tracker')">
+            <canvas id="sampleCanvasTracker" width="130" height="130" style="margin: 0 auto 0.5rem auto;"></canvas>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #fbbf24;">⚠️ Ad Spy Tracker</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted);">Shortened Promo Link</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Hidden canvas for camera decoding -->
+      <canvas id="qrHiddenCanvas" style="display: none;"></canvas>
+
+    </div>
+  </div>
+
   <!-- Forensic PDF Modal -->
   <div id="pdfModalBackdrop" class="modal-backdrop">
     <div class="glass-panel modal-card">
@@ -752,6 +997,7 @@
   <!-- JavaScript Modules & Controller -->
   <script src="./js/app.js"></script>
   <script src="./js/forensic-pdf.js"></script>
+  <script src="./js/libs/jsqr.min.js"></script>
   <script src="./js/link-shield-controller.js"></script>
 
   <!-- Service Worker Registration -->

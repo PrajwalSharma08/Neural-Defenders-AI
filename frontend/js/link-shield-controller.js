@@ -40,6 +40,7 @@ class CyberLinkShieldApp {
     console.log('[LinkShield] Initializing Cyber Link Guard Engine...');
     this.initUI();
     this.initEventListeners();
+    this.initQrScanner();
     this.resetDashboard();
     this.renderHistory();
     this.showToast('SentinelShield Link Guard Engine Ready', 'info');
@@ -992,4 +993,262 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
 } else {
   bootCyberLinkShield();
+
+  // ─── QR Code Scanner & Quishing Engine ─────────────────────────────────────
+
+  initQrScanner() {
+    this.qrVideo = document.getElementById('qrVideo');
+    this.qrCanvas = document.getElementById('qrHiddenCanvas');
+    this.qrCtx = this.qrCanvas ? this.qrCanvas.getContext('2d') : null;
+    this.qrStream = null;
+    this.qrScanning = false;
+    this.currentFacingMode = 'environment'; // 'environment' (back) or 'user' (front)
+
+    const btnOpen = document.getElementById('btnOpenQrScanner');
+    const btnPill = document.getElementById('btnPillQrScenarios');
+    const btnClose = document.getElementById('btnCloseQrModal');
+    const btnSwitchCam = document.getElementById('btnSwitchCamera');
+    const fileInput = document.getElementById('qrFileInput');
+    const dropzone = document.getElementById('qrDropzone');
+
+    if (btnOpen) btnOpen.onclick = (e) => { e.preventDefault(); this.openQrModal('camera'); };
+    if (btnPill) btnPill.onclick = (e) => { e.preventDefault(); this.openQrModal('samples'); };
+    if (btnClose) btnClose.onclick = (e) => { e.preventDefault(); this.closeQrModal(); };
+    if (btnSwitchCam) btnSwitchCam.onclick = (e) => { e.preventDefault(); this.flipCamera(); };
+
+    if (fileInput) {
+      fileInput.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) this.handleQrFile(file);
+      };
+    }
+
+    if (dropzone) {
+      dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('dragover'); };
+      dropzone.ondragleave = (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); };
+      dropzone.ondrop = (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) this.handleQrFile(file);
+      };
+    }
+
+    // Render sample canvases
+    this.renderSampleQrCanvases();
+  }
+
+  openQrModal(defaultTab = 'camera') {
+    const modal = document.getElementById('qrScannerModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+      this.switchQrTab(defaultTab);
+    }
+  }
+
+  closeQrModal() {
+    const modal = document.getElementById('qrScannerModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+    }
+    this.stopCamera();
+  }
+
+  switchQrTab(tabId) {
+    document.querySelectorAll('.qr-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.qr-pane').forEach(pane => pane.style.display = 'none');
+
+    const activeBtn = document.getElementById(`tabBtn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}Qr`);
+    const activePane = document.getElementById(`qrPane${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activePane) activePane.style.display = 'block';
+
+    if (tabId === 'camera') {
+      this.startCamera();
+    } else {
+      this.stopCamera();
+    }
+  }
+
+  async startCamera() {
+    this.stopCamera();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const status = document.getElementById('cameraStatusText');
+      if (status) status.textContent = 'Camera API not supported in this browser. Use Upload Tab.';
+      return;
+    }
+
+    const status = document.getElementById('cameraStatusText');
+    if (status) status.textContent = 'Requesting camera stream...';
+
+    try {
+      this.qrStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: this.currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      if (this.qrVideo) {
+        this.qrVideo.srcObject = this.qrStream;
+        this.qrVideo.setAttribute('playsinline', 'true');
+        await this.qrVideo.play();
+        this.qrScanning = true;
+        if (status) status.textContent = 'Align QR code inside target box...';
+        requestAnimationFrame(() => this.tickCameraScan());
+      }
+    } catch (err) {
+      console.warn('Camera stream error:', err);
+      if (status) status.textContent = 'Camera permission denied or camera unavailable.';
+      this.showToast('Camera access denied. Please use the Upload tab.', 'warning');
+    }
+  }
+
+  stopCamera() {
+    this.qrScanning = false;
+    if (this.qrStream) {
+      this.qrStream.getTracks().forEach(track => track.stop());
+      this.qrStream = null;
+    }
+    if (this.qrVideo) {
+      this.qrVideo.srcObject = null;
+    }
+  }
+
+  flipCamera() {
+    this.currentFacingMode = this.currentFacingMode === 'environment' ? 'user' : 'environment';
+    this.startCamera();
+  }
+
+  tickCameraScan() {
+    if (!this.qrScanning || !this.qrVideo || this.qrVideo.readyState !== this.qrVideo.HAVE_ENOUGH_DATA) {
+      if (this.qrScanning) requestAnimationFrame(() => this.tickCameraScan());
+      return;
+    }
+
+    if (!this.qrCanvas || !this.qrCtx) return;
+
+    this.qrCanvas.width = this.qrVideo.videoWidth;
+    this.qrCanvas.height = this.qrVideo.videoHeight;
+    this.qrCtx.drawImage(this.qrVideo, 0, 0, this.qrCanvas.width, this.qrCanvas.height);
+
+    const imageData = this.qrCtx.getImageData(0, 0, this.qrCanvas.width, this.qrCanvas.height);
+    
+    if (window.jsQR) {
+      const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert'
+      });
+
+      if (code && code.data && code.data.trim()) {
+        const decodedUrl = code.data.trim();
+        this.onQrDecoded(decodedUrl, '📷 Live Camera');
+        return; // stop loop
+      }
+    }
+
+    if (this.qrScanning) {
+      requestAnimationFrame(() => this.tickCameraScan());
+    }
+  }
+
+  handleQrFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      this.showToast('Please select a valid image file.', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.getElementById('qrUploadCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        if (window.jsQR) {
+          const code = window.jsQR(imgData.data, imgData.width, imgData.height);
+          if (code && code.data) {
+            const decodedUrl = code.data.trim();
+            const resultBox = document.getElementById('qrUploadResultBox');
+            const urlText = document.getElementById('qrUploadDecodedUrl');
+            const btnScan = document.getElementById('btnScanExtractedUrl');
+
+            if (resultBox) resultBox.style.display = 'block';
+            if (urlText) urlText.textContent = decodedUrl;
+            if (btnScan) {
+              btnScan.onclick = () => {
+                this.onQrDecoded(decodedUrl, '🖼️ Uploaded QR Image');
+              };
+            }
+            this.showToast('✅ QR Code Decoded Successfully!', 'success');
+          } else {
+            this.showToast('Could not find a valid QR code in this image. Try another one.', 'warning');
+          }
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onQrDecoded(url, source = 'QR Scanner') {
+    this.closeQrModal();
+    const urlInput = document.getElementById('urlInput');
+    if (urlInput) {
+      urlInput.value = url;
+    }
+    this.showToast(`Decoded from ${source}: ${url.substring(0, 45)}...`, 'success');
+    this.scanUrl(url);
+  }
+
+  loadSampleQr(type) {
+    let url = 'https://amazon.com/dp/B08N5WRWNW';
+    if (type === 'phish') url = 'https://google.com/url?q=http://sbi-fake-login-kyc.xyz/verify';
+    if (type === 'tracker') url = 'https://bit.ly/3xXyZ99';
+
+    this.onQrDecoded(url, '🎯 Test QR Sample');
+  }
+
+  renderSampleQrCanvases() {
+    ['Safe', 'Phish', 'Tracker'].forEach((key, idx) => {
+      const canvas = document.getElementById(`sampleCanvas${key}`);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Draw stylized high-contrast QR pattern
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = key === 'Safe' ? '#34d399' : (key === 'Phish' ? '#f87171' : '#fbbf24');
+
+      // Draw standard corner marker squares
+      const drawMarker = (x, y) => {
+        ctx.fillRect(x, y, 32, 32);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 5, y + 5, 22, 22);
+        ctx.fillStyle = key === 'Safe' ? '#34d399' : (key === 'Phish' ? '#f87171' : '#fbbf24');
+        ctx.fillRect(x + 10, y + 10, 12, 12);
+      };
+
+      drawMarker(10, 10);
+      drawMarker(w - 42, 10);
+      drawMarker(10, h - 42);
+
+      // Draw random matrix data cells
+      const seed = idx * 137;
+      for (let r = 0; r < 14; r++) {
+        for (let c = 0; c < 14; c++) {
+          if ((r < 5 && c < 5) || (r < 5 && c > 8) || (r > 8 && c < 5)) continue;
+          if (((r * c + seed) % 3) === 0) {
+            ctx.fillRect(15 + c * 7, 15 + r * 7, 5, 5);
+          }
+        }
+      }
+    });
+  }
+
 }
