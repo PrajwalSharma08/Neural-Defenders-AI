@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SentinelShield AI — Android Mobile App</title>
+  <meta name="description" content="India's first real-time AI deepfake call detector running in the background with a single sticky notification and zero RAM retention." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#080914" />
+  <link rel="apple-touch-icon" href="./img/icon-192.png" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <style>
+    .notif-preview-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .notif-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      margin-bottom: 0.65rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .notif-row:hover {
+      transform: translateX(4px);
+    }
+    .notif-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Lighting Spheres -->
+  <div class="ambient-sphere sphere-1"></div>
+  <div class="ambient-sphere sphere-2"></div>
+
+  <div class="app-container">
+
+    <!-- Top Cyber Operations Header & Global Navbar -->
+    <header class="glass-panel" style="margin-bottom: 1.5rem;">
+      <div class="header-top-bar">
+        
+        <!-- Brand & SIH Identity -->
+        <a href="./index.html" style="text-decoration: none;" class="brand-section">
+          <div class="brand-logo-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">SENTINEL<span>SHIELD</span> AI</h1>
+            <p class="brand-subtitle">AICTE SMART INDIA HACKATHON 2026 • SIH26104</p>
+          </div>
+        </a>
+
+        <!-- Multi-Page Navigation Links -->
+        <nav class="main-nav-links">
+          <a href="./index.html" class="nav-link">🏠 Home</a>
+          <a href="./voice-shield.html" class="nav-link">🎤 Voice Shield</a>
+          <a href="./link-shield.html" class="nav-link">🔗 Link Shield</a>
+          <a href="./app.html" class="nav-link active">📱 App</a>
+        </nav>
+
+        <!-- Telemetry HUD & Actions -->
+        <div class="header-actions">
+          <div class="theme-switch-group">
+            <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
+              🌙 <span>Dark</span>
+            </button>
+            <button class="theme-btn" data-theme="light" onclick="window.SentinelApp.applyTheme('light')">
+              ☀️ <span>Light Glass</span>
+            </button>
+            <button class="theme-btn" data-theme="neon" onclick="window.SentinelApp.applyTheme('neon')">
+              ⚡ <span>Neon</span>
+            </button>
+          </div>
+
+          <div class="hud-pill" style="border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1);">
+            <div style="font-size: 0.62rem; color: #10b981; font-weight: 800;">BUILD STATUS</div>
+            <div style="font-size: 0.68rem; color: #10b981; font-weight: 700;">FLUTTER v1.0</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Showcase Section -->
+      <div class="hero-banner">
+        <div class="hero-text-col">
+          <div class="hero-badge" style="border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald);">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent-emerald); margin-right:4px;"></span>
+            ANDROID NATIVE APP • SIH 2026
+          </div>
+          <h2 class="hero-heading">
+            SentinelShield AI <span class="hero-heading-gradient" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Mobile App</span>
+          </h2>
+          <p class="hero-desc">
+            India's first sub-second in-call AI deepfake detection app. Runs silently in the background via an Android Foreground Service — one single sticky notification that updates live without spamming, and zero audio stored on disk.
+          </p>
+          <div class="hero-feature-tags">
+            <span class="feature-tag">📱 Flutter + Kotlin</span>
+            <span class="feature-tag">🔕 1 Sticky Notification (Zero Spam)</span>
+            <span class="feature-tag">🔒 Volatile RAM Audio</span>
+            <span class="feature-tag">⚡ Sub-10ms Fast Path</span>
+          </div>
+
+          <div style="display: flex; gap: 0.85rem; margin-top: 1.5rem; flex-wrap: wrap;">
+            <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI/tree/main/mobile" target="_blank" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-decoration: none; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+              <span>📥 Download Android APK</span>
+            </a>
+            <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI" target="_blank" class="btn-secondary" style="text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.9rem;">
+              <span>📂 View Source on GitHub</span>
+            </a>
+          </div>
+        </div>
+
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-align: right;">
+          <div style="color: var(--accent-emerald); font-weight: 700;">SERVICE: ACTIVE_FOREGROUND</div>
+          <div style="margin-top: 0.35rem;">AUDIO BUFFER: 200ms ROLLING</div>
+          <div style="margin-top: 0.35rem; color: var(--accent-cyan); font-weight: 700;">STICKY NOTIFICATION: ID #101</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section 1: What The App Does (4 Pillars) -->
+    <div class="glass-panel" style="padding: 2rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+        🛡️ What the Mobile App Does
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Engineered specifically to protect non-technical citizens, seniors, and enterprise employees from synthetic voice scams and digital arrest extortion.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;">
+        
+        <div class="glass-card">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📞</div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Real-Time In-Call Protection</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            As soon as you answer any phone call, the app silently activates in the background. No popup modal, no call interruption.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔕</div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">One Sticky Notification (No Spam)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            A single status bar notification updates dynamically in-place: Grey → Green → Amber → Red without buzzing or ringing repeatedly.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧹</div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Auto RAM Wipe on Hang-Up</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            When the call ends, all 200ms audio bytes are immediately zeroized from RAM. Zero audio is stored, uploaded, or leaked.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔐</div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">OTP Login & Biometric Unlock</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            Sign in once via mobile OTP or Guest mode. After that, unlock the app instantly with your phone's fingerprint sensor.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 2: How It Works (3 Steps) & Live Status Bar Mockup -->
+    <div class="glass-panel" style="padding: 2rem; margin-bottom: 1.5rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: center;">
+        
+        <!-- Left: 3 Steps -->
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+            ⚙️ How It Works in 3 Steps
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Automatic, non-intrusive lifecycle during every incoming phone call.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+              <div class="step-number">1</div>
+              <div>
+                <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main);">You Pick Up a Call</h4>
+                <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.2rem;">
+                  Android <code style="color:var(--accent-cyan)">PhoneStateReceiver</code> detects the <code style="color:var(--accent-cyan)">OFFHOOK</code> state and launches the lightweight Foreground Service.
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+              <div class="step-number">2</div>
+              <div>
+                <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main);">200ms Audio Acoustic DSP</h4>
+                <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.2rem;">
+                  A rolling 200ms buffer evaluates Shannon Entropy, STFT Phase Variance, and Zero-Crossing Rates in sub-10ms.
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+              <div class="step-number">3</div>
+              <div>
+                <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main);">In-Place Notification Update & Auto-Dismiss</h4>
+                <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.2rem;">
+                  Notification updates silently in the status bar. On hang-up (<code style="color:var(--accent-cyan)">IDLE</code>), notification disappears and RAM is wiped clean.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Status Bar Notification Mockup -->
+        <div>
+          <div class="notif-preview-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">ANDROID STATUS BAR PREVIEW</span>
+              <span class="badge badge-safe">ID: #101 ONGOING</span>
+            </div>
+
+            <!-- State 1: Scanning -->
+            <div class="notif-row" style="background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);">
+              <span style="font-size: 1.1rem;">🔍</span>
+              <div style="flex: 1;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-main);">Analyzing caller voice...</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">SentinelShield • Acoustic fingerprint loading</div>
+              </div>
+              <span class="notif-badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted);">SCANNING</span>
+            </div>
+
+            <!-- State 2: Safe -->
+            <div class="notif-row" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3);">
+              <span style="font-size: 1.1rem;">✅</span>
+              <div style="flex: 1;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #34d399;">Genuine Human Voice</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">SentinelShield • 8% Risk — Natural vocal dynamics</div>
+              </div>
+              <span class="notif-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">SAFE</span>
+            </div>
+
+            <!-- State 3: Warning -->
+            <div class="notif-row" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3);">
+              <span style="font-size: 1.1rem;">⚠️</span>
+              <div style="flex: 1;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #fbbf24;">Unusual Voice Patterns Detected</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">SentinelShield • 61% Risk — Exercise caution</div>
+              </div>
+              <span class="notif-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">WARNING</span>
+            </div>
+
+            <!-- State 4: Red Alert -->
+            <div class="notif-row" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulseDanger 1.5s infinite;">
+              <span style="font-size: 1.1rem;">🚨</span>
+              <div style="flex: 1;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #f87171;">AI VOICE CLONE DETECTED!</div>
+                <div style="font-size: 0.7rem; color: #fca5a5;">Do NOT share OTP or money! 94% Risk</div>
+              </div>
+              <span class="notif-badge" style="background: #dc2626; color: #fff;">RED ALERT</span>
+            </div>
+
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">
+              • Silent In-Place Updates • Zero Duplicate Alerts •
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 3: One-Time Permissions & Tech Stack -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      
+      <!-- Permissions -->
+      <div class="glass-panel" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          🔑 3 Permissions, Asked Once
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Clean, transparent permission model compliant with DPDP Act 2023.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="glass-card">
+            <strong style="color: var(--accent-cyan); font-size: 0.82rem;">📞 Phone State</strong>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Detects incoming call pickup & hangup.</p>
+          </div>
+          <div class="glass-card">
+            <strong style="color: var(--accent-emerald); font-size: 0.82rem;">🎤 Microphone (In-Call Only)</strong>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">200ms rolling frame in volatile RAM only.</p>
+          </div>
+          <div class="glass-card">
+            <strong style="color: var(--accent-amber); font-size: 0.82rem;">🔔 Notifications</strong>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Displays single sticky status bar notification.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Installation Guide -->
+      <div class="glass-panel" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          🚀 How to Install & Run
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Simple 4-step setup for Android 8.0+ devices.
+        </p>
+
+        <ol style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem;">
+          <li>Clone repository or download <code style="color:var(--accent-cyan)">mobile/</code> folder.</li>
+          <li>Run <code style="color:var(--accent-cyan)">flutter pub get</code> and <code style="color:var(--accent-cyan)">flutter build apk</code>.</li>
+          <li>Install the generated APK onto your Android phone.</li>
+          <li>Open app, enter mobile number for OTP or tap Guest, grant 3 permissions → Protection Active!</li>
+        </ol>
+
+        <div style="margin-top: 1.25rem;">
+          <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI/tree/main/mobile" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; text-decoration: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <span>Explore Mobile Source Code →</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="./js/app.js?v=2.5"></script>
+</body>
+</html>
