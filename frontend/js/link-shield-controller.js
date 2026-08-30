@@ -832,4 +832,115 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
 } else {
   bootCyberLinkShield();
+
+  // --------------------------------------------------------------------------
+  // Mobile Sandbox Threat Simulation Engine
+  // --------------------------------------------------------------------------
+  simulateLinkScenario(type) {
+    const overlay = document.getElementById('simLinkOverlay');
+    const overlayTitle = document.getElementById('simOverlayTitle');
+    const overlayBadge = document.getElementById('simOverlayBadge');
+    const overlayDetails = document.getElementById('simOverlayDetails');
+    const sender = document.getElementById('simChatSender');
+    const msgText = document.getElementById('simChatMessageText');
+    const linkBox = document.getElementById('simChatLinkBox');
+    const urlInput = document.getElementById('urlInput');
+
+    let url = '';
+
+    if (type === 'cloaked_sbi') {
+      url = 'https://google.com/url?q=http://sbi-fake-login.xyz/verify';
+      if (sender) sender.textContent = 'Bank Alert (Spoofed)';
+      if (msgText) msgText.textContent = '⚠️ Your SBI YONO access will be terminated in 2 hours. Update KYC now:';
+      if (linkBox) linkBox.textContent = url;
+
+      if (overlay) overlay.style.display = 'block';
+      if (overlayBadge) {
+        overlayBadge.textContent = 'BLOCKED';
+        overlayBadge.style.background = '#dc2626';
+      }
+      if (overlayTitle) {
+        overlayTitle.textContent = '🚨 CLOAKED OPEN-REDIRECT DETECTED!';
+        overlayTitle.style.color = '#fef08a';
+      }
+      if (overlayDetails) {
+        overlayDetails.innerHTML = 'Disguised Host: <code>google.com</code><br><span style="color:#f87171;">Hidden Destination: <strong>sbi-fake-login.xyz</strong></span><br>Threat: Credential Phishing / Bank Fraud';
+      }
+    } else if (type === 'lottery_dga') {
+      url = 'https://bit.ly/3xXyZ99';
+      if (sender) sender.textContent = 'Prize Distribution Cell';
+      if (msgText) msgText.textContent = '🎁 Congratulations! You have won ₹50,000 Amazon Gift Voucher. Claim immediately:';
+      if (linkBox) linkBox.textContent = url;
+
+      if (overlay) overlay.style.display = 'block';
+      if (overlayBadge) {
+        overlayBadge.textContent = 'HIGH DGA RISK';
+        overlayBadge.style.background = '#ea580c';
+      }
+      if (overlayTitle) {
+        overlayTitle.textContent = '⚠️ SHORTENED BOT PHISHING LINK';
+        overlayTitle.style.color = '#fed7aa';
+      }
+      if (overlayDetails) {
+        overlayDetails.innerHTML = 'Shortener: <code>bit.ly</code><br>Target: <code>x89qzl293km19az.xyz</code><br>Entropy: <strong style="color:#f87171;">H(X) = 4.12 bits/char</strong> (DGA Bot Domain)';
+      }
+    } else if (type === 'tracking_strip') {
+      url = 'https://amazon.com/dp/B08N5WRWNW?utm_source=fb&utm_medium=cpc&fbclid=IwAR2xyz998&ref=campaign_2026';
+      if (sender) sender.textContent = 'Shopping Deals Club';
+      if (msgText) msgText.textContent = '🛒 70% Discount on Electronics! Tap to view items:';
+      if (linkBox) linkBox.textContent = url;
+
+      if (overlay) overlay.style.display = 'block';
+      if (overlayBadge) {
+        overlayBadge.textContent = 'TRACKERS FOUND';
+        overlayBadge.style.background = '#4f46e5';
+      }
+      if (overlayTitle) {
+        overlayTitle.textContent = '🧹 PRIVACY TRACKING TAGS DETECTED';
+        overlayTitle.style.color = '#c7d2fe';
+      }
+      if (overlayDetails) {
+        overlayDetails.innerHTML = 'Found 4 Spy Trackers (<code>utm_source, utm_medium, fbclid, ref</code>).<br>1-Click Auto-Fix will strip all surveillance tokens.';
+      }
+    } else if (type === 'safe_gov') {
+      url = 'https://sbi.co.in/portal/services';
+      if (sender) sender.textContent = 'State Bank of India (Official)';
+      if (msgText) msgText.textContent = '✅ Official banking circular regarding safe online netbanking guidelines:';
+      if (linkBox) linkBox.textContent = url;
+
+      if (overlay) overlay.style.display = 'block';
+      if (overlayBadge) {
+        overlayBadge.textContent = 'VERIFIED SAFE';
+        overlayBadge.style.background = '#10b981';
+      }
+      if (overlayTitle) {
+        overlayTitle.textContent = '✅ OFFICIAL SECURE DOMAIN';
+        overlayTitle.style.color = '#a7f3d0';
+      }
+      if (overlayDetails) {
+        overlayDetails.innerHTML = 'Domain: <code>sbi.co.in</code> (Official FQDN)<br>SSL: <strong>TLS 1.3 Certified</strong><br>Entropy: <strong>2.45 bits/char</strong> (Genuine Organization)';
+      }
+    }
+
+    if (urlInput) {
+      urlInput.value = url;
+    }
+    this.scanUrl(url);
+  }
+
+  resetLinkSimulation() {
+    const overlay = document.getElementById('simLinkOverlay');
+    const sender = document.getElementById('simChatSender');
+    const msgText = document.getElementById('simChatMessageText');
+    const linkBox = document.getElementById('simChatLinkBox');
+
+    if (overlay) overlay.style.display = 'none';
+    if (sender) sender.textContent = 'Bank Alerts / SMS';
+    if (msgText) msgText.textContent = '⚠️ Dear customer, your SBI YONO account will be blocked today! Update your KYC immediately:';
+    if (linkBox) linkBox.textContent = 'https://google.com/url?q=http://sbi-fake-login.xyz';
+
+    this.resetDashboard();
+  }
+
 }
+

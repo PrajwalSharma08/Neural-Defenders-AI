@@ -448,6 +448,164 @@
 
   </div>
 
+  
+    <!-- ====================================================================
+         Mobile Option 2: Live In-App Phishing & Malicious Link Interceptor Sandbox Simulator
+         ==================================================================== -->
+    <div class="glass-panel" style="padding: 2rem; margin-top: 1.75rem; border: 1px solid rgba(6, 182, 212, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); font-weight: 800;">MOBILE ZERO-TRUST DEMO</span>
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);">🔒 IN-APP THREAT INTERCEPTOR • SUB-10ms SANDBOX</span>
+      </div>
+      <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+        📱 Live Mobile Phishing & URL Interceptor Sandbox
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+        Demonstrates how the SentinelShield Mobile Engine intercepts malicious links tapped inside WhatsApp, SMS, or Email apps before the browser opens. Analyzes Shannon entropy, unmasks cloaked redirects, and strips surveillance trackers in sub-10ms.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;">
+        
+        <!-- Left: Interactive Scenario Selector Controls -->
+        <div>
+          <h4 style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.75rem;">
+            Select a Mobile Threat Scenario to Simulate:
+          </h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Scenario 1: Cloaked Open-Redirect Bank Scam -->
+            <button class="btn-primary" style="padding: 0.9rem 1.25rem; justify-content: space-between; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('cloaked_sbi')">
+              <div style="text-align: left;">
+                <div style="font-weight: 800; font-size: 0.88rem;">🚨 1. Cloaked Open-Redirect (Fake SBI KYC)</div>
+                <div style="font-size: 0.72rem; opacity: 0.85; font-family: var(--font-mono); margin-top: 0.2rem;">google.com/url?q=http://sbi-fake-login.xyz</div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+            </button>
+
+            <!-- Scenario 2: High Entropy DGA Shortened Lottery Link -->
+            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(245, 158, 11, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('lottery_dga')">
+              <div style="text-align: left;">
+                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-amber);">⚠️ 2. Shortened High-Entropy DGA Phish</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">bit.ly/3xXyZ99 → x89qzl293km19az.xyz (H=4.12)</div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+            </button>
+
+            <!-- Scenario 3: Surveillance Tracking Link -->
+            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(99, 102, 241, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('tracking_strip')">
+              <div style="text-align: left;">
+                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-cyan);">🛒 3. E-Commerce Tracking Pixel URL</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">amazon.com/dp/item?utm_source=fb&fbclid=IwAR99</div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+            </button>
+
+            <!-- Scenario 4: Official Bank / Govt Domain -->
+            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('safe_gov')">
+              <div style="text-align: left;">
+                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-emerald);">✅ 4. Verified Government / Bank Portal</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">https://sbi.co.in/portal/services (Safe FQDN)</div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+            </button>
+
+            <!-- Reset Button -->
+            <button class="btn-secondary" style="padding: 0.65rem 1rem; justify-content: center; margin-top: 0.5rem;" onclick="window.CyberLinkShield && window.CyberLinkShield.resetLinkSimulation()">
+              <span>⏹ Reset Sandbox Simulation</span>
+            </button>
+          </div>
+
+          <!-- Feature Explainer Box -->
+          <div class="glass-card" style="margin-top: 1.25rem;">
+            <h5 style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.4rem;">
+              How the Mobile URL Sandbox Protects You:
+            </h5>
+            <ul style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.2rem;">
+              <li><strong>Zero-Trust Intent Hook:</strong> Intercepts Android <code style="color:var(--accent-cyan)">ACTION_VIEW</code> web requests before opening Chrome.</li>
+              <li><strong>Sub-10ms Shannon & Regex Scan:</strong> Flags random bot DGA strings without cloud telemetry.</li>
+              <li><strong>1-Click Tracker Sanitizer:</strong> Drops Facebook/Google surveillance tokens instantly.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right: Simulated Smartphone Device Frame with In-App Threat Interceptor Overlay -->
+        <div style="display: flex; justify-content: center;">
+          <div style="width: 320px; height: 560px; background: #0b0f19; border-radius: 36px; border: 4px solid rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden; padding: 1.25rem 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+            
+            <!-- Phone Notch & Speaker -->
+            <div style="width: 90px; height: 16px; background: #1e293b; border-radius: 10px; margin: 0 auto;"></div>
+
+            <!-- In-App Floating Threat Interceptor Sandbox Modal -->
+            <div id="simLinkOverlay" style="display: none; position: absolute; top: 36px; left: 8px; right: 8px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 16px; border: 2px solid #ef4444; padding: 0.85rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; animation: pulseDanger 1.5s infinite;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 1.15rem;">🛡️</span>
+                  <strong style="font-size: 0.75rem; letter-spacing: 0.04em; color: #f87171;">URL SANDBOX INTERCEPTOR</strong>
+                </div>
+                <span id="simOverlayBadge" style="font-family: var(--font-mono); font-size: 0.65rem; padding: 0.2rem 0.45rem; border-radius: 4px; background: #dc2626; color: #fff; font-weight: 800;">BLOCKED</span>
+              </div>
+
+              <div id="simOverlayTitle" style="font-size: 0.78rem; font-weight: 800; color: #fef08a; margin-bottom: 0.25rem;">
+                CLOAKED REDIRECT TARGET DETECTED!
+              </div>
+
+              <div id="simOverlayDetails" style="font-size: 0.68rem; color: #cbd5e1; line-height: 1.4; background: rgba(0,0,0,0.4); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; word-break: break-all; font-family: var(--font-mono);">
+                Hidden Target: http://sbi-fake-login.xyz
+              </div>
+
+              <div style="display: flex; gap: 0.4rem;">
+                <button id="simBtnCleanLink" class="btn-primary" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);" onclick="window.CyberLinkShield && window.CyberLinkShield.handleAutoFix()">
+                  🪄 Open Clean Link
+                </button>
+                <button class="btn-secondary" style="padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center;" onclick="window.CyberLinkShield && window.CyberLinkShield.resetLinkSimulation()">
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+
+            <!-- Simulated Chat App Screen Body -->
+            <div style="margin-top: 1rem; flex: 1; display: flex; flex-direction: column;">
+              <!-- Chat Header -->
+              <div style="display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--glass-border);">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff;">
+                  💬
+                </div>
+                <div>
+                  <div id="simChatSender" style="font-size: 0.85rem; font-weight: 800; color: #fff;">Bank Alerts / SMS</div>
+                  <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">Incoming Message</div>
+                </div>
+              </div>
+
+              <!-- Message Bubble -->
+              <div style="margin-top: 1rem; background: #1e293b; border-radius: 12px; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.08);">
+                <div id="simChatMessageText" style="font-size: 0.78rem; color: #f1f5f9; line-height: 1.45;">
+                  ⚠️ Dear customer, your SBI YONO account will be blocked today! Update your KYC immediately:
+                </div>
+                <div id="simChatLinkBox" style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); background: rgba(0,0,0,0.3); padding: 0.45rem 0.6rem; border-radius: 6px; word-break: break-all; cursor: pointer; text-decoration: underline;" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('cloaked_sbi')">
+                  https://google.com/url?q=http://sbi-fake-login.xyz
+                </div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-align: right; margin-top: 0.35rem;">
+                  12:34 PM • Tap link to test Interceptor
+                </div>
+              </div>
+
+              <!-- Sandbox Status Note -->
+              <div id="simSandboxStatus" style="margin-top: auto; padding: 0.6rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-align: center;">
+                🛡️ SentinelShield Zero-Trust Link Sandbox Active
+              </div>
+            </div>
+
+            <!-- Phone Bottom Home Bar -->
+            <div style="width: 110px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto;"></div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
   <!-- Forensic PDF Modal (Section 65B Admissibility) -->
   <div id="pdfModalBackdrop" class="modal-backdrop">
     <div class="glass-panel modal-card">
