@@ -22,87 +22,34 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter 3.24
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
           channel: 'stable'
-          cache: true
 
-      - name: Initialize Android Project Skeleton
+      - name: Install Dependencies
         run: |
           cd mobile
-          # Initialize complete Gradle wrapper & Android templates without overwriting custom code
-          flutter create --platforms=android --org=com.sentinelshield .
           flutter pub get
-
-      - name: Restore Custom SentinelShield Native Service & Manifest
-        run: |
-          # Copy custom AndroidManifest and Kotlin service files into created structure
-          cat << 'EOF' > mobile/android/app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-              <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-              <uses-permission android:name="android.permission.RECORD_AUDIO" />
-              <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-              <uses-permission android:name="android.permission.INTERNET" />
-              <application
-                  android:label="SentinelShield AI"
-                  android:name="${applicationName}"
-                  android:icon="@mipmap/ic_launcher">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:launchMode="singleTop"
-                      android:theme="@style/LaunchTheme"
-                      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                      android:hardwareAccelerated="true"
-                      android:windowSoftInputMode="adjustResize">
-                      <meta-data
-                        android:name="io.flutter.embedding.android.NormalTheme"
-                        android:resource="@style/NormalTheme" />
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN"/>
-                          <category android:name="android.intent.category.LAUNCHER"/>
-                      </intent-filter>
-                  </activity>
-                  <service
-                      android:name=".InCallProtectionService"
-                      android:foregroundServiceType="phoneCall"
-                      android:exported="false" />
-                  <receiver
-                      android:name=".PhoneStateReceiver"
-                      android:exported="true"
-                      android:permission="android.permission.READ_PHONE_STATE">
-                      <intent-filter>
-                          <action android:name="android.intent.action.PHONE_STATE" />
-                      </intent-filter>
-                  </receiver>
-                  <meta-data
-                      android:name="flutterEmbedding"
-                      android:value="2" />
-              </application>
-          </manifest>
-          EOF
 
       - name: Build Release APK
         run: |
           cd mobile
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK as GitHub Artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SentinelShield-AI-v1.0-release-apk
           path: mobile/build/app/outputs/flutter-apk/app-release.apk
 
-      - name: Publish Release APK to Website Directory
+      - name: Commit APK to Website
         run: |
           cp mobile/build/app/outputs/flutter-apk/app-release.apk frontend/SentinelShield-AI-v1.0.apk
           cp mobile/build/app/outputs/flutter-apk/app-release.apk frontend/SentinelShield-AI.apk
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add frontend/SentinelShield-AI-v1.0.apk frontend/SentinelShield-AI.apk
-          git commit -m "chore(release): auto-commit compiled signed release APK [skip ci]" || echo "No changes"
+          git commit -m "chore: update release APK binary [skip ci]" || echo "No changes"
           git push origin main || echo "Push skipped"
