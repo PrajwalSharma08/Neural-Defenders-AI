@@ -819,24 +819,12 @@ class CyberLinkShieldApp {
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
-}
-
-// Instantiate immediately and safely
-function bootCyberLinkShield() {
-  if (!window.CyberLinkShield) {
-    window.CyberLinkShield = new CyberLinkShieldApp();
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
-} else {
-  bootCyberLinkShield();
 
   // --------------------------------------------------------------------------
   // Mobile Sandbox Threat Simulation Engine
   // --------------------------------------------------------------------------
   simulateLinkScenario(type) {
+    console.log('[LinkShield] Simulating scenario:', type);
     const overlay = document.getElementById('simLinkOverlay');
     const overlayTitle = document.getElementById('simOverlayTitle');
     const overlayBadge = document.getElementById('simOverlayBadge');
@@ -941,6 +929,19 @@ if (document.readyState === 'loading') {
 
     this.resetDashboard();
   }
-
 }
 
+// Global Singleton Initialization
+window.CyberLinkShield = null;
+
+function bootCyberLinkShield() {
+  if (!window.CyberLinkShield) {
+    window.CyberLinkShield = new CyberLinkShieldApp();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
+} else {
+  bootCyberLinkShield();
+}
