@@ -511,8 +511,10 @@ window.VoiceShield = {
   // Update Results, Radial Gauge & Telemetry Cards
   // --------------------------------------------------------------------------
   updateResults(data) {
-    window.SentinelApp.sharedForensicData.voice_data = data;
-    window.SentinelApp.sharedForensicData.session_id = data.session_id;
+    if (window.SentinelApp && window.SentinelApp.sharedForensicData) {
+      window.SentinelApp.sharedForensicData.voice_data = data;
+      window.SentinelApp.sharedForensicData.session_id = data.session_id;
+    }
 
     const riskPct = Math.round((data.risk_score || 0) * 100);
     const gaugeCircle = document.getElementById('gaugeProgressCircle');
@@ -772,3 +774,17 @@ window.VoiceShield = {
     this.currentFreqData.fill(0);
   }
 };
+
+
+// Auto-initialize VoiceShield when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.VoiceShield && !window.VoiceShield._initialized) {
+      window.VoiceShield.init();
+    }
+  });
+} else {
+  if (window.VoiceShield && !window.VoiceShield._initialized) {
+    window.VoiceShield.init();
+  }
+}
