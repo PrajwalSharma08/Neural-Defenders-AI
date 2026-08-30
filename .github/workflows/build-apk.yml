@@ -1,53 +1,42 @@
-name: Build SentinelShield Android APK
+name: Build Android APK
 
 on:
   push:
-    branches: ["main"]
+    branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Java 17 (OpenJDK)
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          node-version: '20'
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Setup Android Build Directory
+      - name: Get Dependencies
         run: |
-          mkdir -p twa-app
-          cd twa-app
-          npx @bubblewrap/cli init --manifest=https://prajwalsharma08.github.io/Neural-Defenders-AI/manifest.json --directory=. || true
+          cd mobile
+          flutter pub get
 
-      - name: Build Android APK
+      - name: Build Release APK
         run: |
-          cd twa-app
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug || true
-          fi
+          cd mobile
+          flutter build apk --release
 
-      - name: Upload Android APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SentinelShield-AI-App-APK
-          path: |
-            twa-app/app/build/outputs/apk/**/*.apk
-          if-no-files-found: warn
+          name: SentinelShield-AI-v1.0-release
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
