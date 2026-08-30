@@ -356,6 +356,14 @@ class CyberLinkShieldApp {
     return null;
   }
 
+  scanUrl(rawUrl) {
+    const input = document.getElementById('urlInput');
+    if (input && rawUrl) {
+      input.value = rawUrl;
+    }
+    this.handleScan();
+  }
+
   async handleScan() {
     const input = document.getElementById('urlInput');
     let raw = input ? input.value.trim() : '';
@@ -978,23 +986,8 @@ class CyberLinkShieldApp {
 
     this.resetDashboard();
   }
-}
 
-// Global Singleton Initialization
-window.CyberLinkShield = null;
-
-function bootCyberLinkShield() {
-  if (!window.CyberLinkShield) {
-    window.CyberLinkShield = new CyberLinkShieldApp();
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
-} else {
-  bootCyberLinkShield();
-
-  // ─── QR Code Scanner & Quishing Engine ─────────────────────────────────────
+// ─── QR Code Scanner & Quishing Engine ─────────────────────────────────────
 
   initQrScanner() {
     this.qrVideo = document.getElementById('qrVideo');
@@ -1251,4 +1244,20 @@ if (document.readyState === 'loading') {
     });
   }
 
+}
+
+// Global Singleton & Class Export
+window.CyberLinkShieldApp = CyberLinkShieldApp;
+window.CyberLinkShield = null;
+
+function bootCyberLinkShield() {
+  if (!window.CyberLinkShield) {
+    window.CyberLinkShield = new CyberLinkShieldApp();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootCyberLinkShield);
+} else {
+  bootCyberLinkShield();
 }
