@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>SentinelShield AI — Android Mobile App</title>
+  <title>Download SentinelShield AI — Android Mobile App</title>
   <meta name="description" content="India's first real-time AI deepfake call detector running in the background with a single sticky notification and zero RAM retention." />
 
   <!-- Fonts -->
@@ -61,6 +61,13 @@
       font-family: var(--font-mono);
       flex-shrink: 0;
     }
+    .download-hero-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
   </style>
 </head>
 <body>
@@ -112,13 +119,13 @@
 
           <div class="hud-pill" style="border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1);">
             <div style="font-size: 0.62rem; color: #10b981; font-weight: 800;">BUILD STATUS</div>
-            <div style="font-size: 0.68rem; color: #10b981; font-weight: 700;">FLUTTER v1.0</div>
+            <div style="font-size: 0.68rem; color: #10b981; font-weight: 700;">APK v1.0 READY</div>
           </div>
         </div>
 
       </div>
 
-      <!-- Hero Showcase Section -->
+      <!-- Hero Showcase Section with Direct Download Button -->
       <div class="hero-banner">
         <div class="hero-text-col">
           <div class="hero-badge" style="border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald);">
@@ -138,23 +145,65 @@
             <span class="feature-tag">⚡ Sub-10ms Fast Path</span>
           </div>
 
-          <div style="display: flex; gap: 0.85rem; margin-top: 1.5rem; flex-wrap: wrap;">
-            <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI/tree/main/mobile" target="_blank" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-decoration: none; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+          <!-- Direct Download Action Group -->
+          <div style="display: flex; gap: 0.85rem; margin-top: 1.5rem; flex-wrap: wrap; align-items: center;">
+            <a href="./SentinelShield-AI-v1.0.apk" download="SentinelShield-AI-v1.0.apk" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-decoration: none; padding: 0.85rem 1.75rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);" onclick="triggerApkDownload(event, './SentinelShield-AI-v1.0.apk')">
               <span>📥 Download Android APK</span>
             </a>
-            <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI" target="_blank" class="btn-secondary" style="text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.9rem;">
-              <span>📂 View Source on GitHub</span>
-            </a>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">
+              ✓ Direct Instant Download • Android 8.0+
+            </span>
           </div>
         </div>
 
         <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-align: right;">
-          <div style="color: var(--accent-emerald); font-weight: 700;">SERVICE: ACTIVE_FOREGROUND</div>
+          <div style="color: var(--accent-emerald); font-weight: 700;">PACKAGE: com.sentinelshield.ai</div>
           <div style="margin-top: 0.35rem;">AUDIO BUFFER: 200ms ROLLING</div>
           <div style="margin-top: 0.35rem; color: var(--accent-cyan); font-weight: 700;">STICKY NOTIFICATION: ID #101</div>
         </div>
       </div>
     </header>
+
+    <!-- Direct Download Summary Panel -->
+    <div class="download-hero-card" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+            <span style="font-size: 1.35rem;">📦</span>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+              Direct APK Package Download
+            </h3>
+            <span class="badge badge-safe">LATEST RELEASE</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            Tap the button below to download the compiled Android Application Package (<code style="color:var(--accent-cyan)">.apk</code>) directly to your smartphone.
+          </p>
+        </div>
+
+        <a href="./SentinelShield-AI-v1.0.apk" download="SentinelShield-AI-v1.0.apk" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-decoration: none; padding: 0.85rem 1.75rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;" onclick="triggerApkDownload(event, './SentinelShield-AI-v1.0.apk')">
+          <span>⚡ Instant Download APK</span>
+        </a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">PACKAGE NAME</div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-cyan); margin-top: 0.15rem;">com.sentinelshield.ai</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">TARGET OS</div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-emerald); margin-top: 0.15rem;">Android 8.0 – 15 (API 26+)</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">ARCHITECTURE</div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--text-main); margin-top: 0.15rem;">Universal (ARM64 / x86_64)</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">PRIVACY STANDARD</div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-amber); margin-top: 0.15rem;">Zero Disk Audio Storage</div>
+        </div>
+      </div>
+    </div>
 
     <!-- Section 1: What The App Does (4 Pillars) -->
     <div class="glass-panel" style="padding: 2rem; margin-bottom: 1.5rem;">
@@ -307,62 +356,41 @@
       </div>
     </div>
 
-    <!-- Section 3: One-Time Permissions & Tech Stack -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-      
-      <!-- Permissions -->
-      <div class="glass-panel" style="padding: 1.75rem;">
-        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
-          🔑 3 Permissions, Asked Once
-        </h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-          Clean, transparent permission model compliant with DPDP Act 2023.
-        </p>
+    <!-- Section 3: One-Time Permissions -->
+    <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">
+        🔑 3 Transparent Permissions (Asked Once)
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Clean, privacy-first permission model compliant with Digital Personal Data Protection (DPDP) Act 2023.
+      </p>
 
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <div class="glass-card">
-            <strong style="color: var(--accent-cyan); font-size: 0.82rem;">📞 Phone State</strong>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Detects incoming call pickup & hangup.</p>
-          </div>
-          <div class="glass-card">
-            <strong style="color: var(--accent-emerald); font-size: 0.82rem;">🎤 Microphone (In-Call Only)</strong>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">200ms rolling frame in volatile RAM only.</p>
-          </div>
-          <div class="glass-card">
-            <strong style="color: var(--accent-amber); font-size: 0.82rem;">🔔 Notifications</strong>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Displays single sticky status bar notification.</p>
-          </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        <div class="glass-card">
+          <strong style="color: var(--accent-cyan); font-size: 0.88rem;">📞 Phone State</strong>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Detects incoming call pickup & hangup events.</p>
+        </div>
+        <div class="glass-card">
+          <strong style="color: var(--accent-emerald); font-size: 0.88rem;">🎤 Microphone (In-Call Only)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Captures 200ms rolling frame in volatile RAM only.</p>
+        </div>
+        <div class="glass-card">
+          <strong style="color: var(--accent-amber); font-size: 0.88rem;">🔔 Notifications</strong>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Displays the single ongoing status bar notification.</p>
         </div>
       </div>
-
-      <!-- Installation Guide -->
-      <div class="glass-panel" style="padding: 1.75rem;">
-        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
-          🚀 How to Install & Run
-        </h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-          Simple 4-step setup for Android 8.0+ devices.
-        </p>
-
-        <ol style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem;">
-          <li>Clone repository or download <code style="color:var(--accent-cyan)">mobile/</code> folder.</li>
-          <li>Run <code style="color:var(--accent-cyan)">flutter pub get</code> and <code style="color:var(--accent-cyan)">flutter build apk</code>.</li>
-          <li>Install the generated APK onto your Android phone.</li>
-          <li>Open app, enter mobile number for OTP or tap Guest, grant 3 permissions → Protection Active!</li>
-        </ol>
-
-        <div style="margin-top: 1.25rem;">
-          <a href="https://github.com/PrajwalSharma08/Neural-Defenders-AI/tree/main/mobile" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; text-decoration: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            <span>Explore Mobile Source Code →</span>
-          </a>
-        </div>
-      </div>
-
     </div>
 
   </div>
 
   <!-- Scripts -->
   <script src="./js/app.js?v=2.5"></script>
+  <script>
+    function triggerApkDownload(event, url) {
+      if (window.SentinelApp && window.SentinelApp.showToast) {
+        window.SentinelApp.showToast('📥 Starting download for SentinelShield-AI-v1.0.apk...', 'success');
+      }
+    }
+  </script>
 </body>
 </html>
