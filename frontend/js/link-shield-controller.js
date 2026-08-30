@@ -88,6 +88,9 @@ class CyberLinkShieldApp {
     const btnClear = document.getElementById('btnClearInput');
     const btnAutoFix = document.getElementById('btnAutoFix');
     const btnCopyClean = document.getElementById('btnCopyCleanUrl');
+    const btnResetSim = document.getElementById('btnResetSandboxSim');
+    const btnCloseOverlay = document.getElementById('simBtnCloseOverlay');
+    const simChatLink = document.getElementById('simChatLinkBox');
 
     if (btnScan) {
       btnScan.onclick = (e) => {
@@ -119,17 +122,62 @@ class CyberLinkShieldApp {
       };
     }
 
-    // Demo quick pills
+    // Demo quick pills with active state
     document.querySelectorAll('.demo-pill-btn').forEach(pill => {
       pill.onclick = (e) => {
         e.preventDefault();
+        document.querySelectorAll('.demo-pill-btn').forEach(p => p.classList.remove('active-pill'));
+        pill.classList.add('active-pill');
         const url = pill.getAttribute('data-url');
         if (url) {
           if (urlInput) urlInput.value = url;
-          this.handleScan();
+          this.scanUrl(url);
+          this.showToast(`Selected demo: ${pill.textContent.trim()}`, 'info');
         }
       };
     });
+
+    // Mobile Sandbox Scenario buttons with active state & auto-scroll
+    document.querySelectorAll('.sim-scenario-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.sim-scenario-btn').forEach(b => b.classList.remove('active-sim'));
+        btn.classList.add('active-sim');
+        const scenario = btn.getAttribute('data-scenario');
+        if (scenario) {
+          this.simulateLinkScenario(scenario);
+          if (window.innerWidth < 992) {
+            const phoneFrame = document.querySelector('.phone-mockup-frame');
+            if (phoneFrame) {
+              phoneFrame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+      };
+    });
+
+    if (btnResetSim) {
+      btnResetSim.onclick = (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.sim-scenario-btn').forEach(b => b.classList.remove('active-sim'));
+        this.resetLinkSimulation();
+      };
+    }
+
+    if (btnCloseOverlay) {
+      btnCloseOverlay.onclick = (e) => {
+        e.preventDefault();
+        const overlay = document.getElementById('simLinkOverlay');
+        if (overlay) overlay.style.display = 'none';
+      };
+    }
+
+    if (simChatLink) {
+      simChatLink.onclick = (e) => {
+        e.preventDefault();
+        this.simulateLinkScenario('cloaked_sbi');
+      };
+    }
 
     if (btnAutoFix) {
       btnAutoFix.onclick = (e) => {

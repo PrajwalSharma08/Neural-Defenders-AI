@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Link Shield — Cyber Threat Intelligence & Phishing Inspector | SentinelShield AI</title>
   <meta name="description" content="Real-time URL threat intelligence, Open Redirect detection, Shannon entropy DGA bot scanner, and tracking parameter stripper." />
   
@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="./css/style.css" />
 
   <style>
-    /* Custom Layout Styles matching Voice Shield */
+    /* Dedicated Mobile-First Responsive Overrides for Link Shield */
     .link-grid {
       display: grid;
       grid-template-columns: 380px 1fr;
@@ -29,8 +29,11 @@
     @media (max-width: 992px) {
       .link-grid {
         grid-template-columns: 1fr;
+        gap: 1.25rem;
       }
     }
+
+    /* Scanner Search Bar - Desktop & Mobile */
     .scanner-search-bar {
       display: flex;
       align-items: center;
@@ -46,8 +49,16 @@
       border-color: var(--accent-cyan);
       box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
     }
+    .scanner-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+    }
     .scanner-search-bar input {
       flex: 1;
+      min-width: 0;
       background: transparent;
       border: none;
       outline: none;
@@ -55,25 +66,53 @@
       font-size: 0.95rem;
       font-family: var(--font-sans);
     }
-    .scanner-search-bar input::placeholder {
-      color: var(--text-muted);
+    .scanner-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+
+    @media (max-width: 768px) {
+      .scanner-search-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        padding: 0.75rem;
+      }
+      .scanner-btn-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.6fr;
+        gap: 0.4rem;
+        width: 100%;
+      }
+      .scanner-btn-group button {
+        justify-content: center;
+        padding: 0.6rem 0.5rem;
+        font-size: 0.78rem;
+      }
+    }
+
     .quick-tool-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--glass-border);
       color: var(--text-muted);
       border-radius: 6px;
-      padding: 0.4rem 0.6rem;
+      padding: 0.45rem 0.75rem;
       cursor: pointer;
       font-size: 0.8rem;
       display: flex;
       align-items: center;
+      justify-content: center;
       transition: all 0.2s ease;
+      touch-action: manipulation;
+      user-select: none;
     }
-    .quick-tool-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+    .quick-tool-btn:hover, .quick-tool-btn:active {
+      background: rgba(255, 255, 255, 0.12);
       color: var(--text-main);
     }
+
+    /* Demo Quick Scenario Pills */
     .demo-pills-row {
       display: flex;
       flex-wrap: wrap;
@@ -86,16 +125,28 @@
       border: 1px solid var(--glass-border);
       color: var(--text-muted);
       border-radius: 20px;
-      padding: 0.35rem 0.85rem;
+      padding: 0.4rem 0.85rem;
       font-size: 0.78rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     .demo-pill-btn:hover {
       background: rgba(6, 182, 212, 0.15);
       color: var(--accent-cyan);
-      border-color: rgba(6, 182, 212, 0.3);
+      border-color: rgba(6, 182, 212, 0.4);
     }
+    .demo-pill-btn.active-pill {
+      background: rgba(6, 182, 212, 0.25) !important;
+      color: #38bdf8 !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Tabs Navigation */
     .cyber-tabs-nav {
       display: flex;
       gap: 0.5rem;
@@ -103,6 +154,7 @@
       padding-bottom: 0.75rem;
       margin-bottom: 1.25rem;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .cyber-tab-btn {
       background: transparent;
@@ -118,6 +170,7 @@
       align-items: center;
       gap: 0.4rem;
       white-space: nowrap;
+      touch-action: manipulation;
     }
     .cyber-tab-btn:hover {
       color: var(--text-main);
@@ -135,6 +188,7 @@
     .cyber-tab-pane.active {
       display: block;
     }
+
     .url-display-box {
       font-family: var(--font-mono);
       font-size: 0.82rem;
@@ -144,6 +198,66 @@
       border-radius: 8px;
       word-break: break-all;
       color: var(--text-main);
+    }
+
+    /* Mobile Sandbox Responsive Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 992px) {
+      .sandbox-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    .phone-mockup-frame {
+      width: 320px;
+      max-width: 100%;
+      height: 560px;
+      background: #0b0f19;
+      border-radius: 36px;
+      border: 4px solid rgba(255,255,255,0.15);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin: 0 auto;
+    }
+    @media (max-width: 400px) {
+      .phone-mockup-frame {
+        width: 290px;
+        height: 520px;
+        border-radius: 28px;
+        padding: 1rem 0.75rem;
+      }
+    }
+
+    .sim-scenario-btn {
+      width: 100%;
+      padding: 0.85rem 1.15rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      border: 1px solid var(--glass-border);
+      text-align: left;
+    }
+    .sim-scenario-btn:active, .sim-scenario-btn.active-sim {
+      outline: 2px solid #38bdf8 !important;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
+      transform: scale(1.01);
     }
   </style>
 </head>
@@ -217,15 +331,19 @@
         <span class="badge badge-safe">ACTIVE HEURISTICS</span>
       </div>
 
-      <!-- Search Box -->
+      <!-- Search Box (Responsive Grid on Mobile) -->
       <div class="scanner-search-bar">
-        <div style="color: var(--accent-cyan); font-size: 1.1rem;">🔒</div>
-        <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g. https://amazon.com/item?utm_source=fb)..." autocomplete="off" spellcheck="false" />
-        <button class="quick-tool-btn" id="btnPasteInput" onclick="window.CyberLinkShield && window.CyberLinkShield.handlePaste()" title="Paste from clipboard">📋 Paste</button>
-        <button class="quick-tool-btn" id="btnClearInput" onclick="window.CyberLinkShield && window.CyberLinkShield.handleClear()" title="Clear input">✕ Clear</button>
-        <button class="btn-primary" id="btnScanSubmit" onclick="window.CyberLinkShield && window.CyberLinkShield.handleScan()" style="padding: 0.55rem 1.25rem;">
-          <span>⚡ SCAN URL</span>
-        </button>
+        <div class="scanner-input-wrap">
+          <div style="color: var(--accent-cyan); font-size: 1.1rem;">🔒</div>
+          <input type="url" id="urlInput" placeholder="Enter or paste URL to scan (e.g. https://amazon.com)..." autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="scanner-btn-group">
+          <button class="quick-tool-btn" id="btnPasteInput" title="Paste from clipboard">📋 Paste</button>
+          <button class="quick-tool-btn" id="btnClearInput" title="Clear input">✕ Clear</button>
+          <button class="btn-primary" id="btnScanSubmit" style="padding: 0.55rem 1.25rem;">
+            <span>⚡ SCAN URL</span>
+          </button>
+        </div>
       </div>
 
       <!-- Demo Pills with Open-Redirect & Subdomain Spoofing Demos -->
@@ -239,7 +357,7 @@
       </div>
     </div>
 
-    <!-- Main Workstation 2-Column Grid (matching voice-grid) -->
+    <!-- Main Workstation 2-Column Grid -->
     <div class="link-grid">
       
       <!-- Left Column: Radial Security Score & Verdict -->
@@ -254,11 +372,11 @@
           Multi-layer entropy analysis, open-redirect inspection & privacy tracker detection.
         </p>
 
-        <!-- Radial Gauge (Voice-Shield Style) -->
+        <!-- Radial Gauge -->
         <div class="gauge-wrapper">
           <svg class="gauge-svg" viewBox="0 0 200 200">
-            <circle class="gauge-bg-circle" cx="100" cy="100" r="90"></circle>
-            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90" style="stroke-dashoffset: 565.48; stroke: var(--text-muted);"></circle>
+            <circle class="gauge-bg-circle" cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"></circle>
+            <circle id="gaugeProgressCircle" class="gauge-progress-circle" cx="100" cy="100" r="90" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round" stroke-dasharray="565" stroke-dashoffset="565"></circle>
           </svg>
           <div class="gauge-content">
             <div id="gaugePctText" class="gauge-pct">—%</div>
@@ -276,16 +394,16 @@
         <!-- Detected Issues Container -->
         <div id="issuesList" style="margin-bottom: 1.25rem;">
           <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 8px; font-size: 0.82rem; color: var(--text-muted);">
-            <span>🔍</span> <span>Paste or click a demo scenario below to scan.</span>
+            <span>🔍</span> <span>Paste or tap a demo scenario to scan.</span>
           </div>
         </div>
 
         <!-- Action Controls -->
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-          <button id="btnAutoFix" class="btn-primary" onclick="window.CyberLinkShield && window.CyberLinkShield.handleAutoFix()" style="display: none; width: 100%; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
+          <button id="btnAutoFix" class="btn-primary" style="display: none; width: 100%; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
             <span>🪄 One-Click Auto-Fix & Clean URL</span>
           </button>
-          <button id="btnCopyCleanUrl" class="btn-secondary" onclick="window.CyberLinkShield && window.CyberLinkShield.handleCopyClean()" style="width: 100%; justify-content: center;">
+          <button id="btnCopyCleanUrl" class="btn-secondary" style="width: 100%; justify-content: center;">
             <span>📋 Copy Cleaned Privacy Link</span>
           </button>
         </div>
@@ -305,14 +423,14 @@
           </p>
         </div>
 
-        <!-- 6-Card Scientific & Heuristic Intelligence Grid (Using glass-card) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem;">
+        <!-- 6-Card Scientific Grid (2x3 on Mobile) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.85rem;">
           
           <!-- Card 1: Shannon Entropy -->
           <div class="glass-card">
             <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">SHANNON ENTROPY H(X)</span>
             <div id="cardEntropyVal" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin-top: 0.25rem;">—</div>
-            <div id="cardEntropySub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">Threshold: &lt; 3.5 bits/char</div>
+            <div id="cardEntropySub" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem;">Threshold: &lt; 3.5 bits</div>
           </div>
 
           <!-- Card 2: Tracking Parameters -->
@@ -356,24 +474,24 @@
 
     </div>
 
-    <!-- Bottom Tabbed Interactive Inspector Suite -->
+    <!-- Bottom Tabbed Interactive Suite -->
     <div class="glass-panel" style="padding: 1.75rem; margin-bottom: 2rem;">
       
       <!-- Tabs Navigation Bar -->
       <div class="cyber-tabs-nav">
-        <button class="cyber-tab-btn active" data-tab="breakdown" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('breakdown')">
+        <button class="cyber-tab-btn active" data-tab="breakdown">
           <span>🔍</span> URL Breakdown
         </button>
-        <button class="cyber-tab-btn" data-tab="cleaner" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('cleaner')">
+        <button class="cyber-tab-btn" data-tab="cleaner">
           <span>🧹</span> Privacy URL Cleaner
         </button>
-        <button class="cyber-tab-btn" data-tab="unshortener" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('unshortener')">
+        <button class="cyber-tab-btn" data-tab="unshortener">
           <span>🔗</span> Open-Redirect & Unshortener
         </button>
-        <button class="cyber-tab-btn" data-tab="rules" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('rules')">
+        <button class="cyber-tab-btn" data-tab="rules">
           <span>🛡️</span> Security Rule Checks
         </button>
-        <button class="cyber-tab-btn" data-tab="history" onclick="window.CyberLinkShield && window.CyberLinkShield.switchTab('history')">
+        <button class="cyber-tab-btn" data-tab="history">
           <span>📜</span> Audit History
         </button>
       </div>
@@ -446,71 +564,68 @@
 
     </div>
 
-  </div>
-
-  
     <!-- ====================================================================
          Mobile Option 2: Live In-App Phishing & Malicious Link Interceptor Sandbox Simulator
          ==================================================================== -->
-    <div class="glass-panel" style="padding: 2rem; margin-top: 1.75rem; border: 1px solid rgba(6, 182, 212, 0.35);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+    <div id="mobileSandboxSection" class="glass-panel" style="padding: 1.75rem; margin-top: 1.5rem; border: 1px solid rgba(6, 182, 212, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
         <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); font-weight: 800;">MOBILE ZERO-TRUST DEMO</span>
         <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);">🔒 IN-APP THREAT INTERCEPTOR • SUB-10ms SANDBOX</span>
       </div>
-      <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
         📱 Live Mobile Phishing & URL Interceptor Sandbox
       </h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+      <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
         Demonstrates how the SentinelShield Mobile Engine intercepts malicious links tapped inside WhatsApp, SMS, or Email apps before the browser opens. Analyzes Shannon entropy, unmasks cloaked redirects, and strips surveillance trackers in sub-10ms.
       </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;">
+      <div class="sandbox-grid">
         
         <!-- Left: Interactive Scenario Selector Controls -->
         <div>
           <h4 style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.75rem;">
-            Select a Mobile Threat Scenario to Simulate:
+            Tap a Scenario to Simulate Live on Device:
           </h4>
           
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
             <!-- Scenario 1: Cloaked Open-Redirect Bank Scam -->
-            <button class="btn-primary" style="padding: 0.9rem 1.25rem; justify-content: space-between; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('cloaked_sbi')">
-              <div style="text-align: left;">
-                <div style="font-weight: 800; font-size: 0.88rem;">🚨 1. Cloaked Open-Redirect (Fake SBI KYC)</div>
-                <div style="font-size: 0.72rem; opacity: 0.85; font-family: var(--font-mono); margin-top: 0.2rem;">google.com/url?q=http://sbi-fake-login.xyz</div>
+            <button class="sim-scenario-btn" data-scenario="cloaked_sbi" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #fff;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.85rem;">🚨 1. Cloaked Open-Redirect (Fake SBI KYC)</div>
+                <div style="font-size: 0.7rem; opacity: 0.85; font-family: var(--font-mono); margin-top: 0.2rem;">google.com/url?q=http://sbi-fake-login.xyz</div>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(0,0,0,0.35); padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap;">[Simulate]</span>
             </button>
 
             <!-- Scenario 2: High Entropy DGA Shortened Lottery Link -->
-            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(245, 158, 11, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('lottery_dga')">
-              <div style="text-align: left;">
-                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-amber);">⚠️ 2. Shortened High-Entropy DGA Phish</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">bit.ly/3xXyZ99 → x89qzl293km19az.xyz (H=4.12)</div>
+            <button class="sim-scenario-btn" data-scenario="lottery_dga" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.4); color: #fef08a;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.85rem; color: var(--accent-amber);">⚠️ 2. Shortened High-Entropy DGA Phish</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">bit.ly/3xXyZ99 → x89qzl293km19az.xyz (H=4.12)</div>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap;">[Simulate]</span>
             </button>
 
             <!-- Scenario 3: Surveillance Tracking Link -->
-            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(99, 102, 241, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('tracking_strip')">
-              <div style="text-align: left;">
-                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-cyan);">🛒 3. E-Commerce Tracking Pixel URL</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">amazon.com/dp/item?utm_source=fb&fbclid=IwAR99</div>
+            <button class="sim-scenario-btn" data-scenario="tracking_strip" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.85rem; color: var(--accent-cyan);">🛒 3. E-Commerce Tracking Pixel URL</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">amazon.com/dp/item?utm_source=fb&fbclid=IwAR99</div>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap;">[Simulate]</span>
             </button>
 
             <!-- Scenario 4: Official Bank / Govt Domain -->
-            <button class="btn-secondary" style="padding: 0.9rem 1.25rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('safe_gov')">
-              <div style="text-align: left;">
-                <div style="font-weight: 800; font-size: 0.88rem; color: var(--accent-emerald);">✅ 4. Verified Government / Bank Portal</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">https://sbi.co.in/portal/services (Safe FQDN)</div>
+            <button class="sim-scenario-btn" data-scenario="safe_gov" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.85rem; color: var(--accent-emerald);">✅ 4. Verified Government / Bank Portal</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">https://sbi.co.in/portal/services (Safe FQDN)</div>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.6rem; border-radius: 6px;">[Simulate]</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap;">[Simulate]</span>
             </button>
 
             <!-- Reset Button -->
-            <button class="btn-secondary" style="padding: 0.65rem 1rem; justify-content: center; margin-top: 0.5rem;" onclick="window.CyberLinkShield && window.CyberLinkShield.resetLinkSimulation()">
+            <button id="btnResetSandboxSim" class="btn-secondary" style="padding: 0.65rem 1rem; justify-content: center; margin-top: 0.35rem;">
               <span>⏹ Reset Sandbox Simulation</span>
             </button>
           </div>
@@ -529,14 +644,14 @@
         </div>
 
         <!-- Right: Simulated Smartphone Device Frame with In-App Threat Interceptor Overlay -->
-        <div style="display: flex; justify-content: center;">
-          <div style="width: 320px; height: 560px; background: #0b0f19; border-radius: 36px; border: 4px solid rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden; padding: 1.25rem 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <div class="phone-mockup-frame">
             
             <!-- Phone Notch & Speaker -->
             <div style="width: 90px; height: 16px; background: #1e293b; border-radius: 10px; margin: 0 auto;"></div>
 
             <!-- In-App Floating Threat Interceptor Sandbox Modal -->
-            <div id="simLinkOverlay" style="display: none; position: absolute; top: 36px; left: 8px; right: 8px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 16px; border: 2px solid #ef4444; padding: 0.85rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; animation: pulseDanger 1.5s infinite;">
+            <div id="simLinkOverlay" style="display: none; position: absolute; top: 32px; left: 8px; right: 8px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 16px; border: 2px solid #ef4444; padding: 0.85rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; animation: pulseDanger 1.5s infinite;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
                 <div style="display: flex; align-items: center; gap: 0.35rem;">
                   <span style="font-size: 1.15rem;">🛡️</span>
@@ -554,49 +669,49 @@
               </div>
 
               <div style="display: flex; gap: 0.4rem;">
-                <button id="simBtnCleanLink" class="btn-primary" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);" onclick="window.CyberLinkShield && window.CyberLinkShield.handleAutoFix()">
+                <button id="simBtnCleanLink" class="btn-primary" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #6366f1);">
                   🪄 Open Clean Link
                 </button>
-                <button class="btn-secondary" style="padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center;" onclick="window.CyberLinkShield && window.CyberLinkShield.resetLinkSimulation()">
+                <button id="simBtnCloseOverlay" class="btn-secondary" style="padding: 0.45rem 0.6rem; font-size: 0.68rem; justify-content: center;">
                   ✕ Close
                 </button>
               </div>
             </div>
 
             <!-- Simulated Chat App Screen Body -->
-            <div style="margin-top: 1rem; flex: 1; display: flex; flex-direction: column;">
+            <div style="margin-top: 0.85rem; flex: 1; display: flex; flex-direction: column;">
               <!-- Chat Header -->
               <div style="display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--glass-border);">
-                <div style="width: 36px; height: 36px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff;">
+                <div style="width: 34px; height: 34px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; color: #fff;">
                   💬
                 </div>
                 <div>
-                  <div id="simChatSender" style="font-size: 0.85rem; font-weight: 800; color: #fff;">Bank Alerts / SMS</div>
-                  <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">Incoming Message</div>
+                  <div id="simChatSender" style="font-size: 0.82rem; font-weight: 800; color: #fff;">Bank Alerts / SMS</div>
+                  <div style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-muted);">Incoming Message</div>
                 </div>
               </div>
 
               <!-- Message Bubble -->
-              <div style="margin-top: 1rem; background: #1e293b; border-radius: 12px; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.08);">
-                <div id="simChatMessageText" style="font-size: 0.78rem; color: #f1f5f9; line-height: 1.45;">
+              <div style="margin-top: 0.85rem; background: #1e293b; border-radius: 12px; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.08);">
+                <div id="simChatMessageText" style="font-size: 0.75rem; color: #f1f5f9; line-height: 1.45;">
                   ⚠️ Dear customer, your SBI YONO account will be blocked today! Update your KYC immediately:
                 </div>
-                <div id="simChatLinkBox" style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); background: rgba(0,0,0,0.3); padding: 0.45rem 0.6rem; border-radius: 6px; word-break: break-all; cursor: pointer; text-decoration: underline;" onclick="window.CyberLinkShield && window.CyberLinkShield.simulateLinkScenario('cloaked_sbi')">
+                <div id="simChatLinkBox" style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-cyan); background: rgba(0,0,0,0.3); padding: 0.45rem 0.6rem; border-radius: 6px; word-break: break-all; cursor: pointer; text-decoration: underline;">
                   https://google.com/url?q=http://sbi-fake-login.xyz
                 </div>
-                <div style="font-size: 0.6rem; color: var(--text-muted); text-align: right; margin-top: 0.35rem;">
+                <div style="font-size: 0.58rem; color: var(--text-muted); text-align: right; margin-top: 0.35rem;">
                   12:34 PM • Tap link to test Interceptor
                 </div>
               </div>
 
               <!-- Sandbox Status Note -->
-              <div id="simSandboxStatus" style="margin-top: auto; padding: 0.6rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-align: center;">
+              <div id="simSandboxStatus" style="margin-top: auto; padding: 0.55rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-align: center;">
                 🛡️ SentinelShield Zero-Trust Link Sandbox Active
               </div>
             </div>
 
             <!-- Phone Bottom Home Bar -->
-            <div style="width: 110px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto;"></div>
+            <div style="width: 100px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto;"></div>
 
           </div>
         </div>
@@ -606,7 +721,7 @@
 
   </div>
 
-  <!-- Forensic PDF Modal (Section 65B Admissibility) -->
+  <!-- Forensic PDF Modal -->
   <div id="pdfModalBackdrop" class="modal-backdrop">
     <div class="glass-panel modal-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -626,14 +741,14 @@
 
       <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
         <button id="btnCancelPdfModal" class="btn-secondary">Cancel</button>
-        <button id="btnGeneratePdf" class="btn-primary" onclick="window.SentinelForensics.generatePDF()">
+        <button id="btnGeneratePdf" class="btn-primary">
           <span>Download Section 65B PDF</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Modules & Controller (Standard Script tag for 100% browser compatibility) -->
+  <!-- JavaScript Modules & Controller -->
   <script src="./js/app.js"></script>
   <script src="./js/forensic-pdf.js"></script>
   <script src="./js/link-shield-controller.js"></script>
