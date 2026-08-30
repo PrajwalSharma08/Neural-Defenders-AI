@@ -48,5 +48,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add frontend/SentinelShield-AI-v1.0.apk frontend/SentinelShield-AI.apk
-          git commit -m "chore(release): deploy real compiled signed Android APK binary [skip ci]" || echo "No changes"
+          git commit -m "chore(release): deploy real compiled signed Android APK binary " || echo "No changes"
           git push origin main || echo "Push skipped"
