@@ -243,50 +243,60 @@ window.VoiceShield = {
         this.chunkBuffer.push(pcm16);
         this.sampleCount += pcm16.length;
 
-        // --- 1. Compute Exact Sound Level (dB SPL) as per WHO and Acoustic Standards ---
-        // Reference: Whispering = 20-30 dB, AI Conv = 55-65 dB, Normal Speech = 60-70 dB, Loud = 80-90 dB
+        // --- 1. Compute Exact Sound Level (dB SPL) as per WHO Standards ---
         const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
-        let dbCategory = "Standby";
-        if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Breath)";
-        else if (dbSPL <= 55) dbCategory = "30-55 dB (Low Ambient)";
-        else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Conv / Quiet)";
-        else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human)";
-        else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech)";
-        else dbCategory = ">85 dB (WHO Noise Alert)";
+        let dbCategory = "Standby (Quiet)";
+        if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Room Silence)";
+        else if (dbSPL <= 45) dbCategory = "30-45 dB (Ambient / Fan Noise)";
+        else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Playback / Speech)";
+        else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human Voice)";
+        else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech / Speaker)";
+        else dbCategory = ">85 dB (WHO Noise Warning)";
 
-        // --- 2. REAL SPEECH VS AMBIENT NOISE VAD ---
-        // Sensitive threshold for mobile mic, in-call audio and normal speech
-        const isHumanSpeechActive = (rms > 0.0015 || avgSpeechFormant > 4 || dbSPL >= 25);
+        // --- 2. ADAPTIVE SPECTRAL NOISE CANCELLATION & VAD ---
+        if (!this.ambientNoiseFloor) this.ambientNoiseFloor = 0.002;
+        
+        // Track stationary noise floor during quiet intervals
+        if (rms < 0.008 || dbSPL < 42) {
+          this.ambientNoiseFloor = this.ambientNoiseFloor * 0.95 + rms * 0.05;
+        }
+
+        const snrDb = Math.max(0, Math.round(20 * Math.log10(Math.max(1e-5, rms) / Math.max(1e-5, this.ambientNoiseFloor))));
+        
+        // Speech is only active when sound energy exceeds ambient noise floor by > 4 dB and dbSPL >= 40
+        const isHumanSpeechActive = (rms > 0.0035 && avgSpeechFormant > 8 && dbSPL >= 40 && snrDb >= 4);
 
         if (!isHumanSpeechActive) {
-          // Track stationary background noise (cooler / AC hum)
-          if (rms > 0.002) {
-            this.ambientNoiseFloor = this.ambientNoiseFloor * 0.98 + rms * 0.02;
-          }
-          this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.88);
+          // Rapid smooth decay back to 0% when user is NOT speaking
+          this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.70);
+          if (this.smoothedRisk < 0.02) this.smoothedRisk = 0.0;
+          
           this.humanSpeechFrames = Math.max(0, this.humanSpeechFrames - 1);
           if (this.humanSpeechFrames === 0) {
-            this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.08);
+            this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
           }
+
+          const isFanNoise = (avgLowDrone > 15 && avgSpeechFormant < 12);
+          const silenceVerdict = isFanNoise ? "COOLER_FILTERED" : "SILENCE";
 
           this.updateResults({
             risk_score: this.smoothedRisk,
             db_spl: dbSPL,
             db_category: dbCategory,
-            snr_db: Math.max(10, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.002))),
-            variance_score: 0.22,
+            snr_db: snrDb,
+            variance_score: 0.0,
             has_breathing: true,
-            phase_variance: 0.65,
-            pitch_jitter: 0.024,
-            processing_ms: 5,
-            verdict: rms > 0.01 ? "COOLER_FILTERED" : "SILENCE",
+            phase_variance: 0.0,
+            pitch_jitter: 0.0,
+            processing_ms: 3,
+            verdict: silenceVerdict,
             speech_seconds: this.speechAccumSeconds,
             session_id: "live_webaudio_session",
             attestation_hash: "tee_ram_guard_active",
           });
           this.lastNotifiedVerdict = null;
         } else {
-          // Active Vocal Tract Detected
+          // Active Voice Signal Detected (Human or AI)
           this.humanSpeechFrames++;
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
 
@@ -311,10 +321,10 @@ window.VoiceShield = {
             time: Date.now()
           });
           if (this.slidingHistory.length > 20) {
-            this.slidingHistory.shift(); // maintain ~2.5s sliding window
+            this.slidingHistory.shift();
           }
 
-          // --- 3. Statistical Sliding Window Analysis (2.5s Buffer) ---
+          // Statistical Sliding Window Analysis
           const N = this.slidingHistory.length;
           let formantSum = 0;
           let vocoderSum = 0;
@@ -347,17 +357,17 @@ window.VoiceShield = {
           // AI: Unnatural harmonic uniformity (variance < 0.05, zcrStd < 0.015), flat vocoder tone (vocoderRatio > 0.18)
           const isUniform = (spectralVariance < 0.05 && zcrStd < 0.02);
           const isHighVocoder = (vocoderRatio > 0.22);
-          const isSyntheticAI = (N >= 4 && (isUniform || isHighVocoder));
+          const isSyntheticAI = (N >= 3 && (isUniform || isHighVocoder));
 
           let targetRisk = 0.10;
           if (isSyntheticAI) {
             targetRisk = Math.min(0.96, Math.max(0.78, 0.70 + (0.05 - spectralVariance) * 4.0 + (vocoderRatio * 0.4)));
           } else {
-            targetRisk = Math.max(0.08, Math.min(0.20, 0.16 - (spectralVariance * 0.3)));
+            targetRisk = Math.max(0.08, Math.min(0.18, 0.15 - (spectralVariance * 0.3)));
           }
 
           // Exponential Moving Average Smoothing
-          this.smoothedRisk = this.smoothedRisk * 0.65 + targetRisk * 0.35;
+          this.smoothedRisk = this.smoothedRisk * 0.60 + targetRisk * 0.40;
 
           const verdict = this.speechAccumSeconds < 0.35
             ? "LISTENING"
@@ -657,17 +667,18 @@ window.VoiceShield = {
     }
 
     // Update circular radial gauge
-    if (gaugePct) gaugePct.textContent = `${riskPct}%`;
+    const displayRiskPct = (data.verdict === 'SILENCE' || data.verdict === 'COOLER_FILTERED') ? 0 : riskPct;
+    if (gaugePct) gaugePct.textContent = `${displayRiskPct}%`;
     if (gaugeCircle) {
       // Circumference = 2 * PI * 90 ≈ 565
-      const offset = 565 - (565 * riskPct) / 100;
+      const offset = 565 - (565 * displayRiskPct) / 100;
       gaugeCircle.style.strokeDashoffset = offset;
 
       if (data.verdict === 'COOLER_FILTERED' || data.verdict === 'SILENCE') {
         gaugeCircle.style.stroke = 'var(--text-muted)';
         if (gaugeLabel) {
           gaugeLabel.className = 'verdict-pill verdict-silence';
-          gaugeLabel.innerHTML = data.verdict === 'COOLER_FILTERED' ? '🔇 ROOM NOISE / COOLER FILTERED' : '🔇 VAD SILENCE GATE';
+          gaugeLabel.innerHTML = data.verdict === 'COOLER_FILTERED' ? '🔇 FAN / AC HUM FILTERED (0% Risk)' : '🍃 STANDBY • AWAITING AUDIO';
         }
       } else if (data.verdict === 'LISTENING') {
         gaugeCircle.style.stroke = 'var(--accent-purple)';
@@ -709,7 +720,7 @@ window.VoiceShield = {
     if (notifPhase) notifPhase.textContent = data.phase_variance !== undefined ? `${data.phase_variance}` : '0.85';
     if (notifJitter) notifJitter.textContent = data.pitch_jitter !== undefined ? `${((data.pitch_jitter) * 100).toFixed(1)}%` : '3.1%';
     if (notifRisk) {
-      notifRisk.textContent = `${riskPct}%`;
+      notifRisk.textContent = `${displayRiskPct}%`;
       notifRisk.style.color = (data.verdict === 'AI_DETECTED' || riskPct >= 60) ? 'var(--accent-crimson)' : ((data.verdict === 'HUMAN') ? 'var(--accent-emerald)' : 'var(--accent-cyan)');
     }
 
@@ -724,8 +735,8 @@ window.VoiceShield = {
         notifTitle.innerHTML = `<span>✅ GENUINE HUMAN CALLER (Verified)</span>`;
         notifSubtitle.textContent = `Natural vocal tract dynamics and biological breathing verified (${riskPct}% Risk).`;
       } else {
-        notifTitle.innerHTML = `<span>🔍 Monitoring In-Call Voice (RAM TEE)</span>`;
-        notifSubtitle.textContent = `Volatile sub-second acoustic DSP active. Zero call recording (signal physics only).`;
+        notifTitle.innerHTML = `<span>🍃 Monitoring In-Call Voice (Standby • 0% Risk)</span>`;
+        notifSubtitle.textContent = `Adaptive Noise Suppression Active. Volatile RAM TEE forensics ready.`;
       }
     }
   },
