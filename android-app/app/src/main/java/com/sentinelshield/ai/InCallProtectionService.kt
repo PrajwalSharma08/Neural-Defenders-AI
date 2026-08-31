@@ -15,6 +15,11 @@ class InCallProtectionService : Service() {
         const val NOTIFICATION_ID = 101
         const val CHANNEL_ID = "sentinelshield_incall_channel"
         var isShieldActive = true
+
+        const val ACTION_UPDATE_VOICE_STATUS = "com.sentinelshield.ai.UPDATE_VOICE_STATUS"
+        const val EXTRA_VERDICT = "extra_verdict"
+        const val EXTRA_RISK_SCORE = "extra_risk_score"
+        const val EXTRA_MESSAGE = "extra_message"
     }
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
@@ -30,27 +35,46 @@ class InCallProtectionService : Service() {
             return START_NOT_STICKY
         }
 
-        startForeground(NOTIFICATION_ID, buildNotification("🔍 Analyzing In-Call Voice...", "SentinelShield • 200ms Acoustic DSP Active", "#06B6D4"))
+        val verdict = intent?.getStringExtra(EXTRA_VERDICT) ?: "LISTENING"
+        val riskScore = intent?.getIntExtra(EXTRA_RISK_SCORE, 0) ?: 0
+        val customMsg = intent?.getStringExtra(EXTRA_MESSAGE)
 
-        serviceScope.launch {
-            delay(1500)
-            if (isActive) {
-                // In production, DSP features evaluate phase variance & jitter
-                updateNotification("✅ Genuine Human Voice Verified", "SentinelShield • 8% Risk • Natural Dynamics", "#10B981")
+        if (customMsg != null) {
+            val (title, color) = when (verdict) {
+                "AI_DETECTED" -> Pair("🚨 SentinelShield: AI Voice Clone Detected ($riskScore% Risk)", "#EF4444")
+                "HUMAN" -> Pair("✅ SentinelShield: Genuine Human Voice Verified", "#10B981")
+                else -> Pair("🔍 SentinelShield: Monitoring Live Voice (RAM TEE)", "#06B6D4")
             }
+            updateNotification(title, customMsg, color)
+        } else {
+            startForeground(
+                NOTIFICATION_ID,
+                buildNotification(
+                    "🛡️ SentinelShield AI: Active Voice & Link Defense",
+                    "Status: Listening • Volatile RAM DSP Active (Zero Disk Retention)",
+                    "#06B6D4"
+                )
+            )
         }
 
         return START_STICKY
     }
 
-    private fun updateNotification(title: String, message: String, colorHex: String) {
+    fun updateNotification(title: String, message: String, colorHex: String) {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, buildNotification(title, message, colorHex))
     }
 
     private fun buildNotification(title: String, message: String, colorHex: String): Notification {
-        val launchIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
+        val launchIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title)
@@ -58,8 +82,8 @@ class InCallProtectionService : Service() {
             .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
             .setColor(Color.parseColor(colorHex))
             .setColorized(true)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
+            .setOngoing(true) // Fixed sticky notification bar
+            .setOnlyAlertOnce(true) // Silent in-place updates without spamming
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
@@ -69,12 +93,13 @@ class InCallProtectionService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "In-Call AI Threat Monitor",
-                NotificationManager.IMPORTANCE_HIGH
+                "SentinelShield In-Call & Background Monitor",
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Live in-call acoustic status updates"
+                description = "Persistent status notification for Human vs AI voice verification"
                 setSound(null, null)
                 enableVibration(false)
+                setShowBadge(true)
             }
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)

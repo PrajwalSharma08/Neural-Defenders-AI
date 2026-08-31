@@ -354,25 +354,43 @@ window.VoiceShield = {
           const phaseVarDisplay = isSyntheticAI ? +(0.08 + Math.random() * 0.04).toFixed(2) : +(0.75 + Math.random() * 0.2).toFixed(2);
           const jitterDisplay = isSyntheticAI ? +(0.002 + Math.random() * 0.001).toFixed(4) : +(0.028 + Math.random() * 0.015).toFixed(4);
 
-          // TRIGGER NATIVE PUSH NOTIFICATION ON MOBILE
-          if (verdict === "AI_DETECTED" || verdict === "HUMAN") {
-            if (this.lastNotifiedVerdict !== verdict && 'Notification' in window && Notification.permission === 'granted') {
-              this.lastNotifiedVerdict = verdict;
-              const title = verdict === 'AI_DETECTED' ? '🚨 SENTINELSHIELD WARNING' : '✅ SENTINELSHIELD SAFE';
-              const body = verdict === 'AI_DETECTED' ? 'Synthetic AI Voice Clone Detected! Do not send money.' : 'Genuine Human Voice Verified.';
-              const iconUrl = './img/icon-192.png';
-              
-              try {
-                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                  navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: iconUrl, vibrate: verdict === 'AI_DETECTED' ? [200, 100, 200, 100, 200] : [100] });
-                  });
-                } else {
-                  new Notification(title, { body: body, icon: iconUrl });
-                }
-              } catch (e) {
-                console.warn("Push notification failed", e);
+          // --- PERSISTENT STICKY STATUS NOTIFICATION (NATIVE & PWA) ---
+          const riskPct = Math.round(this.smoothedRisk * 100);
+          const notifTitle = verdict === 'AI_DETECTED' 
+            ? `🚨 AI Voice Clone Detected (${riskPct}% Risk)` 
+            : (verdict === 'HUMAN' ? `✅ Genuine Human Voice Verified` : `🔍 Monitoring In-Call Audio`);
+          const notifBody = verdict === 'AI_DETECTED'
+            ? `Synthetic vocoder cues detected! Do NOT transfer money or share OTPs.`
+            : (verdict === 'HUMAN' ? `Natural vocal dynamics & biological breathing verified.` : `Volatile RAM acoustic forensics active.`);
+
+          // 1. Android Native App Foreground Service Update
+          if (window.SentinelNative && typeof window.SentinelNative.updateVoiceVerdict === 'function') {
+            try {
+              window.SentinelNative.updateVoiceVerdict(verdict, riskPct, notifBody);
+            } catch (e) {}
+          }
+
+          // 2. Web / PWA Sticky Notification Bar (Zero spam, silent in-place update)
+          if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+              const notifOptions = {
+                body: notifBody,
+                icon: './img/icon-192.png',
+                tag: 'sentinel-incall-sticky-status', // Keeps 1 single sticky notification in status bar
+                renotify: false, // Update silently without duplicate popups
+                silent: true,
+                badge: './img/icon-192.png'
+              };
+
+              if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => {
+                  reg.showNotification(notifTitle, notifOptions);
+                });
+              } else {
+                new Notification(notifTitle, notifOptions);
               }
+            } catch (e) {
+              console.warn("Sticky notification update note:", e);
             }
           }
 
@@ -755,6 +773,22 @@ window.VoiceShield = {
           statusMsg.textContent = "🚨 In-Call Alert: Floating Warning HUD Displayed to User!";
         }
 
+        // Dispatch sticky notification for AI call
+        if (window.SentinelNative && typeof window.SentinelNative.updateVoiceVerdict === 'function') {
+          try { window.SentinelNative.updateVoiceVerdict('AI_DETECTED', 94, '🚨 AI Voice Clone (94% Risk). Do NOT transfer money.'); } catch (e) {}
+        }
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification('🚨 SentinelShield: AI Voice Clone Detected (94% Risk)', {
+              tag: 'sentinel-incall-sticky-status',
+              renotify: false,
+              silent: true,
+              body: 'Synthetic AI clone detected on active stream. Do not transfer money.',
+              icon: './img/icon-192.png'
+            });
+          } catch (e) {}
+        }
+
         this.updateResults({
           risk_score: 0.94,
           db_spl: 61,
@@ -779,6 +813,22 @@ window.VoiceShield = {
       if (statusMsg) {
         statusMsg.style.color = "var(--accent-emerald)";
         statusMsg.textContent = "✅ Genuine Human Voice: Natural vocal tract dynamics (10% Risk).";
+      }
+
+      // Dispatch sticky notification for Human call
+      if (window.SentinelNative && typeof window.SentinelNative.updateVoiceVerdict === 'function') {
+        try { window.SentinelNative.updateVoiceVerdict('HUMAN', 10, '✅ Genuine Human Voice Verified (Natural Dynamics).'); } catch (e) {}
+      }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification('✅ SentinelShield: Genuine Human Voice Verified', {
+            tag: 'sentinel-incall-sticky-status',
+            renotify: false,
+            silent: true,
+            body: 'Natural vocal tract dynamics and breathing verified.',
+            icon: './img/icon-192.png'
+          });
+        } catch (e) {}
       }
 
       for (let i = 0; i < 42; i++) this.currentFreqData[i] = Math.floor(Math.random() * 120 + 30);

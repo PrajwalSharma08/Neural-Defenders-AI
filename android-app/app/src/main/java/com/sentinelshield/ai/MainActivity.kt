@@ -38,16 +38,43 @@ class MainActivity : AppCompatActivity() {
         checkAndRequestPermissions()
         setupWebView()
 
+        // Automatically start the in-call sticky background service
+        startInCallService()
+
         shieldSwitch.setOnCheckedChangeListener { _, isChecked ->
             InCallProtectionService.isShieldActive = isChecked
             if (isChecked) {
                 statusText.text = "LIVE CALL & LINK DEFENSE ACTIVE"
                 statusText.setTextColor(Color.parseColor("#10B981"))
                 Toast.makeText(this, "SentinelShield In-Call Defense Activated", Toast.LENGTH_SHORT).show()
+                startInCallService()
             } else {
                 statusText.text = "SHIELD PROTECTION PAUSED"
                 statusText.setTextColor(Color.parseColor("#EF4444"))
+                stopInCallService()
             }
+        }
+    }
+
+    private fun startInCallService() {
+        try {
+            val serviceIntent = Intent(this, InCallProtectionService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent)
+            } else {
+                startService(serviceIntent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun stopInCallService() {
+        try {
+            val serviceIntent = Intent(this, InCallProtectionService::class.java)
+            stopService(serviceIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -71,10 +98,25 @@ class MainActivity : AppCompatActivity() {
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
 
-        // WebChromeClient enables:
-        // 1. HTML5 Microphone (getUserMedia) for Voice Shield
-        // 2. HTML5 Camera (getUserMedia) for Link Shield QR Scanning
-        // 3. File Chooser for Audio & QR Image upload
+        // Bridge to receive live Voice DSP verdicts from JS and update the fixed Android notification bar
+        webView.addJavascriptInterface(object {
+            @JavascriptInterface
+            fun updateVoiceVerdict(verdict: String, riskScore: Int, message: String) {
+                runOnUiThread {
+                    val serviceIntent = Intent(this@MainActivity, InCallProtectionService::class.java).apply {
+                        putExtra(InCallProtectionService.EXTRA_VERDICT, verdict)
+                        putExtra(InCallProtectionService.EXTRA_RISK_SCORE, riskScore)
+                        putExtra(InCallProtectionService.EXTRA_MESSAGE, message)
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent)
+                    } else {
+                        startService(serviceIntent)
+                    }
+                }
+            }
+        }, "SentinelNative")
+
         webView.webChromeClient = object : WebChromeClient() {
             
             override fun onPermissionRequest(request: PermissionRequest?) {
