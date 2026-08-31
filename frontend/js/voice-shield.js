@@ -106,8 +106,9 @@ window.VoiceShield = {
     }
     if (micStatusText) micStatusText.textContent = "LISTENING (16kHz PCM WebAudio)...";
 
+    this.liveAcousticMode = 'auto';
     this.speechAccumSeconds = 0;
-    this.ambientNoiseFloor = 0.01; // Initialize to prevent NaN in VAD
+    this.ambientNoiseFloor = 0.01;
 
     // 1. Try WebSocket if on localhost
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -162,21 +163,18 @@ window.VoiceShield = {
       }
     }
 
-    // 2. Setup WebAudio Microphone Stream with AnalyserNode and Hardware Noise Suppression
+    // 2. Setup Robust Universal WebAudio Microphone Stream (Android & Desktop Compatible)
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: {
-          channelCount: 1,
-          sampleRate: this.TARGET_SAMPLE_RATE,
           echoCancellation: true,
-          noiseSuppression: true,
+          noiseSuppression: false,
           autoGainControl: true,
         },
       });
 
-      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: this.TARGET_SAMPLE_RATE,
-      });
+      // Allow native hardware sample rate for zero-error mobile compatibility
+      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
       if (this.audioCtx.state === 'suspended') {
         try {
@@ -188,78 +186,97 @@ window.VoiceShield = {
 
       const source = this.audioCtx.createMediaStreamSource(this.stream);
       
-      // True FFT Analyser Node for Frequency Domain Analysis
+      // True FFT Analyser Node for Real-Time Frequency Domain Analysis
       this.analyser = this.audioCtx.createAnalyser();
       this.analyser.fftSize = 512;
-      this.analyser.smoothingTimeConstant = 0.8;
+      this.analyser.smoothingTimeConstant = 0.6;
       source.connect(this.analyser);
 
-      this.processor = this.audioCtx.createScriptProcessor(4096, 1, 1);
+      this.processor = this.audioCtx.createScriptProcessor(2048, 1, 1);
       this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+      this.timeDataArray = new Uint8Array(this.analyser.fftSize);
 
       this.chunkBuffer = [];
       this.sampleCount = 0;
-      this.smoothedRisk = 0.0;
+      this.smoothedRisk = 0.10;
       this.speechAccumSeconds = 0.0;
       this.humanSpeechFrames = 0;
 
-      this.processor.onaudioprocess = (e) => {
+      // Audio DSP Handler Function (Invoked by both ScriptProcessor and Analyser Poller)
+      const processDspFrame = (inputData) => {
         if (!this.isStreaming) return;
-        const inputData = e.inputBuffer.getChannelData(0);
 
-        // Capture real FFT frequency bins
+        // Capture real FFT frequency and time-domain data
         this.analyser.getByteFrequencyData(this.freqDataArray);
+        this.analyser.getByteTimeDomainData(this.timeDataArray);
 
-        // Feed visualizer 42 bands
+        // Feed visualizer 42 frequency bands
         for (let i = 0; i < 42; i++) {
-          const idx = Math.min(this.freqDataArray.length - 1, i * 4);
+          const idx = Math.min(this.freqDataArray.length - 1, i * 3);
           this.currentFreqData[i] = this.freqDataArray[idx] || 0;
         }
 
         // --- PRECISE ACOUSTIC FORMANT DISCRIMINATION ---
-        // Bin size @ 16000Hz, fftSize 512 = 31.25 Hz per bin
-        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
+        const sampleRate = this.audioCtx ? this.audioCtx.sampleRate : 44100;
+        const binHz = sampleRate / this.analyser.fftSize;
+
+        // 1. Low Drone band (0 - 250 Hz)
+        const lowMaxBin = Math.max(2, Math.floor(250 / binHz));
         let lowDroneSum = 0;
-        for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
-        const avgLowDrone = lowDroneSum / 9;
+        for (let b = 0; b <= lowMaxBin; b++) lowDroneSum += this.freqDataArray[b] || 0;
+        const avgLowDrone = lowDroneSum / (lowMaxBin + 1);
 
-        // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
+        // 2. Human Voice Formants F1/F2 (300 - 3400 Hz)
+        const f1Bin = Math.floor(300 / binHz);
+        const f2Bin = Math.min(this.freqDataArray.length - 1, Math.floor(3400 / binHz));
         let speechFormantSum = 0;
-        for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
-        const avgSpeechFormant = speechFormantSum / 92;
-
-        // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
-        let highVocoderSum = 0;
-        for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
-        const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
-
-        // Compute RMS
-        let sumSquares = 0;
-        const pcm16 = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          const s = Math.max(-1, Math.min(1, inputData[i]));
-          sumSquares += s * s;
-          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        let formantCount = 0;
+        for (let b = f1Bin; b <= f2Bin; b++) {
+          speechFormantSum += this.freqDataArray[b] || 0;
+          formantCount++;
         }
-        const rms = Math.sqrt(sumSquares / inputData.length);
+        const avgSpeechFormant = speechFormantSum / Math.max(1, formantCount);
 
-        this.chunkBuffer.push(pcm16);
-        this.sampleCount += pcm16.length;
+        // 3. High Vocoder Band (4500 - 16000 Hz)
+        const highBin = Math.min(this.freqDataArray.length - 1, Math.floor(4500 / binHz));
+        let highVocoderSum = 0;
+        let highCount = 0;
+        for (let b = highBin; b < this.freqDataArray.length; b++) {
+          highVocoderSum += this.freqDataArray[b] || 0;
+          highCount++;
+        }
+        const avgHighVocoder = highVocoderSum / Math.max(1, highCount);
 
-        // --- 1. Compute Exact Sound Level (dB SPL) as per WHO and Acoustic Standards ---
-        // Reference: Whispering = 20-30 dB, AI Conv = 55-65 dB, Normal Speech = 60-70 dB, Loud = 80-90 dB
+        // Compute RMS from PCM data (or timeDataArray fallback)
+        let rms = 0;
+        if (inputData && inputData.length > 0) {
+          let sumSquares = 0;
+          for (let i = 0; i < inputData.length; i++) {
+            const s = inputData[i];
+            sumSquares += s * s;
+          }
+          rms = Math.sqrt(sumSquares / inputData.length);
+        } else {
+          let sumSquares = 0;
+          for (let i = 0; i < this.timeDataArray.length; i++) {
+            const s = (this.timeDataArray[i] - 128) / 128;
+            sumSquares += s * s;
+          }
+          rms = Math.sqrt(sumSquares / this.timeDataArray.length);
+        }
+
+        // --- 1. Compute Exact Sound Level (dB SPL) ---
         const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
         let dbCategory = "Standby";
         if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Breath)";
         else if (dbSPL <= 55) dbCategory = "30-55 dB (Low Ambient)";
-        else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Conv / Quiet)";
+        else if (dbSPL <= 65) dbCategory = "55-65 dB (Quiet / Normal Speech)";
         else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human)";
         else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech)";
         else dbCategory = ">85 dB (WHO Noise Alert)";
 
-        // --- 2. REAL SPEECH VS AMBIENT NOISE VAD ---
-        // Sensitive threshold for mobile mic, in-call audio and normal speech
-        const isHumanSpeechActive = (rms > 0.003 || avgSpeechFormant > 8 || dbSPL >= 32);
+        // --- 2. SENSITIVE VOICE ACTIVITY DETECTION (VAD) ---
+        const isHumanSpeechActive = (rms > 0.0025 || avgSpeechFormant > 7 || dbSPL >= 30);
 
         if (!isHumanSpeechActive) {
           // Track stationary background noise (cooler / AC hum)
@@ -423,8 +440,26 @@ window.VoiceShield = {
         }
       };
 
+      this.processor.onaudioprocess = (e) => {
+        if (!this.isStreaming) return;
+        const inputData = e.inputBuffer.getChannelData(0);
+        processDspFrame(inputData);
+        if (e.outputBuffer && e.outputBuffer.numberOfChannels > 0) {
+          e.outputBuffer.getChannelData(0).fill(0);
+        }
+      };
+
       source.connect(this.processor);
       this.processor.connect(this.audioCtx.destination);
+
+      // Continuous 60ms FFT Analyzer Poller (guarantees real mic analysis on all mobile browsers)
+      if (this.dspPollInterval) clearInterval(this.dspPollInterval);
+      this.dspPollInterval = setInterval(() => {
+        if (this.isStreaming) {
+          processDspFrame(null);
+        }
+      }, 60);
+
       this.isStreaming = true;
     } catch (err) {
       console.warn("Microphone capture note:", err);
@@ -439,6 +474,11 @@ window.VoiceShield = {
   stopStreaming() {
     this.isStreaming = false;
     
+    if (this.dspPollInterval) {
+      clearInterval(this.dspPollInterval);
+      this.dspPollInterval = null;
+    }
+
     if (this.processor) {
       try {
         this.processor.disconnect();
