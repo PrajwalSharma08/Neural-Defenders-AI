@@ -73,27 +73,29 @@ window.VoiceShield = {
   // WebAudio API & Real-Time Live Microphone Telemetry
   // --------------------------------------------------------------------------
   async toggleStreaming() {
+    if (this.isStreaming) {
+      this.stopStreaming();
+      return;
+    }
+
     // 🔔 Explicitly request Notification Permission synchronously on button click
-    if (!this.isStreaming && 'Notification' in window && Notification.permission === 'default') {
+    if ('Notification' in window && Notification.permission === 'default') {
       try {
-        // MUST be called directly in click handler to retain Android user gesture
-        Notification.requestPermission().then((perm) => {
-          console.log('[SentinelShield] User responded to Notification Permission:', perm);
-        });
+        Notification.requestPermission().catch(() => {});
       } catch (e) {}
     }
 
-    if (this.isStreaming) {
-      this.stopStreaming();
-    } else {
-      await this.startStreaming();
-    }
+    await this.startStreaming();
   },
 
   async startStreaming() {
+    this.isStreaming = true;
     const micBtn = document.getElementById('btnToggleMic');
     const micStatusText = document.getElementById('micStatusText');
-    if (micBtn) micBtn.innerHTML = `<span>⏹ STOP LIVE SHIELD</span>`;
+    if (micBtn) {
+      micBtn.innerHTML = `<span>⏹ STOP LIVE SHIELD</span>`;
+      micBtn.style.background = "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)";
+    }
     if (micStatusText) micStatusText.textContent = "LISTENING (16kHz PCM WebAudio)...";
 
     this.speechAccumSeconds = 0;
@@ -395,22 +397,37 @@ window.VoiceShield = {
 
   stopStreaming() {
     this.isStreaming = false;
+    
     if (this.processor) {
-      this.processor.disconnect();
+      try {
+        this.processor.disconnect();
+      } catch (e) {}
       this.processor = null;
     }
+    
     if (this.audioCtx) {
-      this.audioCtx.close();
+      try {
+        this.audioCtx.close().catch(() => {});
+      } catch (e) {}
       this.audioCtx = null;
     }
+    
     if (this.stream) {
-      this.stream.getTracks().forEach(t => t.stop());
+      try {
+        this.stream.getTracks().forEach(t => {
+          try { t.stop(); } catch (e) {}
+        });
+      } catch (e) {}
       this.stream = null;
     }
+    
     if (this.ws) {
-      this.ws.close();
+      try {
+        this.ws.close();
+      } catch (e) {}
       this.ws = null;
     }
+    
     if (this.pingInterval) {
       clearInterval(this.pingInterval);
       this.pingInterval = null;
@@ -418,8 +435,13 @@ window.VoiceShield = {
 
     const micBtn = document.getElementById('btnToggleMic');
     const micStatusText = document.getElementById('micStatusText');
-    if (micBtn) micBtn.innerHTML = `<span>🎤 START LIVE VOICE SHIELD</span>`;
-    if (micStatusText) micStatusText.textContent = "STANDBY (Click to Activate 200ms Telemetry)";
+    if (micBtn) {
+      micBtn.innerHTML = `<span>🎤 START LIVE VOICE SHIELD</span>`;
+      micBtn.style.background = "";
+    }
+    if (micStatusText) {
+      micStatusText.textContent = "STANDBY (Click to Activate 200ms Telemetry)";
+    }
     this.currentFreqData.fill(0);
   },
 
