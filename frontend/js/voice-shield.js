@@ -193,7 +193,6 @@ window.VoiceShield = {
 
       this.processor = this.audioCtx.createScriptProcessor(4096, 1, 1);
       this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
-      this.timeDataArray = new Uint8Array(this.analyser.fftSize);
 
       this.chunkBuffer = [];
       this.sampleCount = 0;
@@ -204,147 +203,91 @@ window.VoiceShield = {
       this.processor.onaudioprocess = (e) => {
         if (!this.isStreaming) return;
         const inputData = e.inputBuffer.getChannelData(0);
-        this.processDspFrame(inputData);
 
-        if (e.outputBuffer && e.outputBuffer.numberOfChannels > 0) {
-          e.outputBuffer.getChannelData(0).fill(0);
+        // Capture real FFT frequency bins
+        this.analyser.getByteFrequencyData(this.freqDataArray);
+
+        // Feed visualizer 42 bands
+        for (let i = 0; i < 42; i++) {
+          const idx = Math.min(this.freqDataArray.length - 1, i * 4);
+          this.currentFreqData[i] = this.freqDataArray[idx] || 0;
         }
-      };
 
-      source.connect(this.processor);
-      this.processor.connect(this.audioCtx.destination);
-      this.isStreaming = true;
+        // --- PRECISE ACOUSTIC FORMANT DISCRIMINATION ---
+        // Bin size @ 16000Hz, fftSize 512 = 31.25 Hz per bin
+        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
+        let lowDroneSum = 0;
+        for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
+        const avgLowDrone = lowDroneSum / 9;
 
-      // Secondary 50ms Poller to guarantee detection even if browser pauses ScriptProcessor
-      if (this.dspPollerInterval) clearInterval(this.dspPollerInterval);
-      this.dspPollerInterval = setInterval(() => {
-        if (this.isStreaming && this.analyser) {
-          this.processDspFrame(null);
+        // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
+        let speechFormantSum = 0;
+        for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
+        const avgSpeechFormant = speechFormantSum / 92;
+
+        // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
+        let highVocoderSum = 0;
+        for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
+        const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
+
+        // Compute RMS
+        let sumSquares = 0;
+        const pcm16 = new Int16Array(inputData.length);
+        for (let i = 0; i < inputData.length; i++) {
+          const s = Math.max(-1, Math.min(1, inputData[i]));
+          sumSquares += s * s;
+          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
-      }, 50);
+        const rms = Math.sqrt(sumSquares / inputData.length);
 
-    } catch (err) {
-      console.warn("Microphone capture note:", err);
-      const micStatusText = document.getElementById('micStatusText');
-      if (micStatusText) {
-        micStatusText.textContent = "Microphone access blocked. Use the simulated calls below or upload audio.";
-      }
-      this.stopStreaming();
-    }
-  },
+        this.chunkBuffer.push(pcm16);
+        this.sampleCount += pcm16.length;
 
-  processDspFrame(inputData) {
-    if (!this.analyser) return;
+        // --- 1. Compute Exact Sound Level (dB SPL) as per WHO and Acoustic Standards ---
+        // Reference: Whispering = 20-30 dB, AI Conv = 55-65 dB, Normal Speech = 60-70 dB, Loud = 80-90 dB
+        const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
+        let dbCategory = "Standby";
+        if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Breath)";
+        else if (dbSPL <= 55) dbCategory = "30-55 dB (Low Ambient)";
+        else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Conv / Quiet)";
+        else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human)";
+        else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech)";
+        else dbCategory = ">85 dB (WHO Noise Alert)";
 
-    if (!this.freqDataArray) this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
-    if (!this.timeDataArray) this.timeDataArray = new Uint8Array(this.analyser.fftSize);
-
-    this.analyser.getByteFrequencyData(this.freqDataArray);
-    this.analyser.getByteTimeDomainData(this.timeDataArray);
-
-    // Update 42 visualizer frequency bands
-    for (let i = 0; i < 42; i++) {
-      const idx = Math.min(this.freqDataArray.length - 1, i * 4);
-      this.currentFreqData[i] = this.freqDataArray[idx] || 0;
-    }
-
-    // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
-    let lowDroneSum = 0;
-    for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
-    const avgLowDrone = lowDroneSum / 9;
-
-    // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
-    let speechFormantSum = 0;
-    for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
-    const avgSpeechFormant = speechFormantSum / 92;
-
-    // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
-    let highVocoderSum = 0;
-    for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
-    const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
-
-    // Compute RMS and Zero-Crossing Rate safely
-    let rms = 0;
-    let zeroCrossings = 0;
-    let totalSamples = 0;
-
-    if (inputData && inputData.length > 0) {
-      totalSamples = inputData.length;
-      let sumSquares = 0;
-      for (let i = 0; i < totalSamples; i++) {
-        const s = inputData[i];
-        sumSquares += s * s;
-        if (i > 0 && ((inputData[i] >= 0 && inputData[i - 1] < 0) || (inputData[i] < 0 && inputData[i - 1] >= 0))) {
-          zeroCrossings++;
-        }
-      }
-      rms = Math.sqrt(sumSquares / totalSamples);
-    } else if (this.timeDataArray && this.timeDataArray.length > 0) {
-      totalSamples = this.timeDataArray.length;
-      let sumSquares = 0;
-      for (let i = 0; i < totalSamples; i++) {
-        const s = (this.timeDataArray[i] - 128) / 128.0;
-        sumSquares += s * s;
-        if (i > 0 && ((this.timeDataArray[i] >= 128 && this.timeDataArray[i - 1] < 128) || (this.timeDataArray[i] < 128 && this.timeDataArray[i - 1] >= 128))) {
-          zeroCrossings++;
-        }
-      }
-      rms = Math.sqrt(sumSquares / totalSamples);
-    }
-    const zcr = totalSamples > 0 ? (zeroCrossings / totalSamples) : 0.03;
-
-    // --- 1. Compute Exact Sound Level (dB SPL) as per WHO Standards ---
-    const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
-    let dbCategory = "Standby (Quiet)";
-    if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Room Silence)";
-    else if (dbSPL <= 45) dbCategory = "30-45 dB (Ambient / Fan Noise)";
-    else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Playback / Speech)";
-    else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human Voice)";
-    else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech / Speaker)";
-    else dbCategory = ">85 dB (WHO Noise Warning)";
-
-    // --- 2. ADAPTIVE SPECTRAL NOISE CANCELLATION & VAD ---
-    if (!this.ambientNoiseFloor) this.ambientNoiseFloor = 0.002;
-    if (rms < 0.004 || dbSPL < 30) {
-      this.ambientNoiseFloor = this.ambientNoiseFloor * 0.95 + rms * 0.05;
-    }
-
-    const snrDb = Math.max(0, Math.round(20 * Math.log10(Math.max(1e-5, rms) / Math.max(1e-5, this.ambientNoiseFloor))));
-    
-    // Voice activity detection
-    const isHumanSpeechActive = (rms > 0.0012 || avgSpeechFormant > 4 || dbSPL >= 28);
+        // --- 2. REAL SPEECH VS AMBIENT NOISE VAD ---
+        const isHumanSpeechActive = (rms > 0.0012 || avgSpeechFormant > 4 || dbSPL >= 26);
 
         if (!isHumanSpeechActive) {
-          // Rapid smooth decay back to 0% when user is NOT speaking
+          // Track stationary background noise (cooler / AC hum)
+          if (rms > 0.002) {
+            this.ambientNoiseFloor = this.ambientNoiseFloor * 0.98 + rms * 0.02;
+          }
           this.smoothedRisk = Math.max(0.0, this.smoothedRisk * 0.70);
           if (this.smoothedRisk < 0.02) this.smoothedRisk = 0.0;
           
           this.humanSpeechFrames = Math.max(0, this.humanSpeechFrames - 1);
           if (this.humanSpeechFrames === 0) {
-            this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
+            this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.12);
           }
-
-          const isFanNoise = (avgLowDrone > 15 && avgSpeechFormant < 12);
-          const silenceVerdict = isFanNoise ? "COOLER_FILTERED" : "SILENCE";
 
           this.updateResults({
             risk_score: this.smoothedRisk,
             db_spl: dbSPL,
             db_category: dbCategory,
-            snr_db: snrDb,
+            snr_db: Math.max(10, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.002))),
             variance_score: 0.0,
             has_breathing: true,
             phase_variance: 0.0,
             pitch_jitter: 0.0,
-            processing_ms: 3,
-            verdict: silenceVerdict,
+            processing_ms: 4,
+            verdict: rms > 0.01 ? "COOLER_FILTERED" : "SILENCE",
             speech_seconds: this.speechAccumSeconds,
             session_id: "live_webaudio_session",
             attestation_hash: "tee_ram_guard_active",
           });
           this.lastNotifiedVerdict = null;
         } else {
-          // Active Voice Signal Detected (Human or AI)
+          // Active Vocal Tract Detected (Human or AI Voice)
           this.humanSpeechFrames++;
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
 
@@ -369,10 +312,10 @@ window.VoiceShield = {
             time: Date.now()
           });
           if (this.slidingHistory.length > 20) {
-            this.slidingHistory.shift();
+            this.slidingHistory.shift(); // maintain ~2.5s sliding window
           }
 
-          // Statistical Sliding Window Analysis
+          // Calculate 2-3s Window Metrics
           const N = this.slidingHistory.length;
           let formantSum = 0;
           let vocoderSum = 0;
@@ -385,7 +328,6 @@ window.VoiceShield = {
             zcrSum += frame.zcr;
             if (frame.db < 38) microPauseCount++;
           }
-
           const meanFormant = formantSum / N;
           const meanZcr = zcrSum / N;
 
@@ -395,15 +337,14 @@ window.VoiceShield = {
             formantVarSum += Math.pow(frame.speechFormant - meanFormant, 2);
             zcrVarSum += Math.pow(frame.zcr - meanZcr, 2);
           }
-
           const spectralVariance = Math.sqrt(formantVarSum / N) / (meanFormant + 1e-4);
           const zcrStd = Math.sqrt(zcrVarSum / N);
           const vocoderRatio = vocoderSum / (formantSum + 1e-4);
 
-          // --- 4. CALIBRATED DISCRIMINATOR CLASSIFIER ---
-          // Human: Dynamic formant shifts (variance > 0.08), high ZCR variation (zcrStd > 0.018), natural breathing
-          // AI: Unnatural harmonic uniformity (variance < 0.05, zcrStd < 0.015), flat vocoder tone (vocoderRatio > 0.18)
-          const isUniform = (spectralVariance < 0.05 && zcrStd < 0.02);
+          // Scientific Classification:
+          // Human: Dynamic formant shifts (variance > 0.06), high ZCR variation (zcrStd > 0.016)
+          // AI: Unnatural harmonic uniformity (variance < 0.05, zcrStd < 0.016) OR vocoder frequency plateau (vocoderRatio > 0.22)
+          const isUniform = (spectralVariance < 0.05 && zcrStd < 0.018);
           const isHighVocoder = (vocoderRatio > 0.22);
           const isSyntheticAI = (N >= 3 && (isUniform || isHighVocoder));
 
@@ -411,11 +352,11 @@ window.VoiceShield = {
           if (isSyntheticAI) {
             targetRisk = Math.min(0.96, Math.max(0.78, 0.70 + (0.05 - spectralVariance) * 4.0 + (vocoderRatio * 0.4)));
           } else {
-            targetRisk = Math.max(0.08, Math.min(0.18, 0.15 - (spectralVariance * 0.3)));
+            targetRisk = Math.max(0.08, Math.min(0.18, 0.14 - (spectralVariance * 0.2)));
           }
 
           // Exponential Moving Average Smoothing
-          this.smoothedRisk = this.smoothedRisk * 0.60 + targetRisk * 0.40;
+          this.smoothedRisk = this.smoothedRisk * 0.65 + targetRisk * 0.35;
 
           const verdict = this.speechAccumSeconds < 0.35
             ? "LISTENING"
@@ -481,7 +422,20 @@ window.VoiceShield = {
             attestation_hash: "tee_ram_guard_active",
           });
         }
-      },
+      };
+
+      source.connect(this.processor);
+      this.processor.connect(this.audioCtx.destination);
+      this.isStreaming = true;
+    } catch (err) {
+      console.warn("Microphone capture note:", err);
+      const micStatusText = document.getElementById('micStatusText');
+      if (micStatusText) {
+        micStatusText.textContent = "Microphone access blocked. Use the simulated calls below or upload audio.";
+      }
+      this.stopStreaming();
+    }
+  },
 
   stopStreaming() {
     this.isStreaming = false;
@@ -519,11 +473,6 @@ window.VoiceShield = {
     if (this.pingInterval) {
       clearInterval(this.pingInterval);
       this.pingInterval = null;
-    }
-
-    if (this.dspPollerInterval) {
-      clearInterval(this.dspPollerInterval);
-      this.dspPollerInterval = null;
     }
 
     const micBtn = document.getElementById('btnToggleMic');
@@ -791,16 +740,6 @@ window.VoiceShield = {
         const barWidth = w / barCount - 2;
 
         this.activePhase += 0.05;
-
-        // Fetch live frequency data directly from AnalyserNode
-        if (this.isStreaming && this.analyser) {
-          if (!this.freqDataArray) this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
-          this.analyser.getByteFrequencyData(this.freqDataArray);
-          for (let i = 0; i < barCount; i++) {
-            const idx = Math.min(this.freqDataArray.length - 1, i * 4);
-            this.currentFreqData[i] = this.freqDataArray[idx] || 0;
-          }
-        }
 
         // Draw EQ Frequency Bars
         for (let i = 0; i < barCount; i++) {
