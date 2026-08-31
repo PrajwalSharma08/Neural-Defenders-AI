@@ -41,16 +41,16 @@ class InCallProtectionService : Service() {
 
         if (customMsg != null) {
             val (title, color) = when (verdict) {
-                "AI_DETECTED" -> Pair("🚨 SentinelShield: AI Voice Clone Detected ($riskScore% Risk)", "#EF4444")
+                "AI_DETECTED" -> Pair("🚨 SentinelShield: AI Deepfake Detected ($riskScore% Risk)", "#EF4444")
                 "HUMAN" -> Pair("✅ SentinelShield: Genuine Human Voice Verified", "#10B981")
-                else -> Pair("🔍 SentinelShield: Monitoring Live Voice (RAM TEE)", "#06B6D4")
+                else -> Pair("🔍 SentinelShield: Monitoring In-Call Voice (RAM TEE)", "#06B6D4")
             }
             updateNotification(title, customMsg, color)
         } else {
             startForeground(
                 NOTIFICATION_ID,
                 buildNotification(
-                    "🛡️ SentinelShield AI: Active Voice & Link Defense",
+                    "🛡️ SentinelShield AI • In-Call Defense Active",
                     "Status: Listening • Volatile RAM DSP Active (Zero Disk Retention)",
                     "#06B6D4"
                 )
@@ -79,12 +79,15 @@ class InCallProtectionService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(message)
+            .setSubText("TEE RAM GUARD • <180ms")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
             .setColor(Color.parseColor(colorHex))
             .setColorized(true)
             .setOngoing(true) // Fixed sticky notification bar
             .setOnlyAlertOnce(true) // Silent in-place updates without spamming
             .setContentIntent(pendingIntent)
+            .addAction(android.R.drawable.ic_menu_view, "📊 View Telemetry", pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
     }
@@ -93,7 +96,7 @@ class InCallProtectionService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "SentinelShield In-Call & Background Monitor",
+                "SentinelShield In-Call Threat Monitor",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Persistent status notification for Human vs AI voice verification"

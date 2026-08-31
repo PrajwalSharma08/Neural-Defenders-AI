@@ -279,11 +279,48 @@
         <div style="display: flex; justify-content: center;">
           <div style="width: 310px; height: 520px; background: #0b0f19; border-radius: 36px; border: 4px solid rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden; padding: 1.25rem 1rem; display: flex; flex-direction: column; justify-content: space-between;">
             
-            <!-- Phone Notch & Speaker -->
-            <div style="width: 90px; height: 16px; background: #1e293b; border-radius: 10px; margin: 0 auto;"></div>
+            <!-- Phone Top Status Bar -->
+            <div class="cyber-phone-statusbar">
+              <span>13:20</span>
+              <span style="display: flex; align-items: center; gap: 0.25rem;">
+                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; animation: pulseGlow 1.5s infinite;"></span>
+                <span>SENTINEL • LIVE</span>
+              </span>
+              <span>5G 📶 100% 🔋</span>
+            </div>
+
+            <!-- Creative Sticky Android 15 Notification Bar HUD -->
+            <div id="simStickyNotif" class="creative-sticky-notif">
+              <div class="notif-header">
+                <div class="notif-brand-badge">
+                  <div class="notif-icon-circle">🛡️</div>
+                  <span>SENTINELSHIELD AI</span>
+                </div>
+                <div class="notif-time-badge" id="simNotifLatencyBadge">Live • 18ms</div>
+              </div>
+              <div class="notif-main-title" id="simNotifTitle">
+                <span>🔍 Monitoring In-Call Voice (RAM TEE)</span>
+              </div>
+              <div class="notif-subtitle" id="simNotifSubtitle">
+                Volatile sub-second acoustic DSP active. Zero call recording (signal physics only).
+              </div>
+              <div class="notif-metrics-bar">
+                <span>Phase Var: <strong id="simNotifPhase" style="color: var(--accent-cyan);">0.85</strong></span>
+                <span>Jitter: <strong id="simNotifJitter" style="color: var(--accent-cyan);">0.031</strong></span>
+                <span>Risk: <strong id="simNotifRisk" style="color: #10b981;">8%</strong></span>
+              </div>
+              <div class="notif-actions-row">
+                <button class="notif-action-btn" onclick="window.VoiceShield.generateForensicPdf()" style="color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">
+                  📄 Court Dossier
+                </button>
+                <button class="notif-action-btn" onclick="window.VoiceShield.endSimulatedCall()" style="color: var(--accent-crimson); border-color: rgba(239, 68, 68, 0.3);">
+                  📞 End Call
+                </button>
+              </div>
+            </div>
 
             <!-- Floating Warning Overlay HUD (Pop up during AI call) -->
-            <div id="simCallOverlay" style="display: none; position: absolute; top: 38px; left: 10px; right: 10px; background: rgba(220, 38, 38, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 0.85rem; color: #fff; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5); z-index: 50; animation: pulseDanger 1.5s infinite;">
+            <div id="simCallOverlay" style="display: none; position: absolute; top: 70px; left: 10px; right: 10px; background: rgba(220, 38, 38, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 0.85rem; color: #fff; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5); z-index: 50; animation: pulseDanger 1.5s infinite;">
               <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
                 <span style="font-size: 1.25rem;">🚨</span>
                 <strong style="font-size: 0.78rem; letter-spacing: 0.04em;">SENTINELSHIELD LIVE WARNING</strong>
@@ -300,19 +337,19 @@
             </div>
 
             <!-- Phone Call Screen Body -->
-            <div style="text-align: center; margin-top: 1.5rem;">
-              <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #334155, #1e293b); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto; font-size: 1.75rem;">
+            <div style="text-align: center; margin-top: 0.5rem;">
+              <div style="width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #334155, #1e293b); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem auto; font-size: 1.4rem;">
                 👤
               </div>
-              <div id="simCallerName" style="font-size: 1.15rem; font-weight: 800; color: #fff;">Unknown Caller</div>
-              <div id="simCallerNumber" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">+91 98765 43210</div>
-              <div id="simCallTimer" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); margin-top: 0.4rem; font-weight: 700;">
+              <div id="simCallerName" style="font-size: 1rem; font-weight: 800; color: #fff;">Unknown Caller</div>
+              <div id="simCallerNumber" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">+91 98765 43210</div>
+              <div id="simCallTimer" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-cyan); margin-top: 0.25rem; font-weight: 700;">
                 00:18 • IN CALL
               </div>
             </div>
 
             <!-- In-Call Status Message -->
-            <div id="simCallStatusMsg" style="text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <div id="simCallStatusMsg" style="text-align: center; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); padding: 0.35rem 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin: 0.25rem 0;">
               Ready to test in-call detection.
             </div>
 

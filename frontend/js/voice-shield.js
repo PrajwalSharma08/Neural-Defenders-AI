@@ -678,6 +678,39 @@ window.VoiceShield = {
         }
       }
     }
+
+    // --- SYNC CREATIVE ANDROID NOTIFICATION BAR HUD ---
+    const notifCard = document.getElementById('simStickyNotif');
+    const notifTitle = document.getElementById('simNotifTitle');
+    const notifSubtitle = document.getElementById('simNotifSubtitle');
+    const notifPhase = document.getElementById('simNotifPhase');
+    const notifJitter = document.getElementById('simNotifJitter');
+    const notifRisk = document.getElementById('simNotifRisk');
+    const notifLatency = document.getElementById('simNotifLatencyBadge');
+
+    if (notifLatency) notifLatency.textContent = `Live • ${data.processing_ms || 18}ms`;
+    if (notifPhase) notifPhase.textContent = data.phase_variance !== undefined ? `${data.phase_variance}` : '0.85';
+    if (notifJitter) notifJitter.textContent = data.pitch_jitter !== undefined ? `${((data.pitch_jitter) * 100).toFixed(1)}%` : '3.1%';
+    if (notifRisk) {
+      notifRisk.textContent = `${riskPct}%`;
+      notifRisk.style.color = (data.verdict === 'AI_DETECTED' || riskPct >= 60) ? 'var(--accent-crimson)' : ((data.verdict === 'HUMAN') ? 'var(--accent-emerald)' : 'var(--accent-cyan)');
+    }
+
+    if (notifCard && notifTitle && notifSubtitle) {
+      notifCard.classList.remove('notif-state-human', 'notif-state-ai');
+      if (data.verdict === 'AI_DETECTED' || riskPct >= 60) {
+        notifCard.classList.add('notif-state-ai');
+        notifTitle.innerHTML = `<span>🚨 CRITICAL: AI VOICE CLONE DETECTED</span>`;
+        notifSubtitle.textContent = `Synthetic vocoder cues (${riskPct}% Risk). Do NOT transfer money or share OTPs!`;
+      } else if (data.verdict === 'HUMAN' || (riskPct <= 25 && data.verdict !== 'SILENCE' && data.verdict !== 'COOLER_FILTERED')) {
+        notifCard.classList.add('notif-state-human');
+        notifTitle.innerHTML = `<span>✅ GENUINE HUMAN CALLER (Verified)</span>`;
+        notifSubtitle.textContent = `Natural vocal tract dynamics and biological breathing verified (${riskPct}% Risk).`;
+      } else {
+        notifTitle.innerHTML = `<span>🔍 Monitoring In-Call Voice (RAM TEE)</span>`;
+        notifSubtitle.textContent = `Volatile sub-second acoustic DSP active. Zero call recording (signal physics only).`;
+      }
+    }
   },
 
   // --------------------------------------------------------------------------
