@@ -1,10 +1,10 @@
 {
-  "id": "/Neural-Defenders-AI/",
+  "id": "https://prajwalsharma08.github.io/Neural-Defenders-AI/",
   "name": "SentinelShield AI — Cyber Threat Defense",
   "short_name": "SentinelShield",
   "description": "Sub-Second Multi-Modal Voice Deepfake, Phishing & Digital Arrest Defense Platform for Android & Web",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "https://prajwalsharma08.github.io/Neural-Defenders-AI/index.html",
+  "scope": "https://prajwalsharma08.github.io/Neural-Defenders-AI/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "prefer_related_applications": false,

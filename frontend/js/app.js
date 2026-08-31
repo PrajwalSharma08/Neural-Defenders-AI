@@ -223,7 +223,7 @@ window.SentinelApp = {
   },
 
   // --------------------------------------------------------------------------
-  // PWA WebAPK 1-Click Installation Handler
+  // PWA WebAPK 1-Click Installation Handler (Android 10 - 16)
   // --------------------------------------------------------------------------
   initPwaInstall() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -232,21 +232,72 @@ window.SentinelApp = {
       const installBtn = document.getElementById('btnInstallApp');
       if (installBtn) {
         installBtn.style.display = 'inline-flex';
-        installBtn.addEventListener('click', () => this.triggerPwaInstall());
+        installBtn.onclick = () => this.triggerPwaInstall();
       }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      this.deferredPrompt = null;
+      this.showToast('🎉 SentinelShield AI Successfully Installed on your Phone!', 'success');
+      const installBtn = document.getElementById('btnInstallApp');
+      if (installBtn) installBtn.style.display = 'none';
     });
   },
 
   async triggerPwaInstall() {
     if (this.deferredPrompt) {
-      this.deferredPrompt.prompt();
-      const { outcome } = await this.deferredPrompt.userChoice;
-      console.log(`User response to install prompt: ${outcome}`);
-      this.deferredPrompt = null;
-      const installBtn = document.getElementById('btnInstallApp');
-      if (installBtn) installBtn.style.display = 'none';
+      try {
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        if (outcome === 'accepted') {
+          this.showToast('✅ Installing SentinelShield AI Native WebAPK...', 'success');
+        }
+        this.deferredPrompt = null;
+      } catch (err) {
+        console.warn('Install prompt error:', err);
+        this.openInstallGuideModal();
+      }
     } else {
-      alert("To install SentinelShield on your phone, tap your browser menu and select 'Install app' or 'Add to Home Screen'!");
+      this.openInstallGuideModal();
+    }
+  },
+
+  openInstallGuideModal() {
+    let guideModal = document.getElementById('installGuideModal');
+    if (!guideModal) {
+      guideModal = document.createElement('div');
+      guideModal.id = 'installGuideModal';
+      guideModal.className = 'modal-backdrop';
+      guideModal.innerHTML = `
+        <div class="modal-card" style="max-width: 480px; text-align: center; padding: 1.75rem;">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📱</div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">
+            Install SentinelShield AI (Android 15 & 16)
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem;">
+            Android 15 & 16 par direct 0-second install karne ke liye:
+          </p>
+          <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; text-align: left; margin-bottom: 1.25rem; font-size: 0.82rem; line-height: 1.6; color: #cbd5e1;">
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+              <span style="background: var(--accent-cyan); color: #000; font-weight: 800; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+              <span>Upar Chrome me <strong>3 dots (⋮)</strong> menu dabayein</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+              <span style="background: var(--accent-emerald); color: #000; font-weight: 800; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+              <span><strong>"Install app"</strong> ya <strong>"Add to Home Screen"</strong> par click karein</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span style="background: var(--accent-amber); color: #000; font-weight: 800; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+              <span><strong>"Install"</strong> select karein — App bina kisi scanner block ke Home screen par aa jayegi!</span>
+            </div>
+          </div>
+          <button onclick="document.getElementById('installGuideModal').remove()" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
+            <span>Samajh Gaya (Got it!)</span>
+          </button>
+        </div>
+      `;
+      document.body.appendChild(guideModal);
     }
   },
 
