@@ -315,12 +315,12 @@ window.VoiceShield = {
         // --- 3. Dynamic Live Voice Discrimination ---
         // A) Ambient / Background Room Noise (rms < 0.0015 && avgSpeechFormant < 5):
         //    Meter breathes and fluctuates live around 2% to 6%
-        // B) AI Voice / Speaker Playback (vocoderRatio > 0.20 || avgHighVocoder > 7 || meanFlatness > 0.41):
+        // B) AI Voice / Speaker Playback (vocoderRatio > 0.35 || avgHighVocoder > 10 || (avgHighVocoder > 6 && spectralVariance < 0.05)):
         //    Shoots to 88% - 95% Red
         // C) Genuine Human Voice (Natural dynamic formants, avgSpeechFormant >= 5):
         //    Locks at 9% - 14% Emerald Green
         const isQuiet = (rms < 0.0015 && avgSpeechFormant < 5);
-        const isAI = (vocoderRatio > 0.20 || (avgHighVocoder > 7 && spectralVariance < 0.07) || meanFlatness > 0.41);
+        const isAI = (vocoderRatio > 0.35 || avgHighVocoder > 10 || (avgHighVocoder > 6 && spectralVariance < 0.05));
         const isHuman = (!isAI && (avgSpeechFormant >= 5 || rms >= 0.0015));
 
         let targetRisk = 0.03;
@@ -333,7 +333,7 @@ window.VoiceShield = {
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
         } else if (isAI) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.89 + Math.min(0.06, vocoderRatio * 0.15) + (Math.random() * 0.02 - 0.01);
+          targetRisk = 0.89 + Math.min(0.06, vocoderRatio * 0.10) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
         } else if (isHuman) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
