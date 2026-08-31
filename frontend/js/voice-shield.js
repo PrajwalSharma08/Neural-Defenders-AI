@@ -193,6 +193,7 @@ window.VoiceShield = {
 
       this.processor = this.audioCtx.createScriptProcessor(4096, 1, 1);
       this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+      this.timeDataArray = new Uint8Array(this.analyser.fftSize);
 
       this.chunkBuffer = [];
       this.sampleCount = 0;
@@ -203,68 +204,115 @@ window.VoiceShield = {
       this.processor.onaudioprocess = (e) => {
         if (!this.isStreaming) return;
         const inputData = e.inputBuffer.getChannelData(0);
+        this.processDspFrame(inputData);
 
-        // Capture real FFT frequency bins
-        this.analyser.getByteFrequencyData(this.freqDataArray);
-
-        // Feed visualizer 42 bands
-        for (let i = 0; i < 42; i++) {
-          const idx = Math.min(this.freqDataArray.length - 1, i * 4);
-          this.currentFreqData[i] = this.freqDataArray[idx] || 0;
+        if (e.outputBuffer && e.outputBuffer.numberOfChannels > 0) {
+          e.outputBuffer.getChannelData(0).fill(0);
         }
+      };
 
-        // --- PRECISE ACOUSTIC FORMANT DISCRIMINATION ---
-        // Bin size @ 16000Hz, fftSize 512 = 31.25 Hz per bin
-        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
-        let lowDroneSum = 0;
-        for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
-        const avgLowDrone = lowDroneSum / 9;
+      source.connect(this.processor);
+      this.processor.connect(this.audioCtx.destination);
+      this.isStreaming = true;
 
-        // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
-        let speechFormantSum = 0;
-        for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
-        const avgSpeechFormant = speechFormantSum / 92;
-
-        // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
-        let highVocoderSum = 0;
-        for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
-        const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
-
-        // Compute RMS
-        let sumSquares = 0;
-        const pcm16 = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          const s = Math.max(-1, Math.min(1, inputData[i]));
-          sumSquares += s * s;
-          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      // Secondary 50ms Poller to guarantee detection even if browser pauses ScriptProcessor
+      if (this.dspPollerInterval) clearInterval(this.dspPollerInterval);
+      this.dspPollerInterval = setInterval(() => {
+        if (this.isStreaming && this.analyser) {
+          this.processDspFrame(null);
         }
-        const rms = Math.sqrt(sumSquares / inputData.length);
+      }, 50);
 
-        this.chunkBuffer.push(pcm16);
-        this.sampleCount += pcm16.length;
+    } catch (err) {
+      console.warn("Microphone capture note:", err);
+      const micStatusText = document.getElementById('micStatusText');
+      if (micStatusText) {
+        micStatusText.textContent = "Microphone access blocked. Use the simulated calls below or upload audio.";
+      }
+      this.stopStreaming();
+    }
+  },
 
-        // --- 1. Compute Exact Sound Level (dB SPL) as per WHO Standards ---
-        const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
-        let dbCategory = "Standby (Quiet)";
-        if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Room Silence)";
-        else if (dbSPL <= 45) dbCategory = "30-45 dB (Ambient / Fan Noise)";
-        else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Playback / Speech)";
-        else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human Voice)";
-        else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech / Speaker)";
-        else dbCategory = ">85 dB (WHO Noise Warning)";
+  processDspFrame(inputData) {
+    if (!this.analyser) return;
 
-        // --- 2. ADAPTIVE SPECTRAL NOISE CANCELLATION & VAD ---
-        if (!this.ambientNoiseFloor) this.ambientNoiseFloor = 0.002;
-        
-        // Track stationary noise floor during quiet intervals
-        if (rms < 0.008 || dbSPL < 42) {
-          this.ambientNoiseFloor = this.ambientNoiseFloor * 0.95 + rms * 0.05;
+    if (!this.freqDataArray) this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    if (!this.timeDataArray) this.timeDataArray = new Uint8Array(this.analyser.fftSize);
+
+    this.analyser.getByteFrequencyData(this.freqDataArray);
+    this.analyser.getByteTimeDomainData(this.timeDataArray);
+
+    // Update 42 visualizer frequency bands
+    for (let i = 0; i < 42; i++) {
+      const idx = Math.min(this.freqDataArray.length - 1, i * 4);
+      this.currentFreqData[i] = this.freqDataArray[idx] || 0;
+    }
+
+    // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
+    let lowDroneSum = 0;
+    for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
+    const avgLowDrone = lowDroneSum / 9;
+
+    // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
+    let speechFormantSum = 0;
+    for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
+    const avgSpeechFormant = speechFormantSum / 92;
+
+    // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
+    let highVocoderSum = 0;
+    for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
+    const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
+
+    // Compute RMS and Zero-Crossing Rate safely
+    let rms = 0;
+    let zeroCrossings = 0;
+    let totalSamples = 0;
+
+    if (inputData && inputData.length > 0) {
+      totalSamples = inputData.length;
+      let sumSquares = 0;
+      for (let i = 0; i < totalSamples; i++) {
+        const s = inputData[i];
+        sumSquares += s * s;
+        if (i > 0 && ((inputData[i] >= 0 && inputData[i - 1] < 0) || (inputData[i] < 0 && inputData[i - 1] >= 0))) {
+          zeroCrossings++;
         }
+      }
+      rms = Math.sqrt(sumSquares / totalSamples);
+    } else if (this.timeDataArray && this.timeDataArray.length > 0) {
+      totalSamples = this.timeDataArray.length;
+      let sumSquares = 0;
+      for (let i = 0; i < totalSamples; i++) {
+        const s = (this.timeDataArray[i] - 128) / 128.0;
+        sumSquares += s * s;
+        if (i > 0 && ((this.timeDataArray[i] >= 128 && this.timeDataArray[i - 1] < 128) || (this.timeDataArray[i] < 128 && this.timeDataArray[i - 1] >= 128))) {
+          zeroCrossings++;
+        }
+      }
+      rms = Math.sqrt(sumSquares / totalSamples);
+    }
+    const zcr = totalSamples > 0 ? (zeroCrossings / totalSamples) : 0.03;
 
-        const snrDb = Math.max(0, Math.round(20 * Math.log10(Math.max(1e-5, rms) / Math.max(1e-5, this.ambientNoiseFloor))));
-        
-        // Speech is only active when sound energy exceeds ambient noise floor by > 4 dB and dbSPL >= 40
-        const isHumanSpeechActive = (rms > 0.0035 && avgSpeechFormant > 8 && dbSPL >= 40 && snrDb >= 4);
+    // --- 1. Compute Exact Sound Level (dB SPL) as per WHO Standards ---
+    const dbSPL = Math.min(95, Math.max(18, Math.round(20 * Math.log10(Math.max(1e-5, rms) / 0.00002) + 38)));
+    let dbCategory = "Standby (Quiet)";
+    if (dbSPL < 32) dbCategory = "20-30 dB (Whisper / Room Silence)";
+    else if (dbSPL <= 45) dbCategory = "30-45 dB (Ambient / Fan Noise)";
+    else if (dbSPL <= 65) dbCategory = "55-65 dB (AI Playback / Speech)";
+    else if (dbSPL <= 75) dbCategory = "60-70 dB (Standard Human Voice)";
+    else if (dbSPL <= 85) dbCategory = "75-85 dB (Loud Speech / Speaker)";
+    else dbCategory = ">85 dB (WHO Noise Warning)";
+
+    // --- 2. ADAPTIVE SPECTRAL NOISE CANCELLATION & VAD ---
+    if (!this.ambientNoiseFloor) this.ambientNoiseFloor = 0.002;
+    if (rms < 0.004 || dbSPL < 30) {
+      this.ambientNoiseFloor = this.ambientNoiseFloor * 0.95 + rms * 0.05;
+    }
+
+    const snrDb = Math.max(0, Math.round(20 * Math.log10(Math.max(1e-5, rms) / Math.max(1e-5, this.ambientNoiseFloor))));
+    
+    // Voice activity detection
+    const isHumanSpeechActive = (rms > 0.0012 || avgSpeechFormant > 4 || dbSPL >= 28);
 
         if (!isHumanSpeechActive) {
           // Rapid smooth decay back to 0% when user is NOT speaking
@@ -433,24 +481,7 @@ window.VoiceShield = {
             attestation_hash: "tee_ram_guard_active",
           });
         }
-
-        if (e.outputBuffer && e.outputBuffer.numberOfChannels > 0) {
-          e.outputBuffer.getChannelData(0).fill(0);
-        }
-      };
-
-      source.connect(this.processor);
-      this.processor.connect(this.audioCtx.destination);
-      this.isStreaming = true;
-    } catch (err) {
-      console.warn("Microphone capture note:", err);
-      const micStatusText = document.getElementById('micStatusText');
-      if (micStatusText) {
-        micStatusText.textContent = "Microphone access blocked. Use the simulated calls below or upload audio.";
-      }
-      this.stopStreaming();
-    }
-  },
+      },
 
   stopStreaming() {
     this.isStreaming = false;
@@ -488,6 +519,11 @@ window.VoiceShield = {
     if (this.pingInterval) {
       clearInterval(this.pingInterval);
       this.pingInterval = null;
+    }
+
+    if (this.dspPollerInterval) {
+      clearInterval(this.dspPollerInterval);
+      this.dspPollerInterval = null;
     }
 
     const micBtn = document.getElementById('btnToggleMic');
@@ -755,6 +791,16 @@ window.VoiceShield = {
         const barWidth = w / barCount - 2;
 
         this.activePhase += 0.05;
+
+        // Fetch live frequency data directly from AnalyserNode
+        if (this.isStreaming && this.analyser) {
+          if (!this.freqDataArray) this.freqDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+          this.analyser.getByteFrequencyData(this.freqDataArray);
+          for (let i = 0; i < barCount; i++) {
+            const idx = Math.min(this.freqDataArray.length - 1, i * 4);
+            this.currentFreqData[i] = this.freqDataArray[idx] || 0;
+          }
+        }
 
         // Draw EQ Frequency Bars
         for (let i = 0; i < barCount; i++) {
