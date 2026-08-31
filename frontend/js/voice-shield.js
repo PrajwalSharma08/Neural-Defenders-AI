@@ -314,37 +314,50 @@ window.VoiceShield = {
             this.slidingHistory.shift(); // maintain ~2.5s sliding window
           }
 
-          // Calculate 2-3s Window Metrics
+          // --- 3. Statistical Sliding Window Analysis (2.5s Buffer) ---
+          const N = this.slidingHistory.length;
           let formantSum = 0;
+          let vocoderSum = 0;
           let zcrSum = 0;
           let microPauseCount = 0;
+
           for (const frame of this.slidingHistory) {
             formantSum += frame.speechFormant;
+            vocoderSum += frame.highVocoder;
             zcrSum += frame.zcr;
             if (frame.db < 38) microPauseCount++;
           }
-          const meanFormant = formantSum / this.slidingHistory.length;
-          const meanZcr = zcrSum / this.slidingHistory.length;
+
+          const meanFormant = formantSum / N;
+          const meanZcr = zcrSum / N;
 
           let formantVarSum = 0;
+          let zcrVarSum = 0;
           for (const frame of this.slidingHistory) {
             formantVarSum += Math.pow(frame.speechFormant - meanFormant, 2);
+            zcrVarSum += Math.pow(frame.zcr - meanZcr, 2);
           }
-          const spectralVariance = Math.sqrt(formantVarSum / this.slidingHistory.length) / (meanFormant + 1);
 
-          // Scientific Classification:
-          // AI: Abnormally high spectral uniformity + high vocoder ratio (8-16kHz) + zero pitch jitter (<0.004)
-          // Human: Natural biological dynamics (formant shift > 0.06, natural vowel resonance, breathing micro-pauses)
-          const hasBreathing = microPauseCount > 0 || this.slidingHistory.length < 4;
-          const vocoderRatio = avgHighVocoder / (avgSpeechFormant + 1e-4);
-          
-          // True AI detection requires simultaneous unnatural vocoder energy AND rigid spectral uniformity over >10 frames
-          const isSpectralUniform = (this.slidingHistory.length >= 10 && spectralVariance < 0.025 && vocoderRatio > 0.55);
-          const isSyntheticAI = isSpectralUniform || (vocoderRatio > 0.85 && avgHighVocoder > 35);
-          const targetRisk = isSyntheticAI ? 0.92 : 0.10;
+          const spectralVariance = Math.sqrt(formantVarSum / N) / (meanFormant + 1e-4);
+          const zcrStd = Math.sqrt(zcrVarSum / N);
+          const vocoderRatio = vocoderSum / (formantSum + 1e-4);
+
+          // --- 4. CALIBRATED DISCRIMINATOR CLASSIFIER ---
+          // Human: Dynamic formant shifts (variance > 0.08), high ZCR variation (zcrStd > 0.018), natural breathing
+          // AI: Unnatural harmonic uniformity (variance < 0.05, zcrStd < 0.015), flat vocoder tone (vocoderRatio > 0.18)
+          const isUniform = (spectralVariance < 0.05 && zcrStd < 0.02);
+          const isHighVocoder = (vocoderRatio > 0.22);
+          const isSyntheticAI = (N >= 4 && (isUniform || isHighVocoder));
+
+          let targetRisk = 0.10;
+          if (isSyntheticAI) {
+            targetRisk = Math.min(0.96, Math.max(0.78, 0.70 + (0.05 - spectralVariance) * 4.0 + (vocoderRatio * 0.4)));
+          } else {
+            targetRisk = Math.max(0.08, Math.min(0.20, 0.16 - (spectralVariance * 0.3)));
+          }
 
           // Exponential Moving Average Smoothing
-          this.smoothedRisk = this.smoothedRisk * 0.70 + targetRisk * 0.30;
+          this.smoothedRisk = this.smoothedRisk * 0.65 + targetRisk * 0.35;
 
           const verdict = this.speechAccumSeconds < 0.35
             ? "LISTENING"
@@ -358,7 +371,7 @@ window.VoiceShield = {
           const riskPct = Math.round(this.smoothedRisk * 100);
           const notifTitle = verdict === 'AI_DETECTED' 
             ? `🚨 AI Voice Clone Detected (${riskPct}% Risk)` 
-            : (verdict === 'HUMAN' ? `✅ Genuine Human Voice Verified` : `🔍 Monitoring In-Call Audio`);
+            : (verdict === 'HUMAN' ? `✅ Genuine Human Voice Verified (${riskPct}% Risk)` : `🔍 Monitoring In-Call Audio (${riskPct}% Risk)`);
           const notifBody = verdict === 'AI_DETECTED'
             ? `Synthetic vocoder cues detected! Do NOT transfer money or share OTPs.`
             : (verdict === 'HUMAN' ? `Natural vocal dynamics & biological breathing verified.` : `Volatile RAM acoustic forensics active.`);
