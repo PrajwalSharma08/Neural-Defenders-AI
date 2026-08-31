@@ -251,18 +251,28 @@
           <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
             Simulate Live Incoming Phone Call:
           </h4>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <button id="btnSimulateAiCall" class="btn-primary" style="padding: 0.85rem 1.25rem; justify-content: space-between; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);" onclick="window.VoiceShield.simulateCall('ai')">
-              <span>🚨 SIMULATE AI CLONED CALL (Impersonator)</span>
-              <span style="font-family: var(--font-mono); font-size: 0.72rem;">[Play &amp; Detect]</span>
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <button id="btnSimulateAiCall" class="btn-primary" style="padding: 0.75rem 1.15rem; justify-content: space-between; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);" onclick="window.VoiceShield.simulateCall('ai')">
+              <span>🚨 SIMULATE AI CONVERSATION (94% Deepfake)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem;">[Full Voice]</span>
             </button>
 
-            <button id="btnSimulateHumanCall" class="btn-secondary" style="padding: 0.85rem 1.25rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.VoiceShield.simulateCall('human')">
-              <span>✅ SIMULATE GENUINE HUMAN CALL</span>
+            <button id="btnSimulateAiWhisperCall" class="btn-primary" style="padding: 0.75rem 1.15rem; justify-content: space-between; background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); border-color: rgba(239, 68, 68, 0.4);" onclick="window.VoiceShield.simulateCall('ai_whisper')">
+              <span>🚨 SIMULATE AI WHISPER / SOFT TTS (92% Deepfake)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem;">[Soft AI]</span>
+            </button>
+
+            <button id="btnSimulateHumanCall" class="btn-secondary" style="padding: 0.75rem 1.15rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.VoiceShield.simulateCall('human')">
+              <span>✅ SIMULATE GENUINE HUMAN VOICE (10% Risk)</span>
               <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);">[Natural Voice]</span>
             </button>
 
-            <button class="btn-secondary" style="padding: 0.65rem 1rem; justify-content: center;" onclick="window.VoiceShield.endSimulatedCall()">
+            <button id="btnSimulateHumanWhisperCall" class="btn-secondary" style="padding: 0.75rem 1.15rem; justify-content: space-between; border-color: rgba(16, 185, 129, 0.4);" onclick="window.VoiceShield.simulateCall('human_whisper')">
+              <span>✅ SIMULATE GENUINE HUMAN WHISPER (10% Risk)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);">[Soft Speech]</span>
+            </button>
+
+            <button class="btn-secondary" style="padding: 0.6rem 1rem; justify-content: center;" onclick="window.VoiceShield.endSimulatedCall()">
               <span>⏹ End Call Simulation</span>
             </button>
           </div>
