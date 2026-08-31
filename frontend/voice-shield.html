@@ -150,6 +150,21 @@
         <p id="micStatusText" style="text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem;">
           STANDBY (Click to Activate 200ms Telemetry)
         </p>
+
+        <!-- Live Acoustic Calibration / Threat Injection Buttons -->
+        <div style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 0.85rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 700;">
+            🔬 Live Acoustic Testing & Scenario Injector:
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <button id="btnMode_ai_test" class="mode-btn" onclick="window.VoiceShield.setAcousticMode('ai_test')" style="padding: 0.55rem 0.65rem; font-size: 0.74rem; font-weight: 700; border-radius: 8px; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; cursor: pointer; text-align: center;">
+              🚨 Test AI Clone (94%)
+            </button>
+            <button id="btnMode_human_test" class="mode-btn" onclick="window.VoiceShield.setAcousticMode('human_test')" style="padding: 0.55rem 0.65rem; font-size: 0.74rem; font-weight: 700; border-radius: 8px; border: 1px solid rgba(16,185,129,0.4); background: rgba(16,185,129,0.12); color: #10b981; cursor: pointer; text-align: center;">
+              ✅ Test Human Voice (12%)
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Right Column: 60 FPS Visualizer, Telemetry Cards & File Upload -->

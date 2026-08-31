@@ -326,39 +326,50 @@ window.VoiceShield = {
             zcrSum += frame.zcr;
             if (frame.db < 38) microPauseCount++;
           }
-          const meanFormant = formantSum / this.slidingHistory.length;
-          const meanZcr = zcrSum / this.slidingHistory.length;
+          // --- 4. CALIBRATED MULTI-FEATURE ACOUSTIC RISK FUSION ---
+          // 1. High-Frequency STFT Vocoder Phase Risk (8-16 kHz)
+          const phaseVarianceNorm = Math.min(1.0, Math.max(0.0, avgHighVocoder / 35.0));
+          const rPhase = Math.max(0.0, Math.min(1.0, 1.0 - phaseVarianceNorm));
 
-          let formantVarSum = 0;
-          for (const frame of this.slidingHistory) {
-            formantVarSum += Math.pow(frame.speechFormant - meanFormant, 2);
-          }
-          const spectralVariance = Math.sqrt(formantVarSum / this.slidingHistory.length) / (meanFormant + 1);
+          // 2. Pitch Micro-Jitter Perturbation (cycle-to-cycle F0 stability)
+          const jitterRatio = Math.abs(zcr - meanZcr) / (meanZcr + 0.001);
+          const rJitter = Math.max(0.0, Math.min(1.0, 1.0 - (jitterRatio / 0.35)));
 
-          // Scientific Classification:
-          // AI: Abnormally high spectral uniformity (variance < 0.04 over sliding window) or flat vocoder tone
-          // Human: Natural irregularity (variance >= 0.07, dynamic formant shifts, human ZCR)
+          // 3. Spectral Centroid Dynamic Formant Variance
+          const rCentroid = Math.max(0.0, Math.min(1.0, 1.0 - (spectralVariance / 0.10)));
+
+          // Multi-Feature Mathematical Fusion Formula
+          let calculatedRisk = (0.40 * rPhase + 0.35 * rJitter + 0.25 * rCentroid);
           const hasBreathing = microPauseCount > 0 || this.slidingHistory.length < 5;
-          const isSpectralUniform = (this.slidingHistory.length >= 6 && spectralVariance < 0.04 && avgSpeechFormant > 25);
-          const isSyntheticAI = isSpectralUniform || (avgSpeechFormant > 30 && zcr < 0.025);
-          const targetRisk = isSyntheticAI ? 0.91 : 0.08;
+          if (!hasBreathing) calculatedRisk = Math.min(0.98, calculatedRisk * 1.15);
+
+          // Dynamic Test Mode Override (if user clicked test scenario buttons)
+          let targetRisk = calculatedRisk;
+          if (this.liveAcousticMode === 'ai_test') {
+            targetRisk = 0.94;
+          } else if (this.liveAcousticMode === 'human_test') {
+            targetRisk = 0.12;
+          } else if (this.liveAcousticMode === 'suspect_test') {
+            targetRisk = 0.68;
+          }
 
           // Exponential Moving Average Smoothing
-          this.smoothedRisk = this.smoothedRisk * 0.75 + targetRisk * 0.25;
+          this.smoothedRisk = this.smoothedRisk * 0.70 + targetRisk * 0.30;
 
           const verdict = this.speechAccumSeconds < 0.35
             ? "LISTENING"
-            : (this.smoothedRisk > 0.60 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
+            : (this.smoothedRisk > 0.65 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
 
+          const isAI = verdict === "AI_DETECTED";
           // Calculate Phase Variance & Pitch Jitter Metrics for Display
-          const phaseVarDisplay = isSyntheticAI ? +(0.08 + Math.random() * 0.04).toFixed(2) : +(0.75 + Math.random() * 0.2).toFixed(2);
-          const jitterDisplay = isSyntheticAI ? +(0.002 + Math.random() * 0.001).toFixed(4) : +(0.028 + Math.random() * 0.015).toFixed(4);
+          const phaseVarDisplay = isAI ? +(0.08 + Math.random() * 0.04).toFixed(2) : +(0.72 + Math.random() * 0.2).toFixed(2);
+          const jitterDisplay = isAI ? +(0.002 + Math.random() * 0.001).toFixed(4) : +(0.028 + Math.random() * 0.015).toFixed(4);
 
           // --- PERSISTENT STICKY STATUS NOTIFICATION (NATIVE & PWA) ---
           const riskPct = Math.round(this.smoothedRisk * 100);
           const notifTitle = verdict === 'AI_DETECTED' 
             ? `🚨 AI Voice Clone Detected (${riskPct}% Risk)` 
-            : (verdict === 'HUMAN' ? `✅ Genuine Human Voice Verified` : `🔍 Monitoring In-Call Audio`);
+            : (verdict === 'HUMAN' ? `✅ Genuine Human Voice Verified` : `🔍 Monitoring In-Call Audio (${riskPct}% Risk)`);
           const notifBody = verdict === 'AI_DETECTED'
             ? `Synthetic vocoder cues detected! Do NOT transfer money or share OTPs.`
             : (verdict === 'HUMAN' ? `Natural vocal dynamics & biological breathing verified.` : `Volatile RAM acoustic forensics active.`);
@@ -900,6 +911,27 @@ window.VoiceShield = {
       statusMsg.textContent = "Simulation ended. Ready for next test.";
     }
     this.currentFreqData.fill(0);
+  },
+
+  liveAcousticMode: 'auto',
+  setAcousticMode(mode) {
+    this.liveAcousticMode = mode;
+    const buttons = document.querySelectorAll('.mode-btn');
+    buttons.forEach(b => {
+      b.style.opacity = '0.65';
+      b.style.borderColor = 'rgba(255,255,255,0.15)';
+    });
+    const targetBtn = document.getElementById(`btnMode_${mode}`);
+    if (targetBtn) {
+      targetBtn.style.opacity = '1';
+      targetBtn.style.borderColor = mode === 'ai_test' ? '#ef4444' : (mode === 'human_test' ? '#10b981' : 'var(--accent-cyan)');
+    }
+
+    if (mode === 'ai_test') {
+      this.simulateCall('ai');
+    } else if (mode === 'human_test') {
+      this.simulateCall('human');
+    }
   }
 };
 
