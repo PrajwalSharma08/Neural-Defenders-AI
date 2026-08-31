@@ -35,34 +35,48 @@ class InCallProtectionService : Service() {
             return START_NOT_STICKY
         }
 
-        val verdict = intent?.getStringExtra(EXTRA_VERDICT) ?: "LISTENING"
-        val riskScore = intent?.getIntExtra(EXTRA_RISK_SCORE, 0) ?: 0
-        val customMsg = intent?.getStringExtra(EXTRA_MESSAGE)
+        try {
+            val verdict = intent?.getStringExtra(EXTRA_VERDICT) ?: "LISTENING"
+            val riskScore = intent?.getIntExtra(EXTRA_RISK_SCORE, 0) ?: 0
+            val customMsg = intent?.getStringExtra(EXTRA_MESSAGE)
 
-        if (customMsg != null) {
-            val (title, color) = when (verdict) {
-                "AI_DETECTED" -> Pair("🚨 SentinelShield: AI Deepfake Detected ($riskScore% Risk)", "#EF4444")
-                "HUMAN" -> Pair("✅ SentinelShield: Genuine Human Voice Verified", "#10B981")
-                else -> Pair("🔍 SentinelShield: Monitoring In-Call Voice (RAM TEE)", "#06B6D4")
-            }
-            updateNotification(title, customMsg, color)
-        } else {
-            startForeground(
-                NOTIFICATION_ID,
-                buildNotification(
+            if (customMsg != null) {
+                val (title, color) = when (verdict) {
+                    "AI_DETECTED" -> Pair("🚨 SentinelShield: AI Deepfake Detected ($riskScore% Risk)", "#EF4444")
+                    "HUMAN" -> Pair("✅ SentinelShield: Genuine Human Voice Verified", "#10B981")
+                    else -> Pair("🔍 SentinelShield: Monitoring In-Call Voice (RAM TEE)", "#06B6D4")
+                }
+                updateNotification(title, customMsg, color)
+            } else {
+                val notif = buildNotification(
                     "🛡️ SentinelShield AI • In-Call Defense Active",
                     "Status: Listening • Volatile RAM DSP Active (Zero Disk Retention)",
                     "#06B6D4"
                 )
-            )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        notif,
+                        android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                    )
+                } else {
+                    startForeground(NOTIFICATION_ID, notif)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         return START_STICKY
     }
 
     fun updateNotification(title: String, message: String, colorHex: String) {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NOTIFICATION_ID, buildNotification(title, message, colorHex))
+        try {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(NOTIFICATION_ID, buildNotification(title, message, colorHex))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun buildNotification(title: String, message: String, colorHex: String): Notification {

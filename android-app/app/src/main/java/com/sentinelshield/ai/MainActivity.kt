@@ -35,11 +35,8 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         shieldSwitch = findViewById(R.id.shieldSwitch)
 
-        checkAndRequestPermissions()
         setupWebView()
-
-        // Automatically start the in-call sticky background service
-        startInCallService()
+        checkAndRequestPermissions()
 
         shieldSwitch.setOnCheckedChangeListener { _, isChecked ->
             InCallProtectionService.isShieldActive = isChecked
@@ -58,6 +55,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun startInCallService() {
         try {
+            // Check if audio / notification permissions are granted before starting service on Android 14+
+            val hasAudio = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+            val hasNotif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            } else true
+
+            if (!hasAudio || !hasNotif) {
+                // Do not launch FGS until user allows permissions to prevent crash
+                return
+            }
+
             val serviceIntent = Intent(this, InCallProtectionService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(serviceIntent)
@@ -227,6 +235,7 @@ class MainActivity : AppCompatActivity() {
 
             if (audioGranted && cameraGranted && notifGranted) {
                 Toast.makeText(this, "✅ All Hardware & Security Permissions Granted!", Toast.LENGTH_SHORT).show()
+                startInCallService()
             }
         }
     }
