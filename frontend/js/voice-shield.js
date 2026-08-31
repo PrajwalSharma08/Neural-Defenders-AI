@@ -306,19 +306,16 @@ window.VoiceShield = {
           }
           const zcr = zeroCrossings / inputData.length;
 
-          // Compute Wiener Spectral Flatness
-          let logSpecSum = 0;
-          let linSpecSum = 0;
-          let specBins = 0;
-          for (let b = 10; b < this.freqDataArray.length; b++) {
-            const mag = (this.freqDataArray[b] || 0) + 1e-6;
-            logSpecSum += Math.log(mag);
-            linSpecSum += mag;
-            specBins++;
+          // Compute Stable Wiener Spectral Flatness (Bounded Power Density)
+          let stableLogSum = 0;
+          let stableLinSum = 0;
+          const specBins = 90; // Bins 10 to 100
+          for (let b = 10; b <= 100; b++) {
+            const p = Math.max(1, this.freqDataArray[b] || 0) / 255.0;
+            stableLogSum += Math.log(p);
+            stableLinSum += p;
           }
-          const geomMean = Math.exp(logSpecSum / specBins);
-          const arithMean = linSpecSum / specBins;
-          const spectralFlatness = geomMean / arithMean;
+          const spectralFlatness = Math.exp(stableLogSum / specBins) / ((stableLinSum / specBins) + 1e-4);
 
           // --- 3. 2-to-3-Second Sliding Window History Buffer ---
           if (!this.slidingHistory) this.slidingHistory = [];
@@ -367,20 +364,20 @@ window.VoiceShield = {
           const vocoderRatio = vocoderSum / (formantSum + 1e-4);
 
           // Scientific Multi-Scenario Classification (Calibrated across all 2,893 dataset samples):
-          // - Scenario A: Human Normal Speech (smooth flatness <= 0.060, vocoder <= 0.15, formant variance > 0.05)
-          // - Scenario B: Human Whisper (low volume < 45dB, bounded flatness <= 0.050, vocoder <= 0.14)
-          // - Scenario C: AI Normal / Speaker Playback (flatnessStd > 0.065 || vocoderRatio > 0.16 || zcrStd > 0.080)
-          // - Scenario D: AI Whisper (flatnessStd > 0.055 || vocoderRatio > 0.15)
+          // - Scenario A: Human Normal Speech (smooth bounded flatness <= 0.35, dynamic formants variance > 0.08, vocoder <= 0.20)
+          // - Scenario B: Human Whisper (low volume < 45dB, bounded flatness <= 0.38, vocoder <= 0.22)
+          // - Scenario C: AI Normal / Speaker Playback (vocoderRatio > 0.22 || spectralVariance < 0.08 || meanFlatness > 0.40)
+          // - Scenario D: AI Whisper (vocoderRatio > 0.25 || meanFlatness > 0.42)
           const isWhisper = (dbSPL < 45 && rms < 0.0035);
-          const isAIWhisper = isWhisper && (flatnessStd > 0.055 || vocoderRatio > 0.15);
-          const isAINormal = !isWhisper && (flatnessStd > 0.065 || vocoderRatio > 0.16 || zcrStd > 0.080);
+          const isAIWhisper = isWhisper && (vocoderRatio > 0.25 || meanFlatness > 0.42);
+          const isAINormal = !isWhisper && (vocoderRatio > 0.22 || spectralVariance < 0.08 || meanFlatness > 0.40);
           const isSyntheticAI = (N >= 3 && (isAIWhisper || isAINormal));
 
-          let targetRisk = 0.10;
+          let targetRisk = 0.11;
           if (isSyntheticAI) {
-            targetRisk = Math.min(0.96, Math.max(0.85, 0.75 + (flatnessStd * 2.0) + (vocoderRatio * 0.4)));
+            targetRisk = Math.min(0.96, Math.max(0.85, 0.78 + (meanFlatness * 0.3) + (vocoderRatio * 0.4)));
           } else {
-            targetRisk = Math.max(0.08, Math.min(0.16, 0.12 - (spectralVariance * 0.1)));
+            targetRisk = Math.max(0.08, Math.min(0.14, 0.12 - (spectralVariance * 0.05)));
           }
 
           // Exponential Moving Average Smoothing
