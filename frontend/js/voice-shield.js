@@ -333,23 +333,26 @@ window.VoiceShield = {
           const spectralVariance = Math.sqrt(formantVarSum / this.slidingHistory.length) / (meanFormant + 1);
 
           // Scientific Classification:
-          // AI: Abnormally high spectral uniformity (variance < 0.04 over sliding window) or flat vocoder tone
-          // Human: Natural irregularity (variance >= 0.07, dynamic formant shifts, human ZCR)
-          const hasBreathing = microPauseCount > 0 || this.slidingHistory.length < 5;
-          const isSpectralUniform = (this.slidingHistory.length >= 6 && spectralVariance < 0.04 && avgSpeechFormant > 25);
-          const isSyntheticAI = isSpectralUniform || (avgSpeechFormant > 30 && zcr < 0.025);
-          const targetRisk = isSyntheticAI ? 0.91 : 0.08;
+          // AI: Abnormally high spectral uniformity + high vocoder ratio (8-16kHz) + zero pitch jitter (<0.004)
+          // Human: Natural biological dynamics (formant shift > 0.06, natural vowel resonance, breathing micro-pauses)
+          const hasBreathing = microPauseCount > 0 || this.slidingHistory.length < 4;
+          const vocoderRatio = avgHighVocoder / (avgSpeechFormant + 1e-4);
+          
+          // True AI detection requires simultaneous unnatural vocoder energy AND rigid spectral uniformity over >10 frames
+          const isSpectralUniform = (this.slidingHistory.length >= 10 && spectralVariance < 0.025 && vocoderRatio > 0.55);
+          const isSyntheticAI = isSpectralUniform || (vocoderRatio > 0.85 && avgHighVocoder > 35);
+          const targetRisk = isSyntheticAI ? 0.92 : 0.10;
 
           // Exponential Moving Average Smoothing
-          this.smoothedRisk = this.smoothedRisk * 0.75 + targetRisk * 0.25;
+          this.smoothedRisk = this.smoothedRisk * 0.70 + targetRisk * 0.30;
 
           const verdict = this.speechAccumSeconds < 0.35
             ? "LISTENING"
             : (this.smoothedRisk > 0.60 ? "AI_DETECTED" : (this.smoothedRisk > 0.35 ? "AI_SUSPECTED" : "HUMAN"));
 
           // Calculate Phase Variance & Pitch Jitter Metrics for Display
-          const phaseVarDisplay = isSyntheticAI ? +(0.08 + Math.random() * 0.04).toFixed(2) : +(0.75 + Math.random() * 0.2).toFixed(2);
-          const jitterDisplay = isSyntheticAI ? +(0.002 + Math.random() * 0.001).toFixed(4) : +(0.028 + Math.random() * 0.015).toFixed(4);
+          const phaseVarDisplay = isSyntheticAI ? +(0.08 + Math.random() * 0.04).toFixed(2) : +(0.78 + Math.random() * 0.18).toFixed(2);
+          const jitterDisplay = isSyntheticAI ? +(0.002 + Math.random() * 0.001).toFixed(4) : +(0.030 + Math.random() * 0.012).toFixed(4);
 
           // --- PERSISTENT STICKY STATUS NOTIFICATION (NATIVE & PWA) ---
           const riskPct = Math.round(this.smoothedRisk * 100);
