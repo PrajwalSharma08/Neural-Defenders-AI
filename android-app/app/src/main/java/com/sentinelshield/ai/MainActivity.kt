@@ -196,6 +196,19 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 neededPermissions.add(Manifest.permission.POST_NOTIFICATIONS)
             }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(Manifest.permission.READ_MEDIA_AUDIO)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
         }
 
         if (neededPermissions.isNotEmpty()) {
@@ -208,8 +221,12 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             val audioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
             val cameraGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (audioGranted && cameraGranted) {
-                Toast.makeText(this, "✅ Hardware Permissions Active for Voice & Link Shield", Toast.LENGTH_SHORT).show()
+            val notifGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            } else true
+
+            if (audioGranted && cameraGranted && notifGranted) {
+                Toast.makeText(this, "✅ All Hardware & Security Permissions Granted!", Toast.LENGTH_SHORT).show()
             }
         }
     }

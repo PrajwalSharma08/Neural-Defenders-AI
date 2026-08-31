@@ -406,6 +406,10 @@
         </nav>
 
         <div class="header-actions">
+          <!-- Permissions Manager Button -->
+          <button class="btn-secondary" onclick="window.SentinelApp.openPermissionsModal()" style="padding: 0.45rem 0.75rem; font-size: 0.75rem; font-weight: 700; border-color: rgba(6, 182, 212, 0.4); color: var(--accent-cyan);">
+            <span>🔐 Permissions</span>
+          </button>
           <div class="theme-switch-group">
             <button class="theme-btn active" data-theme="dark" onclick="window.SentinelApp.applyTheme('dark')">
               🌙 <span>Dark</span>
@@ -990,6 +994,89 @@
         <button id="btnCancelPdfModal" class="btn-secondary">Cancel</button>
         <button id="btnGeneratePdf" class="btn-primary">
           <span>Download Section 65B PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hardware & Security Permissions Modal -->
+  <div id="permissionsModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 580px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.35rem;">🔐</span>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0;">Hardware & System Permissions</h3>
+            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Grant permissions for real-time acoustic DSP, camera QR scanning & sticky in-call alerts.</p>
+          </div>
+        </div>
+        <button onclick="window.SentinelApp.closePermissionsModal()" class="btn-secondary" style="padding: 0.35rem 0.65rem;">✕</button>
+      </div>
+
+      <div class="perm-grid-modal">
+        <!-- 1. Microphone -->
+        <div class="perm-item-card">
+          <div class="perm-item-header">
+            <div class="perm-item-title">
+              <span>🎤</span>
+              <span>Microphone</span>
+            </div>
+            <span id="permBadgeMic" class="perm-status-pill perm-prompt" onclick="window.SentinelApp.requestMicrophonePermission()">ALLOW NOW ⚡</span>
+          </div>
+          <div class="perm-item-desc">
+            Required for sub-second 200ms WebAudio acoustic DSP (STFT Phase Variance, Titze Pitch Jitter, Formants). 🔒 Volatile RAM only (zero call logging).
+          </div>
+        </div>
+
+        <!-- 2. Camera -->
+        <div class="perm-item-card">
+          <div class="perm-item-header">
+            <div class="perm-item-title">
+              <span>📷</span>
+              <span>Camera</span>
+            </div>
+            <span id="permBadgeCam" class="perm-status-pill perm-prompt" onclick="window.SentinelApp.requestCameraPermission()">ALLOW NOW ⚡</span>
+          </div>
+          <div class="perm-item-desc">
+            Required for optical QR barcode matrix scanning & quishing detection. High-speed 60fps in-browser jsQR decoding.
+          </div>
+        </div>
+
+        <!-- 3. Notifications -->
+        <div class="perm-item-card">
+          <div class="perm-item-header">
+            <div class="perm-item-title">
+              <span>🔔</span>
+              <span>In-Call Notifications</span>
+            </div>
+            <span id="permBadgeNotif" class="perm-status-pill perm-prompt" onclick="window.SentinelApp.requestNotificationPermission()">ALLOW NOW ⚡</span>
+          </div>
+          <div class="perm-item-desc">
+            Required for the persistent Sticky In-Call Notification Bar & instant high-priority red alert chimes when deepfakes are intercepted.
+          </div>
+        </div>
+
+        <!-- 4. Storage / TEE Memory -->
+        <div class="perm-item-card">
+          <div class="perm-item-header">
+            <div class="perm-item-title">
+              <span>📁</span>
+              <span>Storage & Audit Cache</span>
+            </div>
+            <span id="permBadgeStorage" class="perm-status-pill perm-granted">ACTIVE 🟢</span>
+          </div>
+          <div class="perm-item-desc">
+            Used for exporting Section 65B Certified Forensic Dossier PDFs and local threat history cache.
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem;">
+        <button class="btn-primary" onclick="window.SentinelApp.requestAllPermissions()" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
+          <span>⚡ Grant All Hardware Permissions</span>
+        </button>
+        <button class="btn-secondary" onclick="window.SentinelApp.closePermissionsModal()">
+          <span>Close</span>
         </button>
       </div>
     </div>

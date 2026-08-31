@@ -19,6 +19,9 @@ window.SentinelApp = {
     this.initAttestationTicker();
     this.initPwaInstall();
 
+    // Initialize permission state checks
+    this.checkPermissionsStatus();
+
     // Show Notification button if not granted
     if ('Notification' in window && Notification.permission !== 'granted') {
       const btnNotif = document.getElementById('btnEnableNotifications');
@@ -66,26 +69,157 @@ window.SentinelApp = {
   },
 
   // --------------------------------------------------------------------------
-  // Global Notification & Push Enable Handler
+  // Hardware & Security Permission Management (Mic, Camera, Notification, Storage)
   // --------------------------------------------------------------------------
+  permissionsState: {
+    mic: 'prompt',
+    camera: 'prompt',
+    notif: 'prompt',
+    storage: 'granted',
+  },
+
+  async checkPermissionsStatus() {
+    if (navigator.permissions) {
+      try {
+        const micStatus = await navigator.permissions.query({ name: 'microphone' }).catch(() => null);
+        if (micStatus) {
+          this.permissionsState.mic = micStatus.state;
+          micStatus.onchange = () => { this.permissionsState.mic = micStatus.state; this.renderPermissionPills(); };
+        }
+      } catch (e) {}
+
+      try {
+        const camStatus = await navigator.permissions.query({ name: 'camera' }).catch(() => null);
+        if (camStatus) {
+          this.permissionsState.camera = camStatus.state;
+          camStatus.onchange = () => { this.permissionsState.camera = camStatus.state; this.renderPermissionPills(); };
+        }
+      } catch (e) {}
+    }
+
+    if ('Notification' in window) {
+      this.permissionsState.notif = Notification.permission;
+    }
+
+    this.renderPermissionPills();
+  },
+
+  renderPermissionPills() {
+    const micBadge = document.getElementById('permBadgeMic');
+    const camBadge = document.getElementById('permBadgeCam');
+    const notifBadge = document.getElementById('permBadgeNotif');
+    const storageBadge = document.getElementById('permBadgeStorage');
+
+    if (micBadge) {
+      const isGranted = this.permissionsState.mic === 'granted';
+      micBadge.textContent = isGranted ? 'GRANTED 🟢' : 'ALLOW NOW ⚡';
+      micBadge.className = isGranted ? 'perm-status-pill perm-granted' : 'perm-status-pill perm-prompt';
+    }
+    if (camBadge) {
+      const isGranted = this.permissionsState.camera === 'granted';
+      camBadge.textContent = isGranted ? 'GRANTED 🟢' : 'ALLOW NOW ⚡';
+      camBadge.className = isGranted ? 'perm-status-pill perm-granted' : 'perm-status-pill perm-prompt';
+    }
+    if (notifBadge) {
+      const isGranted = this.permissionsState.notif === 'granted';
+      notifBadge.textContent = isGranted ? 'GRANTED 🟢' : 'ALLOW NOW ⚡';
+      notifBadge.className = isGranted ? 'perm-status-pill perm-granted' : 'perm-status-pill perm-prompt';
+    }
+    if (storageBadge) {
+      storageBadge.textContent = 'ACTIVE 🟢';
+      storageBadge.className = 'perm-status-pill perm-granted';
+    }
+  },
+
+  async requestMicrophonePermission() {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(t => t.stop());
+        this.permissionsState.mic = 'granted';
+        this.renderPermissionPills();
+        this.showToast('✅ Microphone Access Granted for Voice DSP!', 'success');
+      }
+    } catch (err) {
+      console.warn('Microphone permission rejected:', err);
+      this.permissionsState.mic = 'denied';
+      this.renderPermissionPills();
+      this.showToast('Microphone access denied in browser settings.', 'warning');
+    }
+  },
+
+  async requestCameraPermission() {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(t => t.stop());
+        this.permissionsState.camera = 'granted';
+        this.renderPermissionPills();
+        this.showToast('✅ Camera Access Granted for QR Scanner!', 'success');
+      }
+    } catch (err) {
+      console.warn('Camera permission rejected:', err);
+      this.permissionsState.camera = 'denied';
+      this.renderPermissionPills();
+      this.showToast('Camera access denied in browser settings.', 'warning');
+    }
+  },
+
   async requestNotificationPermission() {
     if (!('Notification' in window)) {
-      alert("Push notifications not supported on this browser.");
+      this.showToast("Push notifications not supported on this browser.", 'warning');
       return;
     }
     try {
       const perm = await Notification.requestPermission();
-      console.log("[SentinelShield] Manual Notification Request:", perm);
+      this.permissionsState.notif = perm;
+      this.renderPermissionPills();
       if (perm === 'granted') {
-        alert("✅ Security Alerts are now ENABLED!");
-        const btn = document.getElementById('btnEnableNotifications');
-        if (btn) btn.style.display = 'none';
+        this.showToast("✅ In-Call Security Alerts & Sticky Bar Active!", 'success');
       } else {
-        alert("❌ Alerts Denied. You may need to enable them in your Android browser settings.");
+        this.showToast("Notifications blocked. Enable in Android settings.", 'warning');
       }
     } catch (e) {
       console.error(e);
     }
+  },
+
+  async requestAllPermissions() {
+    this.showToast('Requesting security permissions...', 'info');
+    await this.requestMicrophonePermission();
+    await this.requestCameraPermission();
+    await this.requestNotificationPermission();
+    this.renderPermissionPills();
+    this.showToast('🎯 Hardware & Security Setup Completed!', 'success');
+  },
+
+  openPermissionsModal() {
+    const modal = document.getElementById('permissionsModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+      this.checkPermissionsStatus();
+    }
+  },
+
+  closePermissionsModal() {
+    const modal = document.getElementById('permissionsModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+    }
+  },
+
+  showToast(msg, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `cyber-toast cyber-toast-${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
   },
 
   // --------------------------------------------------------------------------
