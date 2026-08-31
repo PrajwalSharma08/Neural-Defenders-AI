@@ -1249,10 +1249,12 @@ class CyberLinkShieldApp {
 // Global Singleton & Class Export
 window.CyberLinkShieldApp = CyberLinkShieldApp;
 window.CyberLinkShield = null;
+window.LinkShield = null;
 
 function bootCyberLinkShield() {
   if (!window.CyberLinkShield) {
     window.CyberLinkShield = new CyberLinkShieldApp();
+    window.LinkShield = window.CyberLinkShield;
   }
 }
 

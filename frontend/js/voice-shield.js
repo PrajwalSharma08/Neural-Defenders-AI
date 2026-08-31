@@ -168,6 +168,14 @@ window.VoiceShield = {
         sampleRate: this.TARGET_SAMPLE_RATE,
       });
 
+      if (this.audioCtx.state === 'suspended') {
+        try {
+          await this.audioCtx.resume();
+        } catch (e) {
+          console.warn('[VoiceShield] AudioContext resume note:', e);
+        }
+      }
+
       const source = this.audioCtx.createMediaStreamSource(this.stream);
       
       // True FFT Analyser Node for Frequency Domain Analysis
@@ -376,8 +384,11 @@ window.VoiceShield = {
       this.processor.connect(this.audioCtx.destination);
       this.isStreaming = true;
     } catch (err) {
-      console.error("Microphone capture failed:", err);
-      alert("Microphone permission required: " + err.message);
+      console.warn("Microphone capture note:", err);
+      const micStatusText = document.getElementById('micStatusText');
+      if (micStatusText) {
+        micStatusText.textContent = "Microphone access blocked. Use the simulated calls below or upload audio.";
+      }
       this.stopStreaming();
     }
   },
