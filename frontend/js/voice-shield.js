@@ -313,15 +313,19 @@ window.VoiceShield = {
         const vocoderRatio = vocoderSum / (formantSum + 1e-4);
 
         // --- 3. Dynamic Live Voice Discrimination ---
-        // A) Ambient / Background Room Noise (rms < 0.0015 && avgSpeechFormant < 5):
-        //    Meter breathes and fluctuates live around 2% to 6%
-        // B) AI Voice / Speaker Playback (vocoderRatio > 0.35 || avgHighVocoder > 10 || (avgHighVocoder > 6 && spectralVariance < 0.05)):
-        //    Shoots to 88% - 95% Red
-        // C) Genuine Human Voice (Natural dynamic formants, avgSpeechFormant >= 5):
-        //    Locks at 9% - 14% Emerald Green
-        const isQuiet = (rms < 0.0015 && avgSpeechFormant < 5);
-        const isAI = (vocoderRatio > 0.35 || avgHighVocoder > 10 || (avgHighVocoder > 6 && spectralVariance < 0.05));
-        const isHuman = (!isAI && (avgSpeechFormant >= 5 || rms >= 0.0015));
+        // A) Ambient / Room Quiet:
+        //    Low energy and no active speech formant resonance
+        // B) Genuine Human Voice:
+        //    Active speech formants (avgSpeechFormant >= 6 || rms >= 0.0015)
+        //    Formant energy dominates over high vocoder frequencies (vocoderRatio < 0.23)
+        //    Natural articulatory dynamics across syllables
+        // C) Synthetic AI Voice / Neural TTS Clone:
+        //    Elevated high-frequency vocoder ratio (vocoderRatio >= 0.23)
+        //    OR artificial spectral rigidity with vocoder plateau
+        const isSpeaking = (rms >= 0.0015 || avgSpeechFormant >= 6);
+        const isAI = isSpeaking && (vocoderRatio >= 0.23 || (vocoderRatio > 0.19 && spectralVariance < 0.04));
+        const isHuman = isSpeaking && !isAI;
+        const isQuiet = !isSpeaking;
 
         let targetRisk = 0.03;
         let verdict = "AMBIENT";
