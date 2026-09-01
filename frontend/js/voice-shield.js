@@ -273,6 +273,25 @@ window.VoiceShield = {
         }
         const zcr = zeroCrossings / inputData.length;
 
+        // Compute Time-Domain Pitch Period via Normalized Autocorrelation (Volume-Invariant)
+        let pitchLag = 0;
+        if (rms > 0.0015) {
+          const minLag = Math.max(12, Math.floor(sr / 650)); // Max 650Hz
+          const maxLag = Math.min(220, Math.floor(sr / 75));  // Min 75Hz
+          let maxCorr = -1;
+          for (let lag = minLag; lag < maxLag; lag += 2) {
+            let corr = 0;
+            const step = 4;
+            for (let i = 0; i < inputData.length - lag; i += step) {
+              corr += inputData[i] * inputData[i + lag];
+            }
+            if (corr > maxCorr) {
+              maxCorr = corr;
+              pitchLag = lag;
+            }
+          }
+        }
+
         // Compute Stable Wiener Spectral Flatness (Bounded Power Density)
         let stableLogSum = 0;
         let stableLinSum = 0;
@@ -290,6 +309,7 @@ window.VoiceShield = {
           rms: rms,
           db: dbSPL,
           zcr: zcr,
+          pitchLag: pitchLag,
           speechFormant: avgSpeechFormant,
           lowDrone: avgLowDrone,
           highVocoder: avgHighVocoder,
@@ -312,6 +332,7 @@ window.VoiceShield = {
         const meanVocoder = vocoderSum / N;
         const meanFlatness = flatnessSum / N;
 
+        // Biological Vocal-Tract Articulatory Dynamics (Syllable variance across frames)
         let formantVarSum = 0;
         for (const frame of this.slidingHistory) {
           formantVarSum += Math.pow(frame.speechFormant - meanFormant, 2);
@@ -319,28 +340,40 @@ window.VoiceShield = {
         const spectralVariance = Math.sqrt(formantVarSum / N) / (meanFormant + 1e-4);
         const vocoderRatio = vocoderSum / (formantSum + 1e-4);
 
-        // --- 3. Dynamic Live Voice Discrimination ---
-        // Vocoder Ratio = High frequencies / Core speech formants
-        // In real Human voice: Formant energy (250-3200Hz) is dominant over high band -> vocoderRatio <= 0.25
-        // In AI Voice Clone / Neural TTS: Vocoder high plateau -> vocoderRatio >= 0.35
-        const isSpeaking = (rms >= 0.002 || avgSpeechFormant >= 8);
-        const isAI = isSpeaking && (vocoderRatio >= 0.35);
-        const isHuman = isSpeaking && !isAI;
-        const isQuiet = !isSpeaking;
+        // Pitch Jitter (Cycle-to-cycle frequency perturbations)
+        let pitchJitter = 0.035; // Default human jitter
+        const voicedPitches = this.slidingHistory.map(f => f.pitchLag).filter(p => p > 12);
+        if (voicedPitches.length >= 4) {
+          let pDiffSum = 0;
+          for (let i = 1; i < voicedPitches.length; i++) {
+            pDiffSum += Math.abs(voicedPitches[i] - voicedPitches[i - 1]);
+          }
+          const meanP = voicedPitches.reduce((a, b) => a + b, 0) / voicedPitches.length;
+          pitchJitter = (pDiffSum / (voicedPitches.length - 1)) / (meanP + 1e-4);
+        }
+
+        // --- 3. Multi-Dimensional Volume-Invariant Voice Discrimination ---
+        // A) Insaan ki aawaz (Direct Mic, Phone Speaker, Loud voice, Soft whisper):
+        //    Natural biological vocal cords have natural cycle jitter (>= 0.015) & syllable modulation (>= 0.06).
+        // B) AI Voice Clone / Neural TTS (ChatGPT, ElevenLabs):
+        //    Synthesized on rigid mathematical time grid (pitchJitter < 0.012 && spectralVariance < 0.055).
+        const isSpeaking = (rms >= 0.0018 || avgSpeechFormant >= 7);
+        const isAISynthetic = isSpeaking && ((pitchJitter < 0.012 && spectralVariance < 0.055) || (vocoderRatio >= 0.45 && spectralVariance < 0.07));
+        const isHumanBiological = isSpeaking && !isAISynthetic && (spectralVariance >= 0.06 || pitchJitter >= 0.015);
 
         let targetRisk = 0.03;
         let verdict = "AMBIENT";
 
-        if (isQuiet) {
+        if (!isSpeaking) {
           // Dynamic ambient energy fluctuation (2% to 5%)
           targetRisk = 0.02 + Math.min(0.04, (rms * 1500) * 0.01) + (Math.random() * 0.015);
           verdict = "AMBIENT";
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
-        } else if (isAI) {
+        } else if (isAISynthetic) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
           targetRisk = 0.90 + Math.min(0.05, vocoderRatio * 0.05) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
-        } else if (isHuman) {
+        } else if (isHumanBiological || !isAISynthetic) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
           targetRisk = 0.10 + (Math.random() * 0.03 - 0.015);
           verdict = (dbSPL < 45 && rms < 0.003) ? "HUMAN_WHISPER" : "HUMAN";
