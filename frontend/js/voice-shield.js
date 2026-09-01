@@ -216,22 +216,29 @@ window.VoiceShield = {
           this.currentFreqData[i] = this.freqDataArray[idx] || 0;
         }
 
-        // --- PRECISE ACOUSTIC FORMANT DISCRIMINATION ---
-        // Bin size @ 16000Hz, fftSize 512 = 31.25 Hz per bin
-        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 250 Hz (bins 0 to 8)
+        // --- DYNAMIC SAMPLE-RATE-AWARE ACOUSTIC FORMANT DISCRIMINATION ---
+        const sr = (this.audioCtx && this.audioCtx.sampleRate) ? this.audioCtx.sampleRate : 48000;
+        const binHz = sr / this.analyser.fftSize; // e.g., 93.75 Hz at 48k, 31.25 Hz at 16k
+        
+        // 1. Low Drone band (Cooler, AC, Motor hum): 0 - 200 Hz
+        const binLowEnd = Math.max(1, Math.floor(200 / binHz));
         let lowDroneSum = 0;
-        for (let b = 0; b <= 8; b++) lowDroneSum += this.freqDataArray[b] || 0;
-        const avgLowDrone = lowDroneSum / 9;
+        for (let b = 0; b <= binLowEnd; b++) lowDroneSum += this.freqDataArray[b] || 0;
+        const avgLowDrone = lowDroneSum / (binLowEnd + 1);
 
-        // 2. Human Voice Formant band (Vocal cords F1/F2): 350 - 3200 Hz (bins 11 to 102)
+        // 2. Human Voice Formant band (Vocal cords F1/F2): 250 - 3200 Hz
+        const binFormantStart = Math.max(1, Math.floor(250 / binHz));
+        const binFormantEnd = Math.min(this.freqDataArray.length - 1, Math.floor(3200 / binHz));
         let speechFormantSum = 0;
-        for (let b = 11; b <= 102; b++) speechFormantSum += this.freqDataArray[b] || 0;
-        const avgSpeechFormant = speechFormantSum / 92;
+        for (let b = binFormantStart; b <= binFormantEnd; b++) speechFormantSum += this.freqDataArray[b] || 0;
+        const avgSpeechFormant = speechFormantSum / (binFormantEnd - binFormantStart + 1);
 
-        // 3. High Vocoder band (AI artifact zone): 4500 - 8000 Hz (bins 144 to 255)
+        // 3. High Vocoder band (AI artifact zone): 4200 - 8000 Hz
+        const binHighStart = Math.min(this.freqDataArray.length - 1, Math.floor(4200 / binHz));
+        const binHighEnd = Math.min(this.freqDataArray.length - 1, Math.floor(8000 / binHz));
         let highVocoderSum = 0;
-        for (let b = 144; b < this.freqDataArray.length; b++) highVocoderSum += this.freqDataArray[b] || 0;
-        const avgHighVocoder = highVocoderSum / (this.freqDataArray.length - 144);
+        for (let b = binHighStart; b <= binHighEnd; b++) highVocoderSum += this.freqDataArray[b] || 0;
+        const avgHighVocoder = highVocoderSum / (binHighEnd - binHighStart + 1);
 
         // Compute RMS
         let sumSquares = 0;
@@ -313,17 +320,11 @@ window.VoiceShield = {
         const vocoderRatio = vocoderSum / (formantSum + 1e-4);
 
         // --- 3. Dynamic Live Voice Discrimination ---
-        // A) Ambient / Room Quiet:
-        //    Low energy and no active speech formant resonance
-        // B) Genuine Human Voice:
-        //    Active speech formants (avgSpeechFormant >= 6 || rms >= 0.0015)
-        //    Formant energy dominates over high vocoder frequencies (vocoderRatio < 0.23)
-        //    Natural articulatory dynamics across syllables
-        // C) Synthetic AI Voice / Neural TTS Clone:
-        //    Elevated high-frequency vocoder ratio (vocoderRatio >= 0.23)
-        //    OR artificial spectral rigidity with vocoder plateau
-        const isSpeaking = (rms >= 0.0015 || avgSpeechFormant >= 6);
-        const isAI = isSpeaking && (vocoderRatio >= 0.23 || (vocoderRatio > 0.19 && spectralVariance < 0.04));
+        // Vocoder Ratio = High frequencies / Core speech formants
+        // In real Human voice: Formant energy (250-3200Hz) is dominant over high band -> vocoderRatio <= 0.25
+        // In AI Voice Clone / Neural TTS: Vocoder high plateau -> vocoderRatio >= 0.35
+        const isSpeaking = (rms >= 0.002 || avgSpeechFormant >= 8);
+        const isAI = isSpeaking && (vocoderRatio >= 0.35);
         const isHuman = isSpeaking && !isAI;
         const isQuiet = !isSpeaking;
 
@@ -331,13 +332,13 @@ window.VoiceShield = {
         let verdict = "AMBIENT";
 
         if (isQuiet) {
-          // Dynamic ambient energy fluctuation (2% to 6%)
+          // Dynamic ambient energy fluctuation (2% to 5%)
           targetRisk = 0.02 + Math.min(0.04, (rms * 1500) * 0.01) + (Math.random() * 0.015);
           verdict = "AMBIENT";
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
         } else if (isAI) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.89 + Math.min(0.06, vocoderRatio * 0.10) + (Math.random() * 0.02 - 0.01);
+          targetRisk = 0.90 + Math.min(0.05, vocoderRatio * 0.05) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
         } else if (isHuman) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
