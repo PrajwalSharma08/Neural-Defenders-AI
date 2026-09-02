@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 from backend.services.voice_dsp import _extract_dataset_feature_vector, _load_ml_model
 from backend.scripts.calibrate_dsp import load_audio_file
 
-DATASET_DIR = Path(r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data")
-FEATURES_CSV = Path(r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\features.csv")
+DATASET_DIR = Path(Path(__file__).resolve().parent.parent.parent / "data" / "voice_data")
+FEATURES_CSV = Path(__file__).resolve().parent.parent.parent / "data" / "features.csv"
 
 df_feats = pd.read_csv(FEATURES_CSV)
 payload = _load_ml_model()

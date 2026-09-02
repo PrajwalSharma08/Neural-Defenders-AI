@@ -2,7 +2,7 @@
 SentinelShield AI — Multi-Lingual Dataset Model Training Script.
 
 Trains a Random Forest classifier directly on the 962 audio samples in:
-  - C:\\Users\\FRONTMAN\\OneDrive\\Desktop\\voice-data-main\\features.csv
+  - data/features.csv
 Saves the trained model and scaler to:
   - backend/models/voice_classifier.joblib
 """
@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MODELS_DIR = BASE_DIR / "models"
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_FEATURES_PATH = Path(r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\features.csv")
+DEFAULT_FEATURES_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "features.csv"
 LOCAL_FEATURES_PATH = BASE_DIR.parent / "dataset" / "features.csv"
 MODEL_OUTPUT_PATH = MODELS_DIR / "voice_classifier.joblib"
 

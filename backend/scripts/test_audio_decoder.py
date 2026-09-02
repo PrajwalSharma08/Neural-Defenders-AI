@@ -53,7 +53,7 @@ def decode_audio_bytes(raw_bytes: bytes, target_sr: int = 16000) -> bytes:
     return raw_bytes
 
 # Test on real dataset file
-wav_path = r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data\ai\ai_hi_001.wav"
+wav_path = r"data/voice_data\ai\ai_hi_001.wav"
 with open(wav_path, "rb") as f:
     raw = f.read()
 

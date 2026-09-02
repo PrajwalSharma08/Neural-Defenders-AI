@@ -8,7 +8,7 @@ import numpy as np
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from backend.services.voice_dsp import analyze_audio_chunk, decode_audio_file_bytes
 
-wav_path = r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data\ai\ai_hi_001.wav"
+wav_path = r"data/voice_data\ai\ai_hi_001.wav"
 with open(wav_path, "rb") as f:
     raw_wav = f.read()
 

@@ -183,7 +183,7 @@ def build_docx_proposal():
 
     doc.add_paragraph(
         "SentinelShield AI was verified across all 960 multi-lingual audio files in the dataset repository "
-        "(C:\\Users\\FRONTMAN\\OneDrive\\Desktop\\voice-data-main\\voice data). The results prove zero-placeholder, "
+        "(data/voice_data). The results prove zero-placeholder, "
         "production-grade classification capabilities:"
     )
 
@@ -412,7 +412,7 @@ SentinelShield AI provides a unified, zero-trust, real-time defense platform fea
 
 ## 3. Dataset Ingestion & Empirical Verification Benchmark
 
-Verified against all **960 multi-lingual audio files** (`C:\\Users\\FRONTMAN\\OneDrive\\Desktop\\voice-data-main\\voice data`):
+Verified against all **960 multi-lingual audio files** (`data/voice_data`):
 
 ### 📊 Benchmark Summary:
 - **Total Audio Files Tested:** `960 Files` (480 AI Synthetic + 480 Human Voices)
@@ -528,9 +528,9 @@ graph TD
 ---
 
 ## 7. Generated Document Files
-- **Word Document File (.docx):** `C:\\Users\\FRONTMAN\\.gemini\\antigravity\\scratch\\sentinelshield-ai\\SentinelShield_AI_Complete_Proposal_Synopsis_Implementation_Plan.docx`
-- **Markdown Document File (.md):** `C:\\Users\\FRONTMAN\\.gemini\\antigravity\\scratch\\sentinelshield-ai\\PROJECT_PROPOSAL_SYNOPSIS_IMPLEMENTATION_PLAN.md`
-- **Team Role Matrix (.md):** `C:\\Users\\FRONTMAN\\.gemini\\antigravity\\scratch\\sentinelshield-ai\\SIH_TEAM_ROLE_AND_FILE_DISTRIBUTION.md`
+- **Word Document File (.docx):** `./SentinelShield_AI_Complete_Proposal_Synopsis_Implementation_Plan.docx`
+- **Markdown Document File (.md):** `./PROJECT_PROPOSAL_SYNOPSIS_IMPLEMENTATION_PLAN.md`
+- **Team Role Matrix (.md):** `./SIH_TEAM_ROLE_AND_FILE_DISTRIBUTION.md`
 """
     with open(MD_OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(content)

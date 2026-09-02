@@ -14,7 +14,7 @@ import scipy.io.wavfile as wavfile
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from backend.services.voice_dsp import analyze_audio_chunk, _load_ml_model
 
-DATASET_DIR = Path(r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data")
+DATASET_DIR = Path(Path(__file__).resolve().parent.parent.parent / "data" / "voice_data")
 
 
 def evaluate_full_dataset():

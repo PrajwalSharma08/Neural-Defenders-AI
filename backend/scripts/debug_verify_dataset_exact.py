@@ -8,8 +8,8 @@ import joblib
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from backend.scripts.calibrate_dsp import load_audio_file
 
-DATASET_DIR = Path(r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data")
-MODEL_PATH = Path(r"C:\Users\FRONTMAN\.gemini\antigravity\scratch\sentinelshield-ai\backend\models\voice_classifier.joblib")
+DATASET_DIR = Path(Path(__file__).resolve().parent.parent.parent / "data" / "voice_data")
+MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "voice_classifier.joblib"
 
 payload = joblib.load(MODEL_PATH)
 scaler = payload["scaler"]

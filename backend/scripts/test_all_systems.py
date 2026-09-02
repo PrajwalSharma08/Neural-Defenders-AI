@@ -21,8 +21,8 @@ import websockets
 
 BASE_URL = "http://127.0.0.1:8888"
 WS_URL = "ws://127.0.0.1:8888/ws/voice-stream"
-AI_AUDIO_SAMPLE = r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data\ai\ai_hi_001.wav"
-HUMAN_AUDIO_SAMPLE = r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data\human\human_hi_001.wav"
+AI_AUDIO_SAMPLE = r"data/voice_data\ai\ai_hi_001.wav"
+HUMAN_AUDIO_SAMPLE = r"data/voice_data\human\human_hi_001.wav"
 
 passed_tests = 0
 total_tests = 10

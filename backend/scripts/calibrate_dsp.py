@@ -3,14 +3,14 @@
 SentinelShield AI — Multi-Lingual DSP Calibration & Benchmark Script.
 
 Iterates through 100 AI and 100 Human audio samples per language:
-    - Path: "C:\\Users\\FRONTMAN\\OneDrive\\Desktop\\voice-data-main\\voice data" (or ./dataset/)
+    - Path: "data/voice_data" (or ./dataset/)
     - Computes acoustic features: STFT phase variance, pitch jitter/std, spectral centroid stability, zero-crossing rate
     - Evaluates calibrated weights & ML baseline that maximize ROC-AUC
     - Outputs confusion matrix PNG, ROC-AUC curve plot, and calibrated weights benchmark
 
 Usage:
     python backend/scripts/calibrate_dsp.py \
-        --dataset-dir "C:\\Users\\FRONTMAN\\OneDrive\\Desktop\\voice-data-main\\voice data"
+        --dataset-dir "data/voice_data"
 """
 from __future__ import annotations
 
@@ -277,7 +277,7 @@ def main() -> None:
     parser.add_argument(
         "--dataset-dir",
         type=str,
-        default=r"C:\Users\FRONTMAN\OneDrive\Desktop\voice-data-main\voice data",
+        default=Path(__file__).resolve().parent.parent.parent / "data" / "voice_data",
         help="Path to voice dataset directory with 'ai/' and 'human/' subfolders",
     )
     parser.add_argument("--max-per-class", type=int, default=100, help="Max samples per class")
