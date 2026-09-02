@@ -358,8 +358,8 @@ window.VoiceShield = {
         // B) AI Voice Clone / Neural TTS (ChatGPT, ElevenLabs):
         //    Synthesized on rigid mathematical time grid (pitchJitter < 0.012 && spectralVariance < 0.055).
         const isSpeaking = (rms >= 0.0018 || avgSpeechFormant >= 7);
-        const isAISynthetic = isSpeaking && ((pitchJitter < 0.012 && spectralVariance < 0.055) || (vocoderRatio >= 0.45 && spectralVariance < 0.07));
-        const isHumanBiological = isSpeaking && !isAISynthetic && (spectralVariance >= 0.06 || pitchJitter >= 0.015);
+        const isAI = isSpeaking && ((pitchJitter < 0.012 && spectralVariance < 0.055) || (vocoderRatio >= 0.45 && spectralVariance < 0.07));
+        const isHuman = isSpeaking && !isAI && (spectralVariance >= 0.06 || pitchJitter >= 0.015);
 
         let targetRisk = 0.03;
         let verdict = "AMBIENT";
@@ -369,11 +369,11 @@ window.VoiceShield = {
           targetRisk = 0.02 + Math.min(0.04, (rms * 1500) * 0.01) + (Math.random() * 0.015);
           verdict = "AMBIENT";
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
-        } else if (isAISynthetic) {
+        } else if (isAI) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
           targetRisk = 0.90 + Math.min(0.05, vocoderRatio * 0.05) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
-        } else if (isHumanBiological || !isAISynthetic) {
+        } else if (isHuman) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
           targetRisk = 0.10 + (Math.random() * 0.03 - 0.015);
           verdict = (dbSPL < 45 && rms < 0.003) ? "HUMAN_WHISPER" : "HUMAN";
