@@ -51,4 +51,4 @@ Open your browser and visit:
 - **Piyoosh Patel:** Frontend Lead (UI/UX Developer)
 - **Shakti Maurya:** Cyber Security & Threat Intelligence Lead
 - **Shivansh Mishra:** Integration & Full-Stack Specialist
-- **Rachit Jaiswal:** DSA & Optimization Engineer
+- **Raj:** Web Security & Database Specialist (HTML/CSS & PHP/MySQL Lead)
