@@ -175,9 +175,9 @@
           </p>
         </div>
 
-        <button class="btn-primary" onclick="window.SentinelApp.triggerPwaInstall()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.85rem 1.75rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; border: none; cursor: pointer;">
-          <span>📱 1-Tap Web App (Instant Install)</span>
-        </button>
+        <a href="./SentinelShield-WebAPK.apk" download="SentinelShield-WebAPK.apk" class="btn-primary" onclick="handleWebAppDownload(event)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.85rem 1.75rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; text-decoration: none; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);">
+          <span>📱 1-Tap Web App (Instant Download & Install)</span>
+        </a>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
@@ -511,6 +511,17 @@
     function triggerApkDownload(event, url) {
       if (window.SentinelApp && window.SentinelApp.showToast) {
         window.SentinelApp.showToast('📥 Starting download for SentinelShield-AI-v1.0.apk...', 'success');
+      }
+    }
+
+    function handleWebAppDownload(event) {
+      if (window.SentinelApp && window.SentinelApp.showToast) {
+        window.SentinelApp.showToast('📥 Downloading SentinelShield Web App APK & Launching 1-Tap Install...', 'success');
+      }
+      if (window.SentinelApp && typeof window.SentinelApp.triggerPwaInstall === 'function') {
+        try {
+          window.SentinelApp.triggerPwaInstall();
+        } catch (e) {}
       }
     }
   </script>
