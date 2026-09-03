@@ -361,12 +361,21 @@ window.VoiceShield = {
         }
 
         // --- 3. Multi-Dimensional Volume-Invariant Voice Discrimination ---
-        // A) Insaan ki aawaz (Direct Mic, Phone Speaker, Loud voice, Soft whisper):
-        //    Natural biological vocal cords have bounded zcr dispersion & dynamic vocal tract modulation.
+        // A) Insaan ki aawaz (Direct Mic, Phone Speaker, English / Hindi Accents, Soft whisper):
+        //    Natural biological vocal cords have bounded median zcr dispersion & dynamic vocal tract modulation.
+        //    Transient English sibilants ("s", "sh", "th", "ch") cause brief 50ms ZCR spikes, but vowels pull median back down.
         // B) AI Voice Clone / Neural TTS (ChatGPT, ElevenLabs):
-        //    Synthesized on rigid mathematical time grid with distinct vocoder phase artifacts (zcrRisk >= 0.55).
+        //    Synthesized on rigid mathematical time grid with sustained vocoder phase artifacts (medianZcrRisk >= 0.48).
+        if (!this.frameRiskHistory) this.frameRiskHistory = [];
+        this.frameRiskHistory.push(zcrRisk);
+        if (this.frameRiskHistory.length > 7) this.frameRiskHistory.shift();
+
+        // Median ZCR risk across recent frames (Immune to transient English consonant spikes)
+        const sortedRisks = [...this.frameRiskHistory].sort((a, b) => a - b);
+        const medianZcrRisk = sortedRisks[Math.floor(sortedRisks.length / 2)] || zcrRisk;
+
         const isSpeaking = (rms >= 0.0018 || avgSpeechFormant >= 5);
-        const isAI = isSpeaking && ((zcrRisk >= 0.55 && pitchJitter < 0.28) || (zcrRisk >= 0.68) || (vocoderRatio >= 0.45 && spectralVariance < 0.07));
+        const isAI = isSpeaking && ((medianZcrRisk >= 0.48 && vocoderRatio >= 0.42) || (medianZcrRisk >= 0.62) || (vocoderRatio >= 0.48 && spectralVariance < 0.065));
         const isHuman = isSpeaking && !isAI;
 
         let targetRisk = 0.03;
@@ -379,11 +388,11 @@ window.VoiceShield = {
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
         } else if (isAI) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.88 + Math.min(0.08, zcrRisk * 0.08) + (Math.random() * 0.02 - 0.01);
+          targetRisk = 0.88 + Math.min(0.08, medianZcrRisk * 0.08) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
         } else if (isHuman) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.10 + Math.min(0.04, zcrRisk * 0.04) + (Math.random() * 0.02 - 0.01);
+          targetRisk = 0.10 + Math.min(0.04, medianZcrRisk * 0.04) + (Math.random() * 0.02 - 0.01);
           verdict = (dbSPL < 45 && rms < 0.003) ? "HUMAN_WHISPER" : "HUMAN";
         }
 
@@ -391,7 +400,7 @@ window.VoiceShield = {
         if (this.smoothedRisk === 0.0 || this.smoothedRisk === undefined) {
           this.smoothedRisk = targetRisk;
         } else {
-          this.smoothedRisk = this.smoothedRisk * 0.45 + targetRisk * 0.55;
+          this.smoothedRisk = this.smoothedRisk * 0.50 + targetRisk * 0.50;
         }
 
         const riskPct = Math.round(this.smoothedRisk * 100);
