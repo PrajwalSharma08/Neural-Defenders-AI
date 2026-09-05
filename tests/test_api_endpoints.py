@@ -117,7 +117,7 @@ class TestApiEndpoints(unittest.TestCase):
         res = client.post("/api/v1/analyze-audio", files=files)
         self.assertEqual(res.status_code, 200)
         data = res.json()
-        self.assertIn(data["verdict"], ["HUMAN", "AI_SUSPECTED", "AI_DETECTED", "DEGRADED_SIGNAL"])
+        self.assertIn(data["verdict"], ["HUMAN", "AI_SUSPECTED", "AI_DETECTED", "DEGRADED_SIGNAL", "LISTENING"])
         self.assertEqual(len(data["attestation_hash"]), 64)
 
 

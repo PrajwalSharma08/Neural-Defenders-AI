@@ -41,8 +41,10 @@ Thumbs.db
 
 # Documentation & Proposals (Local Only - Never Push to GitHub)
 docs/
+presentation_materials/
 *.docx
 *.pptx
+*.pdf
 project_synopsis.md
 *synopsis*
 *PROPOSAL*
@@ -56,6 +58,8 @@ temp_*
 *.dump
 *.bak
 scratch/
+backend/scripts/output/
 
 # Allow pre-trained classifier model
 !backend/models/voice_classifier.joblib
+
