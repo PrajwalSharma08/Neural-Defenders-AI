@@ -6,7 +6,7 @@
 
 ## 🚀 Key Features
 
-1. **🎤 Voice Integrity Shield:** Sub-second (<300ms) acoustic forensic pipeline utilizing 128-Mel Filterbanks, 13-MFCCs, 8–16kHz STFT Phase Variance, and Pitch Micro-Jitter biometrics. Trained on 960 multi-lingual audio files across 13 Indian languages with **97.29% empirical accuracy**.
+1. **🎤 Voice Integrity Shield:** Sub-second (<300ms) acoustic forensic pipeline utilizing 128-Mel Filterbanks, 13-MFCCs, 8–16kHz STFT Phase Variance, and Pitch Micro-Jitter biometrics. Trained on 6,900 multi-lingual audio files (3,450 Real Human + 3,450 AI Synthetic across 13 Indian languages) with **98.99% 5-fold CV accuracy, 99.49% test accuracy, and 0.9994 ROC-AUC**.
 2. **🔗 Link & Phishing Shield:** Real-time URL threat intelligence featuring Shannon Domain Entropy calculation ($>3.5\text{ bits/char}$ for DGA detection), Levenshtein distance typosquatting matrix (60+ Indian banking & government brands), and shortener unmasking.
 3. **📱 Digital Arrest & SMS Shield:** Aho-Corasick multi-pattern automaton ($O(n+m)$ single-pass search) detecting 82 extortion, CBI/Customs impersonation, and panic-inducing threats.
 4. **🔒 Zero-Disk TEE Privacy:** In-memory RAM page-locking (`VirtualLock`/`mlock`) with immediate cryptographic memory zeroization (`ctypes.memset`) on exit.

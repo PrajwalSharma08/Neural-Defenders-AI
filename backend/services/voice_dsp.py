@@ -4,7 +4,7 @@ SentinelShield AI — Sub-Second Acoustic DSP & Multi-Second Temporal Voice Fore
 Features:
   1. Universal Audio Container Decoder (WAV, MP3, OGG, FLAC -> 16kHz PCM int16).
   2. Voice Activity Detection (VAD) Silence Gate (Zero false alarms on background room noise).
-  3. Pre-trained Multi-Lingual Dataset Model (960 audio samples, 38 acoustic features).
+  3. Pre-trained Multi-Lingual Dataset Model (6,900 balanced audio samples across 13 Indian languages + English).
   4. Multi-Second (3–5s) Speech Accumulator for stable, high-confidence forensic classification.
   5. Vocoder Phase Variance (8–16 kHz) & Pitch Micro-Jitter Forensics.
   6. Zero-Disk TEE Ingestion & Memory Zeroization.

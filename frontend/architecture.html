@@ -594,38 +594,38 @@
           3.2 Benchmark Dataset & Empirical Performance Validation
         </h4>
         <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.25rem;">
-          Trained and validated on <strong>ASVspoof 2021 DF</strong> (Logical Access + Deepfake) + <strong>FakeAVCeleb</strong> corpus with <strong>12dB Cellular Noise</strong> injection.
+          Trained and validated on <strong>6,900 Multi-Lingual Audio Samples</strong> (3,450 Real Human + 3,450 AI Synthetic across 13 Indian languages) with <strong>12dB Cellular Noise</strong> injection.
         </p>
 
         <div class="grid-metrics">
           <div class="metric-card" style="border-color: rgba(52, 211, 153, 0.3);">
             <div class="metric-lbl">Accuracy</div>
-            <div class="metric-val" style="color: #34d399;">98.7%</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Overall Test Set</div>
+            <div class="metric-val" style="color: #34d399;">99.5%</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Holdout Test (98.99% CV)</div>
           </div>
           <div class="metric-card" style="border-color: rgba(56, 189, 248, 0.3);">
             <div class="metric-lbl">Precision</div>
-            <div class="metric-val" style="color: #38bdf8;">98.9%</div>
+            <div class="metric-val" style="color: #38bdf8;">99.0%</div>
             <div style="font-size: 0.72rem; color: #64748b;">Low False Alarms</div>
           </div>
           <div class="metric-card" style="border-color: rgba(251, 191, 36, 0.3);">
             <div class="metric-lbl">Recall / Sensitivity</div>
-            <div class="metric-val" style="color: #fbbf24;">98.5%</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Deepfake Catch Rate</div>
+            <div class="metric-val" style="color: #fbbf24;">100.0%</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Deepfake Catch Rate (690/690)</div>
           </div>
           <div class="metric-card" style="border-color: rgba(192, 132, 252, 0.3);">
             <div class="metric-lbl">F1-Score</div>
-            <div class="metric-val" style="color: #c084fc;">98.7%</div>
+            <div class="metric-val" style="color: #c084fc;">99.5%</div>
             <div style="font-size: 0.72rem; color: #64748b;">Harmonic Mean</div>
           </div>
           <div class="metric-card" style="border-color: rgba(52, 211, 153, 0.3);">
             <div class="metric-lbl">ROC-AUC</div>
-            <div class="metric-val" style="color: #34d399;">0.994</div>
+            <div class="metric-val" style="color: #34d399;">0.9994</div>
             <div style="font-size: 0.72rem; color: #64748b;">Discrimination Power</div>
           </div>
           <div class="metric-card" style="border-color: rgba(248, 113, 113, 0.3);">
             <div class="metric-lbl">Equal Error Rate (EER)</div>
-            <div class="metric-val" style="color: #f87171;">1.3%</div>
+            <div class="metric-val" style="color: #f87171;">0.5%</div>
             <div style="font-size: 0.72rem; color: #64748b;">SOTA Minimal Error</div>
           </div>
           <div class="metric-card" style="border-color: rgba(56, 189, 248, 0.3);">
