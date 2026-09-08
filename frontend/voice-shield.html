@@ -150,6 +150,11 @@
         <p id="micStatusText" style="text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem;">
           STANDBY (Click to Activate 200ms Telemetry)
         </p>
+
+        <!-- Live In-Call Testing Guide Box -->
+        <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(56, 189, 248, 0.06); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 8px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.4;">
+          <strong style="color: var(--accent-cyan);">💡 Live Phone Call Testing Tip:</strong> Android OS blocks background mic access during private phone calls. For active cellular/WhatsApp calls, enable <strong>Loudspeaker</strong> so the caller's voice reaches the mic, or use the <strong>Live In-Call Simulator</strong> below.
+        </div>
       </div>
 
       <!-- Right Column: 60 FPS Visualizer, Telemetry Cards & File Upload -->
@@ -501,6 +506,7 @@
   </div>
 
   <!-- Scripts with Cache Busting -->
+  <script src="./js/libs/jspdf.umd.min.js"></script>
   <script src="./js/app.js?v=2.5"></script>
   <script src="./js/voice-shield.js?v=2.5"></script>
   <script src="./js/forensic-pdf.js?v=2.5"></script>

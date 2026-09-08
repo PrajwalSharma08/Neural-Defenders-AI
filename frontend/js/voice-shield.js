@@ -164,19 +164,27 @@ window.VoiceShield = {
 
     // 2. Setup WebAudio Microphone Stream with AnalyserNode and Hardware Noise Suppression
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          sampleRate: this.TARGET_SAMPLE_RATE,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      let stream = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            channelCount: 1,
+            echoCancellation: false, // Don't filter out vocoder anomalies
+            noiseSuppression: false, // Keep high-frequency phase cues intact
+            autoGainControl: true,
+          },
+        });
+      } catch (err1) {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+      this.stream = stream;
 
-      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: this.TARGET_SAMPLE_RATE,
-      });
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      try {
+        this.audioCtx = new AudioCtxClass({ sampleRate: this.TARGET_SAMPLE_RATE });
+      } catch (e) {
+        this.audioCtx = new AudioCtxClass();
+      }
 
       if (this.audioCtx.state === 'suspended') {
         try {
@@ -374,26 +382,33 @@ window.VoiceShield = {
         const sortedRisks = [...this.frameRiskHistory].sort((a, b) => a - b);
         const medianZcrRisk = sortedRisks[Math.floor(sortedRisks.length / 2)] || zcrRisk;
 
-        const isSpeaking = (rms >= 0.0018 || avgSpeechFormant >= 5);
-        const isAI = isSpeaking && ((medianZcrRisk >= 0.48 && vocoderRatio >= 0.42) || (medianZcrRisk >= 0.62) || (vocoderRatio >= 0.48 && spectralVariance < 0.065));
+        // Adaptive background noise floor calibration
+        if (!this.ambientFloor || isNaN(this.ambientFloor)) this.ambientFloor = 0.0008;
+        if (rms < this.ambientFloor * 1.5) {
+          this.ambientFloor = this.ambientFloor * 0.95 + rms * 0.05;
+        }
+        const speechThreshold = Math.max(0.0008, this.ambientFloor * 1.35);
+
+        const isSpeaking = (rms > speechThreshold || avgSpeechFormant >= 2.5);
+        const isAI = isSpeaking && ((medianZcrRisk >= 0.48 && vocoderRatio >= 0.40) || (medianZcrRisk >= 0.60) || (vocoderRatio >= 0.45 && spectralVariance < 0.075));
         const isHuman = isSpeaking && !isAI;
 
         let targetRisk = 0.03;
         let verdict = "AMBIENT";
 
         if (!isSpeaking) {
-          // Dynamic ambient energy fluctuation (2% to 5%)
-          targetRisk = 0.02 + Math.min(0.04, (rms * 1500) * 0.01) + (Math.random() * 0.015);
+          // Dynamic ambient energy fluctuation (2% to 4%)
+          targetRisk = 0.02 + Math.min(0.03, (rms * 1000) * 0.01) + (Math.random() * 0.01);
           verdict = "AMBIENT";
-          this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.15);
+          this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.12);
         } else if (isAI) {
-          this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.88 + Math.min(0.08, medianZcrRisk * 0.08) + (Math.random() * 0.02 - 0.01);
-          verdict = (dbSPL < 45 && rms < 0.003) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
+          this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.35);
+          targetRisk = 0.92 + Math.min(0.06, medianZcrRisk * 0.06) + (Math.random() * 0.02 - 0.01);
+          verdict = (dbSPL < 45 && rms < 0.0025) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
         } else if (isHuman) {
-          this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.25);
-          targetRisk = 0.10 + Math.min(0.04, medianZcrRisk * 0.04) + (Math.random() * 0.02 - 0.01);
-          verdict = (dbSPL < 45 && rms < 0.003) ? "HUMAN_WHISPER" : "HUMAN";
+          this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.35);
+          targetRisk = 0.08 + Math.min(0.05, medianZcrRisk * 0.04) + (Math.random() * 0.02 - 0.01);
+          verdict = (dbSPL < 45 && rms < 0.0025) ? "HUMAN_WHISPER" : "HUMAN";
         }
 
         // Smoothly adjust risk with real-time responsive EMA
@@ -467,8 +482,12 @@ window.VoiceShield = {
         });
       };
 
+      // Silent GainNode keeps audio processing active without audio loopback or echo cancellation muting
+      this.silentGain = this.audioCtx.createGain();
+      this.silentGain.gain.value = 0;
       source.connect(this.processor);
-      this.processor.connect(this.audioCtx.destination);
+      this.processor.connect(this.silentGain);
+      this.silentGain.connect(this.audioCtx.destination);
       this.isStreaming = true;
     } catch (err) {
       console.warn("Microphone capture note:", err);
@@ -488,6 +507,13 @@ window.VoiceShield = {
         this.processor.disconnect();
       } catch (e) {}
       this.processor = null;
+    }
+
+    if (this.silentGain) {
+      try {
+        this.silentGain.disconnect();
+      } catch (e) {}
+      this.silentGain = null;
     }
     
     if (this.audioCtx) {
@@ -724,7 +750,7 @@ window.VoiceShield = {
         gaugeCircle.style.stroke = 'var(--accent-cyan)';
         if (gaugeLabel) {
           gaugeLabel.className = 'verdict-pill verdict-listening';
-          gaugeLabel.innerHTML = '🍃 MONITORING LIVE AUDIO';
+          gaugeLabel.innerHTML = this.isStreaming ? '🍃 LISTENING FOR SPEECH...' : 'STANDBY';
         }
       }
     }
