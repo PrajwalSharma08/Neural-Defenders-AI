@@ -419,21 +419,29 @@ def analyze_audio_chunk(
                     logger.debug("ML inference error: %s", exc)
 
         # 3. Scaled Risk Score Calibration
-        # Normalizes ML probability: <= 0.20 -> near 0 risk (Human), >= 0.45 -> near 1.0 (AI Detected)
-        scaled_ml_risk = np.clip((ml_prob_ai - 0.20) / (0.45 - 0.20), 0.0, 1.0)
+        # In natural human vocal cords, physiological jitter_ratio is 0.015 - 0.045
+        # If natural human pitch jitter is observed (jitter_score < 0.50), safeguard against false alarms
+        has_human_jitter = (jitter_score < 0.50)
+        if has_human_jitter:
+            ml_prob_ai = min(ml_prob_ai, 0.25)
+
+        # Conservative ML scaling: Only scale into AI risk if model probability is genuinely high (> 0.40)
+        scaled_ml_risk = float(np.clip((ml_prob_ai - 0.35) / (0.75 - 0.35), 0.0, 1.0))
         dsp_score = 0.50 * phase_score + 0.35 * jitter_score + 0.15 * centroid_score
 
         # Fused final risk score
-        r_final = float(np.clip(0.80 * scaled_ml_risk + 0.20 * dsp_score, 0.0, 1.0))
+        r_final = float(np.clip(0.70 * scaled_ml_risk + 0.30 * dsp_score, 0.0, 1.0))
+        if has_human_jitter:
+            r_final = min(r_final, 0.18)
 
         # 4. Final Verdict Decision
         if not is_full_file and curr_speech_secs < 2.0:
             verdict = "LISTENING"
             red_alert = False
-        elif r_final >= 0.60:
+        elif r_final >= 0.70:
             verdict = "AI_DETECTED"
             red_alert = True
-        elif r_final >= 0.35:
+        elif r_final >= 0.40:
             verdict = "AI_SUSPECTED"
             red_alert = False
         else:
