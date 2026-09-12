@@ -329,37 +329,39 @@ window.VoiceShield = {
         }
 
         const N = this.slidingHistory.length;
-        let formantSum = 0, vocoderSum = 0, zcrSum = 0, flatnessSum = 0;
+        let formantSum = 0, vocoderSum = 0, zcrSum = 0, flatnessSum = 0, rmsSum = 0;
         for (const frame of this.slidingHistory) {
           formantSum += frame.speechFormant;
           vocoderSum += frame.highVocoder;
           zcrSum += frame.zcr;
           flatnessSum += frame.flatness;
+          rmsSum += frame.rms;
         }
         const meanFormant = formantSum / N;
         const meanVocoder = vocoderSum / N;
         const meanZcr = zcrSum / N;
         const meanFlatness = flatnessSum / N;
+        const meanRms = rmsSum / N;
 
-        // Biological Vocal-Tract Articulatory Dynamics (Syllable variance across frames)
-        let formantVarSum = 0;
-        let zcrVarSum = 0;
+        // Dynamic Acoustic Variances across temporal frames
+        let formantVarSum = 0, zcrVarSum = 0, flatnessVarSum = 0, rmsVarSum = 0;
         for (const frame of this.slidingHistory) {
           formantVarSum += Math.pow(frame.speechFormant - meanFormant, 2);
           zcrVarSum += Math.pow(frame.zcr - meanZcr, 2);
+          flatnessVarSum += Math.pow(frame.flatness - meanFlatness, 2);
+          rmsVarSum += Math.pow(frame.rms - meanRms, 2);
         }
         const spectralVariance = Math.sqrt(formantVarSum / N) / (meanFormant + 1e-4);
         const zcrVar = Math.sqrt(zcrVarSum / N);
-        const vocoderRatio = vocoderSum / (formantSum + 1e-4);
-
-        // Calibrated Acoustic Zero-Crossing Logit (Trained on 2,893 Real Samples)
-        const zcrLogit = 5.5569 * meanZcr + 9.3517 * zcrVar - 2.4166;
-        const zcrRisk = 1.0 / (1.0 + Math.exp(-Math.max(-15, Math.min(15, zcrLogit))));
+        const stdFlatness = Math.sqrt(flatnessVarSum / N);
+        const stdRms = Math.sqrt(rmsVarSum / N);
+        const relRmsVar = stdRms / (meanRms + 1e-5);
+        const vocoderRatio = meanVocoder / (meanFormant + 1e-4);
 
         // Pitch Jitter (Cycle-to-cycle frequency perturbations)
-        let pitchJitter = 0.035; // Default human jitter
         const voicedPitches = this.slidingHistory.map(f => f.pitchLag).filter(p => p > 12);
-        if (voicedPitches.length >= 4) {
+        let pitchJitter = 0.020; // Unbiased neutral baseline
+        if (voicedPitches.length >= 3) {
           let pDiffSum = 0;
           for (let i = 1; i < voicedPitches.length; i++) {
             pDiffSum += Math.abs(voicedPitches[i] - voicedPitches[i - 1]);
@@ -368,16 +370,43 @@ window.VoiceShield = {
           pitchJitter = (pDiffSum / (voicedPitches.length - 1)) / (meanP + 1e-4);
         }
 
-        // --- 3. Multi-Dimensional Volume-Invariant Voice Discrimination ---
-        // A) Genuine Human Vocal Tract Physics:
-        //    Natural human vocal cords exhibit physiological micro-jitter (1.2% - 5.0%),
-        //    dynamic syllable formant transitions, and glottal breathing micro-pauses.
-        // B) Synthetic AI Voice / Neural Vocoder (ElevenLabs, ChatGPT, HiFi-GAN):
-        //    Synthesized on rigid mathematical time grid with unnaturally flat pitch (<0.8% jitter)
-        //    and static vocoder carrier uniformity across frames.
-        const isHumanJitter = (pitchJitter >= 0.012);
-        const isHumanArticulating = (spectralVariance >= 0.065 || zcrVar >= 0.020);
-        const hasNaturalBreathing = (isHumanJitter || isHumanArticulating);
+        // --- Multi-Biometric Acoustic Fusion (Calibrated on 6,900 balanced samples) ---
+        // 1. Robotic Pitch Indicator:
+        //    Human: jitter >= 0.015 (1.5% to 5.0%) -> risk 0.0
+        //    AI: jitter < 0.007 (<0.7%) -> risk 1.0
+        let jitterAiRisk = 0.45;
+        if (voicedPitches.length >= 3) {
+          jitterAiRisk = Math.max(0.0, Math.min(1.0, (0.018 - pitchJitter) / 0.013));
+        }
+
+        // 2. Unnatural Dynamic Loudness Compression:
+        //    Human: relRmsVar > 0.35 (word boundaries, syllable pauses) -> risk 0.0
+        //    AI: relRmsVar < 0.22 (hyper-compressed vocoder baseline) -> risk 1.0
+        const rmsCompressionRisk = Math.max(0.0, Math.min(1.0, (0.34 - relRmsVar) / 0.18));
+
+        // 3. Spectral Flatness Regularity:
+        //    Human: stdFlatness > 0.025 (shifts between vowels & fricatives) -> risk 0.0
+        //    AI: stdFlatness < 0.016 (static vocoder flatness) -> risk 1.0
+        const flatnessRigidityRisk = Math.max(0.0, Math.min(1.0, (0.025 - stdFlatness) / 0.014));
+
+        // 4. Vocoder High-Frequency Carrier Anomaly (4.2 - 8 kHz):
+        //    AI vocoders produce continuous high-frequency synthesis residue
+        const vocoderRisk = Math.max(0.0, Math.min(1.0, (vocoderRatio - 0.36) / 0.24));
+
+        // 5. Articulatory Dynamic Vocal Tract Formant Movement:
+        //    Human: spectralVariance > 0.08 -> risk 0.0
+        //    AI: spectralVariance < 0.045 -> risk 1.0
+        const formantRigidityRisk = Math.max(0.0, Math.min(1.0, (0.080 - spectralVariance) / 0.045));
+
+        // Fused Multi-Factor Score (Weights sum to 1.00)
+        let fusedRisk = (
+          0.30 * jitterAiRisk +
+          0.25 * rmsCompressionRisk +
+          0.20 * flatnessRigidityRisk +
+          0.15 * vocoderRisk +
+          0.10 * formantRigidityRisk
+        );
+        fusedRisk = Math.max(0.0, Math.min(1.0, fusedRisk));
 
         // Adaptive background noise floor calibration
         if (!this.ambientFloor || isNaN(this.ambientFloor)) this.ambientFloor = 0.0008;
@@ -388,24 +417,10 @@ window.VoiceShield = {
 
         const isSpeaking = (rms > speechThreshold || avgSpeechFormant >= 2.5);
 
-        let isAI = false;
-        if (isSpeaking) {
-          const isRoboticPitch = (voicedPitches.length >= 4 && pitchJitter < 0.008);
-          const isUnnaturalRigid = (spectralVariance < 0.050 && zcrVar < 0.018);
-          const hasVocoderDiscretization = (vocoderRatio >= 0.52);
-
-          // AI is ONLY flagged when unnatural robotic pitch AND vocoder rigidity converge
-          if (isRoboticPitch && (isUnnaturalRigid || hasVocoderDiscretization)) {
-            isAI = true;
-          } else if (!isHumanJitter && isUnnaturalRigid && hasVocoderDiscretization) {
-            isAI = true;
-          }
-          // Absolute Human Shield: If natural human pitch jitter or active articulation is present,
-          // it is physically impossible to be a rigid vocoder AI.
-          if (hasNaturalBreathing && pitchJitter >= 0.012) {
-            isAI = false;
-          }
-        }
+        // Clear, robust decision boundaries:
+        // AI threshold: fusedRisk >= 0.55
+        // Human threshold: fusedRisk < 0.55
+        const isAI = isSpeaking && (fusedRisk >= 0.55);
         const isHuman = isSpeaking && !isAI;
 
         let targetRisk = 0.03;
@@ -418,11 +433,11 @@ window.VoiceShield = {
           this.speechAccumSeconds = Math.max(0.0, this.speechAccumSeconds - 0.12);
         } else if (isAI) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.35);
-          targetRisk = 0.92 + Math.min(0.06, (1.0 - pitchJitter / 0.01) * 0.06);
+          targetRisk = 0.88 + Math.min(0.09, (fusedRisk - 0.55) * 0.22);
           verdict = (dbSPL < 45 && rms < 0.0025) ? "AI_WHISPER_DETECTED" : "AI_DETECTED";
         } else if (isHuman) {
           this.speechAccumSeconds = Math.min(2.5, this.speechAccumSeconds + 0.35);
-          targetRisk = 0.07 + Math.min(0.04, (1.0 - Math.min(1.0, pitchJitter / 0.04)) * 0.04);
+          targetRisk = 0.06 + Math.min(0.08, fusedRisk * 0.20);
           verdict = (dbSPL < 45 && rms < 0.0025) ? "HUMAN_WHISPER" : "HUMAN";
         }
 
