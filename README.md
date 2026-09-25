@@ -43,6 +43,16 @@ Open your browser and visit:
 👉 **`http://localhost:8888`**
 
 ---
+<div align="center">
+
+# 🛡️ Neural-Defenders-AI
+### Advanced Neural Network Cyber Defense & Threat Intelligence Platform
+
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-NeuralEngine-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
+
+> **Autonomous Cyber Defense at Neural Speed** — Real-time intrusion detection and payload analysis.
+</div>
 
 ## 👥 Team Neural Defenders (SIH26104)
 
