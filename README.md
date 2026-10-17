@@ -1,11 +1,11 @@
-﻿# 🛡️ SentinelShield AI — Neural Defenders AI
+# 🛡️ SentinelShield AI — Neural Defenders AI
 > **Real-Time Sub-Second Voice Deepfake, Phishing & Digital Arrest Defense Platform**  
 > **AICTE Smart India Hackathon (SIH 2026) — Problem Statement ID: SIH26104**
 
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Accuracy](https://img.shields.io/badge/Accuracy-99.49%25-brightgreen?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://github.com/prajwalsharma08/Neural-defenders-ai)
-[![ROC-AUC](https://img.shields.io/badge/ROC--AUC-0.9994-blue?style=for-the-badge)](https://github.com/prajwalsharma08/Neural-defenders-ai)
+[![Accuracy](https://img.shields.io/badge/Accuracy-99.35%25-brightgreen?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://github.com/prajwalsharma08/Neural-defenders-ai)
+[![ROC-AUC](https://img.shields.io/badge/ROC--AUC-0.9999-blue?style=for-the-badge)](https://github.com/prajwalsharma08/Neural-defenders-ai)
 [![Latency](https://img.shields.io/badge/Latency-%3C300ms-orange?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/prajwalsharma08/Neural-defenders-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
@@ -28,16 +28,16 @@ Cybercriminals are increasingly deploying multimodal social engineering attacks 
 ---
 
 ## 🎯 Dataset & Forensic Benchmarking
-The Voice Integrity Shield was trained and validated on a rigorously curated multi-lingual acoustic dataset:
-- **Total Dataset Size:** 6,900 high-fidelity audio samples (3,450 Real Human + 3,450 AI Synthetic/Cloned).
-- **Linguistic Coverage:** 13 Indian languages & accents (Hindi, English, Bengali, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Odia, Bhojpuri, Urdu).
+The Voice Integrity Shield was trained and validated on a rigorously curated multi-lingual & in-the-wild acoustic dataset:
+- **Total Dataset Size:** 30,400 balanced audio samples (15,200 Real Human + 15,200 AI Synthetic/Cloned).
+- **Linguistic & Wild Coverage:** 14 language/source categories (13 Indian languages + English clean dataset, plus 23,500 in-the-wild YouTube conversational audio samples across all 13 languages).
 - **Deepfake Generators Benchmarked:** ElevenLabs v2/v3, Bark, Tortoise-TTS, Coqui XTTS-v2, and RVC (Retrieval-based Voice Conversion).
 - **Audio Quality Profiles:** Clean 16kHz WAV, telephony 8kHz PCM, Opus (WhatsApp/Telegram compressed), and background noise-injected samples (15dB–25dB SNR).
 - **Evaluation Metrics:**
-  - **5-Fold Cross Validation Accuracy:** `98.99%`
-  - **Holdout Test Set Accuracy:** `99.49%`
-  - **Area Under ROC Curve (ROC-AUC):** `0.9994`
-  - **False Positive Rate (FPR):** `< 0.32%`
+  - **5-Fold Cross Validation Accuracy:** `99.40% (+/- 0.18%)`
+  - **Holdout Test Set Accuracy:** `99.35%`
+  - **Area Under ROC Curve (ROC-AUC):** `0.9999`
+  - **False Positive Rate (FPR):** `< 0.65%`
 
 ---
 

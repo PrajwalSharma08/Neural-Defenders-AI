@@ -52,7 +52,7 @@ window.ForensicPdf = {
 
     const vText = shared.voice_data 
       ? `${shared.voice_data.verdict} (Risk: ${Math.round((shared.voice_data.risk_score || 0) * 100)}%)` 
-      : 'Active session live telemetry (Calibrated 6,900 Dataset)';
+      : 'Active session live telemetry (Calibrated 30,400 Dataset)';
     const uText = shared.url_data 
       ? `${shared.url_data.verdict} (${shared.url_data.domain || shared.url_data.url})` 
       : 'No suspicious URL reported in session';
@@ -288,7 +288,7 @@ window.ForensicPdf = {
       ['pYIN Pitch Micro-Jitter', ((vData.pitch_jitter || 0.012) * 100).toFixed(2) + '%', '0.50% - 2.00%', isDanger ? 'Ultra-Stable (Neural TTS Contour)' : 'Natural Muscular Tremor'],
       ['Spectral Centroid Stability', (vData.spectral_centroid_stability || 38.4).toFixed(1) + ' Hz', '> 400.0 Hz std', isDanger ? 'Constrained Syllabic Modulation' : 'Dynamic Formant Articulation'],
       ['Cellular Noise SNR Guard', (vData.snr_db || 22.5).toFixed(1) + ' dB', '> 12.0 dB', 'Signal Intact (Exceeds 12dB Guard)'],
-      ['Calibrated ML Ensemble', 'Random Forest (150 Trees)', '6,900 Audio Dataset', '99.49% Test Acc | 100.00% AI Recall']
+      ['Calibrated ML Ensemble', 'Random Forest (150 Trees)', '30,400 Audio Dataset', '99.35% Holdout Acc | 0.9999 ROC-AUC']
     ];
 
     bioMetrics.forEach((row, rIdx) => {
@@ -440,7 +440,7 @@ window.ForensicPdf = {
         <div class="section-title">2. ACOUSTIC VOICE FORENSICS</div>
         <div class="alert-box">
           <strong>VERDICT: ${shared.voice_data ? shared.voice_data.verdict : 'AI_DETECTED'}</strong> (Risk Score: ${shared.voice_data ? Math.round(shared.voice_data.risk_score * 100) : 97}%)
-          <br><small>Evaluated against 6,900 Multi-Lingual Balanced Dataset (13 Indian Languages + English) - 99.49% Holdout Accuracy.</small>
+          <br><small>Evaluated against 30,400 Multi-Lingual Balanced Dataset (14 Language & YouTube Categories) - 99.35% Holdout Accuracy.</small>
         </div>
         <div class="section-title">3. LEGAL CERTIFICATE OF AUTHENTICITY (SECTION 65B)</div>
         <p style="font-size: 0.8rem; line-height: 1.5; color: #334155;">
