@@ -389,20 +389,20 @@ def analyze_audio_chunk(
 
         # 3. Scaled Risk Score Calibration
         # The multi-lingual Random Forest model delivers 99.4% accuracy across 30,400 audio samples (14 language & YouTube categories).
-        if ml_prob_ai >= 0.40:
+        if not is_full_file and curr_speech_secs < 1.0:
+            # Warmup state: gathering speech telemetry (6% - 10% baseline)
+            r_final = float(np.clip(0.06 + min(0.04, rms_energy * 0.4), 0.05, 0.12))
+            verdict = "LISTENING"
+            red_alert = False
+        elif ml_prob_ai >= 0.45:
             # AI Synthetic Voice detected: high dynamic risk (88% - 98%)
-            r_final = float(np.clip(0.88 + (ml_prob_ai - 0.40) * 0.16, 0.88, 0.98))
+            r_final = float(np.clip(0.88 + (ml_prob_ai - 0.45) * 0.16, 0.88, 0.98))
             verdict = "AI_DETECTED"
             red_alert = True
         else:
             # Verified Genuine Human Voice: low voice tracking risk (6% - 18%)
             r_final = float(np.clip(0.06 + ml_prob_ai * 0.22 + min(0.04, rms_energy * 0.4), 0.05, 0.18))
             verdict = "HUMAN"
-            red_alert = False
-
-        # If live stream has just started (< 1.0 second), show LISTENING state
-        if not is_full_file and curr_speech_secs < 1.0:
-            verdict = "LISTENING"
             red_alert = False
 
         elapsed_ms = (time.perf_counter() - t_start) * 1000
